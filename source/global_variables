@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+# start	comment.4 ####
+NC='\033[0m' # No Color
+BCYAN='\033[1;36m'
+BGREEN='\033[1;32m'
+BYELLOW='\033[1;33m'
+BRED='\033[1;31m'
+# end	comment.4 ####
+
+FLATSYNC_DATA="$HOME/.local/share/flatsync" # comment.5
+
+DATE=$(date "%H.%M.%S_%d.%m.%Y") # comment.3
+
