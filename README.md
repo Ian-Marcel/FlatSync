@@ -14,6 +14,6 @@ Synchronize flatpak applications between devices.
 
 - - -
 
-- [License - GNU GPL V3](LICENSE)
-
 - [Code commentaries](docs/comments.md)
+
+- [License - GNU GPL V3](LICENSE)
