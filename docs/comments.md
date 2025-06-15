@@ -5,6 +5,6 @@
 - comment-3: Date funtion to use instead of the command(/usr/bin/date).
     - comment-3.1: Variable calls date function with the following format(24h-format):`hour.minute.second_day.month.year`.
 
-- comment-4: Colorized messages through a variables that contain scape characters value.
+- comment-4: Colorized messages through variables that represent the specials scape characters for colors.
 
 - comment-5: FlatSync data directory (default: `~/.local/share/flatsync`)
