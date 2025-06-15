@@ -10,5 +10,3 @@ BRED='\033[1;31m'
 
 FLATSYNC_DATA="$HOME/.local/share/flatsync" # comment.5
 
-DATE=$(date "%H.%M.%S_%d.%m.%Y") # comment.3
-

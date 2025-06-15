@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+# comment-3
+date() {
+	printf "%($1)T\\n" "-1"
+}
+DATE=$(date "%H.%M.%S_%d.%m.%Y") # comment-3.1
+

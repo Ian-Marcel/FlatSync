@@ -1,7 +1,0 @@
-#!/usr/bin/env bash
-
-# Date funtion for not need for command(/usr/bin/date)
-date() {
-	printf "%($1)T\\n" "-1"
-}
-
