@@ -8,5 +8,3 @@ BYELLOW='\033[1;33m'
 BRED='\033[1;31m'
 # end	comment.4 ####
 
-FLATSYNC_DATA="$HOME/.local/share/flatsync" # comment.5
-
