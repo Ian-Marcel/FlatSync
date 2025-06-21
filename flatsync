@@ -10,6 +10,7 @@ mkdir -p "$FLATSYNC_DATA"/{git,history,app/{source,cache}} # decomentar se FLATS
 
 source "$FLATSYNC_DATA"/app/source/global_variables
 source "$FLATSYNC_DATA"/app/source/pure_bash_functions
+source "$FLATSYNC_DATA"/app/source/progress_bar_by_task_completion
 
 flatpak list --columns=application --app |
 	tee -p "$FLATSYNC_DATA"/app/cache/local_flatpaks &>/dev/null
@@ -27,9 +28,12 @@ diff "$FLATSYNC_DATA"/app/cache/remote_flatpaks "$FLATSYNC_DATA"/app/cache/local
 	tee -p "$FLATSYNC_DATA"/app/cache/install &>/dev/null # comment.1
 
 echo -e "${BRED}Removing...${NC}"
-flatpak uninstall "$(<"$FLATSYNC_DATA"/app/cache/uninstall)"
+source "$FLATSYNC_DATA"/app/source/uninstalling
+#flatpak uninstall "$(<"$FLATSYNC_DATA"/app/cache/uninstall)"
+
 echo -e "${BGREEN}Installing...${NC}"
-flatpak install "$(<"$FLATSYNC_DATA"/app/cache/install)"
+source "$FLATSYNC_DATA"/app/source/installing
+#flatpak install "$(<"$FLATSYNC_DATA"/app/cache/install)"
 
 mv -v "$FLATSYNC_DATA"/app/cache/remote_flatpaks \
 	"$FLATSYNC_DATA"/history/synced_flatpaks-"$DATE".old
