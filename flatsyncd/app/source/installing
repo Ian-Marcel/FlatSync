@@ -26,7 +26,7 @@ sleep 1s;
 cat "$FLATSYNC_DATA"/app/cache/install-notice.tmp
 shred -u "$FLATSYNC_DATA"/app/cache/install-notice.tmp
 ASWR="y"
-#read -rp "Proceed? [y/n]: " ASWR
+read -rp "Proceed? [y/n]: " ASWR
 
 if [ $ASWR = y ]; then
 	for index in "${!install2[@]}"; do

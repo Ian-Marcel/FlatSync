@@ -25,7 +25,7 @@ sleep 1s;
 cat "$FLATSYNC_DATA"/app/cache/uninstall-notice.tmp
 shred -u "$FLATSYNC_DATA"/app/cache/uninstall-notice.tmp
 ASWR="y"
-#read -rp "Proceed? [y/n]: " ASWR
+read -rp "Proceed? [y/n]: " ASWR
 
 if [ $ASWR = y ]; then
 	for index in "${!uninstall2[@]}"; do
