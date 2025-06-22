@@ -11,6 +11,7 @@ mkdir -p "$FLATSYNC_DATA"/{git,history,app/{source,cache}} # decomentar se FLATS
 source "$FLATSYNC_DATA"/app/source/global_variables
 source "$FLATSYNC_DATA"/app/source/pure_bash_functions
 source "$FLATSYNC_DATA"/app/source/progress_bar_by_task_completion
+source "$FLATSYNC_DATA"/app/source/wait_with_spinner_loading
 
 flatpak list --columns=application --app |
 	tee -p "$FLATSYNC_DATA"/app/cache/local_flatpaks &>/dev/null

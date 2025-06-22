@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 
-printf "Processing data...\n"
+source "$FLATSYNC_DATA"/app/source/progress_bar_by_task_completion
+source "$FLATSYNC_DATA"/app/source/wait_with_spinner_loading
+
+printf "Processing uninstallation data...\n"
 for appid in $("$FLATSYNC_DATA"/app/cache/uninstall); do
 	uninstallid+=("$appid")
 done
@@ -8,18 +11,21 @@ done
 total="$((${#uninstallid[@]} - 1))"
 for index in "${!uninstallid[@]}"; do
 	appid=${uninstallid[$index]}
-	show_progress "$index" "$total"
-	printf "\t\b + $(flatpak search --columns=name $index | tr -d "\n"): " | tee -pa "$FLATSYNC_DATA"/app/cache/uninstall-notice.tmp &> /dev/null
-	printf "$(flatpak search --columns=description $index | tr -d "\n")\n" | tee -pa "$FLATSYNC_DATA"/app/cache/uninstall-notice.tmp &> /dev/null
-	uninstall2+=("$(flatpak search --columns=name $index | tr -d "\n")")
+
+	progress_bar_by_task_completion "$index" "$total"
+	printf "\b ${BRED}-${NC} $(flatpak search --columns=name $appid | tr -d "\n"): " |
+		tee -pa "$FLATSYNC_DATA"/app/cache/uninstall-notice.tmp &> /dev/null
+	printf "$(flatpak search --columns=description $appid | tr -d "\n")\n" |
+		tee -pa "$FLATSYNC_DATA"/app/cache/uninstall-notice.tmp &> /dev/null
+	uninstall2+=("$(flatpak search --columns=name $appid | tr -d "\n")")
 done
 
-printf "To be uninstalled:\n"
-sleep 2s;
+printf "${BRED}To be uninstalled:${NC}\n"
+sleep 1s;
 cat "$FLATSYNC_DATA"/app/cache/uninstall-notice.tmp
 shred -u "$FLATSYNC_DATA"/app/cache/uninstall-notice.tmp
-#read -rp "Install? [y/n]: " ASWR
 ASWR="y"
+#read -rp "Proceed? [y/n]: " ASWR
 
 if [ $ASWR = y ]; then
 	for index in "${!uninstall2[@]}"; do
@@ -29,12 +35,9 @@ if [ $ASWR = y ]; then
 		appid=${uninstallid[$index]}
 		app_name=${uninstall2[$index]}
 
-		printf "%s" "$app_name"
-
-		#sleep 2s
 		flatpak uninstall --noninteractive "$appid" &> /dev/null 
+		wait_with_spinner_loading "$app_name"
 
-		printf "%*s[ OK ]\n" $(( 40 - ${#app_name} )) ""
 	done
 else
 	exit 0

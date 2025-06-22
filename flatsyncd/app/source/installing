@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 
-printf "Processing data...\n"
+source "$FLATSYNC_DATA"/app/source/progress_bar_by_task_completion
+source "$FLATSYNC_DATA"/app/source/wait_with_spinner_loading
+
+printf "Processing installation data...\n"
 for appid in $("$FLATSYNC_DATA"/app/cache/install); do
 	installid+=("$appid")
 done
@@ -8,18 +11,22 @@ done
 total="$((${#installid[@]} - 1))"
 for index in "${!installid[@]}"; do
 	appid=${installid[$index]}
-	show_progress "$index" "$total"
-	printf "\t\b + $(flatpak search --columns=name $index | tr -d "\n"): " | tee -pa "$FLATSYNC_DATA"/app/cache/install-notice.tmp &> /dev/null
-	printf "$(flatpak search --columns=description $index | tr -d "\n")\n" | tee -pa "$FLATSYNC_DATA"/app/cache/install-notice.tmp &> /dev/null
-	install2+=("$(flatpak search --columns=name $index | tr -d "\n")")
+
+	progress_bar_by_task_completion "$index" "$total"
+	printf "\b ${BGREEN}+${NC} $(flatpak search --columns=name $appid | tr -d "\n"): " |
+		tee -pa "$FLATSYNC_DATA"/app/cache/install-notice.tmp &> /dev/null
+	printf "$(flatpak search --columns=description $appid | tr -d "\n")\n" |
+		tee -pa "$FLATSYNC_DATA"/app/cache/install-notice.tmp &> /dev/null
+	install2+=("$(flatpak search --columns=name $appid | tr -d "\n")")
+
 done
 
-printf "To be installed:\n"
-sleep 2s;
+printf "${BGREEN}To be installed:${NC}\n"
+sleep 1s;
 cat "$FLATSYNC_DATA"/app/cache/install-notice.tmp
 shred -u "$FLATSYNC_DATA"/app/cache/install-notice.tmp
-#read -rp "Install? [y/n]: " ASWR
 ASWR="y"
+#read -rp "Proceed? [y/n]: " ASWR
 
 if [ $ASWR = y ]; then
 	for index in "${!install2[@]}"; do
@@ -29,12 +36,9 @@ if [ $ASWR = y ]; then
 		appid=${installid[$index]}
 		app_name=${install2[$index]}
 
-		printf "%s" "$app_name"
-
-		#sleep 2s
 		flatpak install --noninteractive "$appid" &> /dev/null 
+		wait_with_spinner_loading "$app_name"
 
-		printf "%*s[ OK ]\n" $(( 40 - ${#app_name} )) ""
 	done
 else
 	exit 0
