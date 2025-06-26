@@ -8,3 +8,7 @@ BYELLOW='\033[1;33m'
 BRED='\033[1;31m'
 # end	comment.4 ####
 
+FLATSYNC_SCRIPT="$FLATSYNC_DATA"/app/source
+FLATSYNC_CACHE="$FLATSYNC_DATA"/app/cache
+FLATSYNC_GIT="$FLATSYNC_DATA"/git
+
