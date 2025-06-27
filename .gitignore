@@ -1,3 +1,4 @@
 flatsyncd/git
-flatsyncd/app/cache
+flatsyncd/cache
+flatsyncd/history
 
