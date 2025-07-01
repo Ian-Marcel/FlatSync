@@ -46,7 +46,9 @@ cd "$FLATSYNC_GIT" || exit
 flatpak list --columns=application --app |
 	tee -p remote_flatpaks &>/dev/null
 git add .
-git commit -q -m "$(date "%H:%M:%S - %d/%m/%Y")" &>/dev/null
-git push -q &>/dev/null
-echo "$PWD"
+if git commit -q -m "$(date "%H:%M:%S - %d/%m/%Y")" &>/dev/null ; then
+	git push -q
+else
+	exit 0
+fi
 
