@@ -43,7 +43,7 @@ if [ -d "$FLATSYNC_GIT"/.git ]; then
 		done
 	else
 		git fetch -q
-		git pull -q
+		git pull -q --force
 	fi
 else
 	cd "$FLATSYNC_GIT" || exit
