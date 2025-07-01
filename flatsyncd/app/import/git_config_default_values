@@ -6,7 +6,7 @@ git_preference=(
 	"core.sshCommand"
 	"user.signingKey"
 	"gpg.format"
-	"commit.gpgsign"
+	#"commit.gpgsign"
 )
 git_preference_value=(
 	"'flatsync'"
@@ -14,5 +14,5 @@ git_preference_value=(
 	""ssh -o IdentitiesOnly=yes -i ~/.ssh/flatsync_key""
 	""~/.ssh/flatsync_key.pub""
 	"ssh"
-	"true"
+	#"true"
 )
