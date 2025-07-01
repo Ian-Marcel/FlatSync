@@ -59,7 +59,6 @@ else
 					\r${BYELLOW}The SSH key for Flatsync is created automatically without a password, in the future it will be given you the choice of setting one for it. ${NC}\n"
 			read -rp "Please read the text above and then hit ENTER to proceed " void
 			if [ -e "$HOME"/.ssh/flatsync_key ] && [ -e "$HOME"/.ssh/flatsync_key.pub ]; then
-				continue
 				sleep 1
 				printf "SSH key already exists! That's odd... \n"
 			else
