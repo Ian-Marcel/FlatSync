@@ -35,4 +35,8 @@ mv -v "$FLATSYNC_CACHE"/remote_flatpaks \
 shred -u "$FLATSYNC_CACHE"/local_flatpaks
 flatpak list --columns=application --app |
 	tee -p "$FLATSYNC_GIT"/remote_flatpaks &>/dev/null
+cd "$FLATSYNC_GIT" || exit
+git add remote_flatpaks
+git commit -q -m "$(date "%H:%M:%S - %d/%m/%Y")"
+git push -q
 
