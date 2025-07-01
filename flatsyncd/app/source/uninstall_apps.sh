@@ -37,6 +37,6 @@ if [ $ASWR = y ]; then
 
 	done
 else
-	exit 0
+	sleep 1
 fi
 
