@@ -18,8 +18,6 @@ import global_variables
 import progress_bar_by_task_completion
 import wait_with_spinner_loading
 
-echo "$DATE"
-exit 1
 source "$FLATSYNC_SCRIPT"/git.sh
 
 source "$FLATSYNC_SCRIPT"/compare.sh
