@@ -18,8 +18,10 @@ import global_variables
 import progress_bar_by_task_completion
 import wait_with_spinner_loading
 
+printf "Check Git repo"
 source "$FLATSYNC_SCRIPT"/git.sh
 
+printf "Comparing"
 source "$FLATSYNC_SCRIPT"/compare.sh
 
 echo -e "${BRED}Removing...${NC}"
