@@ -38,12 +38,13 @@ else
 	echo -e "${BYELLOW}Nothing to install${NC}"
 fi
 
-mv -v "$FLATSYNC_CACHE"/remote_flatpaks \
+mv "$FLATSYNC_CACHE"/remote_flatpaks \
 	"$FLATSYNC_DATA"/history/synced_flatpaks-"$DATE".old
-shred -u "$FLATSYNC_CACHE"/local_flatpaks
-flatpak list --columns=application --app |
-	tee -p "$FLATSYNC_GIT"/remote_flatpaks &>/dev/null
+shred -u "$FLATSYNC_CACHE"/*
+
 cd "$FLATSYNC_GIT" || exit
+flatpak list --columns=application --app |
+	tee -p remote_flatpaks &>/dev/null
 git add remote_flatpaks
 git commit -q -m "$(date "%H:%M:%S - %d/%m/%Y")"
 git push -q
