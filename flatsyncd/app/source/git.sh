@@ -73,7 +73,7 @@ else
 			\rGitLab: ${BCYAN}https://youtu.be/mNtQ55quG9M?si=57nsYWVfpvd_4NfR&t=265${NC}\n"
 			sleep 10
 			read -rp $'\033[1;33mHit ENTER to proceed \033[0m' void
-			foreach_git_config_set
+			foreach_git_config_set else
 			printf "\rPlease provide the repository url, make sure it is for SSH! ${NC}\n"
 			#while true; do
 			read -rp "URL: " NR_GIT_ORIGIN
