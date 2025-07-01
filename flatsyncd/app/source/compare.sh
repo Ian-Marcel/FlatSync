@@ -5,15 +5,19 @@ flatpak list --columns=application --app |
 cp "$FLATSYNC_GIT"/remote_flatpaks "$FLATSYNC_CACHE"/
 
 # comment.2
-diff "$FLATSYNC_CACHE"/remote_flatpaks "$FLATSYNC_CACHE"/local_flatpaks |
-	grep ">" |
-	awk -F ">" '{ print $2 }' |
-	tr -d "\n" |
-	tee -p "$FLATSYNC_CACHE"/uninstall &>/dev/null
+if diff "$FLATSYNC_CACHE"/remote_flatpaks "$FLATSYNC_CACHE"/local_flatpaks | grep ">" &>/dev/null ; then
+	diff "$FLATSYNC_CACHE"/remote_flatpaks "$FLATSYNC_CACHE"/local_flatpaks |
+		grep ">" |
+		awk -F ">" '{ print $2 }' |
+		tr -d "\n" |
+		tee -p "$FLATSYNC_CACHE"/uninstall &>/dev/null
+fi
 # comment.1
-diff "$FLATSYNC_CACHE"/remote_flatpaks "$FLATSYNC_CACHE"/local_flatpaks |
-	grep "<" |
-	awk -F "<" '{ print $2 }' |
-	tr -d "\n" |
-	tee -p "$FLATSYNC_CACHE"/install &>/dev/null
+if diff "$FLATSYNC_CACHE"/remote_flatpaks "$FLATSYNC_CACHE"/local_flatpaks | grep "<" &>/dev/null ; then
+	diff "$FLATSYNC_CACHE"/remote_flatpaks "$FLATSYNC_CACHE"/local_flatpaks |
+		grep "<" |
+		awk -F "<" '{ print $2 }' |
+		tr -d "\n" |
+		tee -p "$FLATSYNC_CACHE"/install &>/dev/null
+fi
 

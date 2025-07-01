@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 printf "Processing installation data...\n"
-for appid in $("$FLATSYNC_CACHE"/install); do
+for appid in $(<"$FLATSYNC_CACHE"/install); do
 	installid+=("$appid")
 done
 

@@ -3,7 +3,7 @@
 #printf "Checking data directory...\n"
 if [ -d "$FLATSYNC_DATA" ]; then
 	#printf "Found! Now checking child directories...\n"
-	for dir in "$FLATSYNC_DATA"/{git,history,app/{source,import,cache}}; do
+	for dir in "$FLATSYNC_DATA"/{git,history,cache,app/{source,import}}; do
 		if [ -d "$dir" ]; then
 			#printf "$(basename "$dir") - OK\n"
 			continue

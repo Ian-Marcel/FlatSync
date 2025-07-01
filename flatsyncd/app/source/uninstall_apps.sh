@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 printf "Processing uninstallation data...\n"
-for appid in $("$FLATSYNC_CACHE"/uninstall); do
+for appid in $(<"$FLATSYNC_CACHE"/uninstall); do
 	uninstallid+=("$appid")
 done
 
