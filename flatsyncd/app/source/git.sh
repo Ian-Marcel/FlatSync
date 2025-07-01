@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+shopt -s nocasematch
 # git config set --local
 import git_config_default_values
 foreach_git_config_set() {
@@ -110,6 +111,7 @@ else
 fi
 cd "$FLATSYNC_ROOT" || exit
 
+shopt -u nocasematch
 # git config set --local user.name 'flatsync'
 # git config set --local user.email 'flatsync@fake.mail'
 ### Using SSH is one of the simplest—and most secure—ways to transfer Git data to hosting services such as GitHub, GitLab, Gitea, and others. Even if you choose not to protect your SSH key with a passphrase, SSH still provides robust security. For more details, see the official Git documentation on credential storage: https://git-scm.com/book/en/v2/Git-Tools-Credential-Storage.

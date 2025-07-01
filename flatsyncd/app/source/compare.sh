@@ -10,6 +10,8 @@ if diff "$FLATSYNC_CACHE"/remote_flatpaks "$FLATSYNC_CACHE"/local_flatpaks | gre
 		grep ">" |
 		awk -F ">" '{ print $2 }' |
 		tee -p "$FLATSYNC_CACHE"/uninstall &>/dev/null
+else
+	sleep 2
 fi
 # comment.1
 if diff "$FLATSYNC_CACHE"/remote_flatpaks "$FLATSYNC_CACHE"/local_flatpaks | grep "<" &>/dev/null ; then
@@ -17,5 +19,7 @@ if diff "$FLATSYNC_CACHE"/remote_flatpaks "$FLATSYNC_CACHE"/local_flatpaks | gre
 		grep "<" |
 		awk -F "<" '{ print $2 }' |
 		tee -p "$FLATSYNC_CACHE"/install &>/dev/null
+else
+	sleep 2
 fi
 

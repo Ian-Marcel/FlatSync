@@ -45,7 +45,8 @@ shred -u "$FLATSYNC_CACHE"/*
 cd "$FLATSYNC_GIT" || exit
 flatpak list --columns=application --app |
 	tee -p remote_flatpaks &>/dev/null
-git add remote_flatpaks
-git commit -q -m "$(date "%H:%M:%S - %d/%m/%Y")"
-git push -q
+git add .
+git commit -q -m "$(date "%H:%M:%S - %d/%m/%Y")" &>/dev/null
+git push -q &>/dev/null
+echo "$PWD"
 
