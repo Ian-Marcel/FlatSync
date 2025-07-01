@@ -58,6 +58,7 @@ else
 					\r\tGit documentation on credential storage: ${BCYAN}https://git-scm.com/book/en/v2/Git-Tools-Credential-Storage${NC}.
 					\r${BYELLOW}The SSH key for Flatsync is created automatically without a password, in the future it will be given you the choice of setting one for it. ${NC}\n"
 			read -rp "Please read the text above and then hit ENTER to proceed " void
+			clear
 			if [ -e "$HOME"/.ssh/flatsync_key ] && [ -e "$HOME"/.ssh/flatsync_key.pub ]; then
 				sleep 1
 				printf "SSH key already exists! That's odd... \n"
@@ -72,7 +73,8 @@ else
 			\rGitLab: ${BCYAN}https://youtu.be/mNtQ55quG9M?si=57nsYWVfpvd_4NfR&t=265${NC}\n"
 			sleep 10
 			read -rp $'\033[1;33mHit ENTER to proceed \033[0m' void
-			foreach_git_config_set els
+			clear
+			foreach_git_config_set ok
 			printf "\rPlease provide the repository url, make sure it is for SSH! ${NC}\n"
 			#while true; do
 			read -rp "URL: " NR_GIT_ORIGIN
