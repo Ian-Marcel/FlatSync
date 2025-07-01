@@ -28,7 +28,7 @@ if [ -d "$FLATSYNC_GIT"/.git ]; then
 			if [ "$NO_LIST" = Y ] || [ "$NO_LIST" = Yes ]; then
 				flatpak list --columns=application --app |
 					tee -p remote_flatpaks &>/dev/null
-				git add remote_flatpaks -q
+				git add remote_flatpaks
 				git commit -q -m "$(date "%H:%M:%S - %d/%m/%Y")"
 				git push -q
 				exit 0
