@@ -1,8 +1,10 @@
 #!/usr/bin/env bash
+set +e +u +o pipefail
 
 flatpak list --columns=application --app |
 	tee -p "$FLATSYNC_CACHE"/local_flatpaks &>/dev/null
 mv "$FLATSYNC_GIT"/remote_flatpaks "$FLATSYNC_CACHE"/
+
 
 # comment.2
 if diff "$FLATSYNC_CACHE"/remote_flatpaks "$FLATSYNC_CACHE"/local_flatpaks | grep ">" &>/dev/null ; then
@@ -13,6 +15,7 @@ if diff "$FLATSYNC_CACHE"/remote_flatpaks "$FLATSYNC_CACHE"/local_flatpaks | gre
 else
 	sleep 2
 fi
+
 # comment.1
 if diff "$FLATSYNC_CACHE"/remote_flatpaks "$FLATSYNC_CACHE"/local_flatpaks | grep "<" &>/dev/null ; then
 	diff "$FLATSYNC_CACHE"/remote_flatpaks "$FLATSYNC_CACHE"/local_flatpaks |
@@ -22,4 +25,6 @@ if diff "$FLATSYNC_CACHE"/remote_flatpaks "$FLATSYNC_CACHE"/local_flatpaks | gre
 else
 	sleep 2
 fi
+
+set -euo pipefail
 
