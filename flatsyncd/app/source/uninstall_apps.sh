@@ -10,15 +10,15 @@ for index in "${!uninstallid[@]}"; do
 	appid=${uninstallid[$index]}
 
 	progress_bar_by_task_completion "$index" "$total"
-	printf "\b ${BRED}-${NC} $(flatpak search --columns=name $appid | head -n1 ): " |
-		tee -pa "$FLATSYNC_CACHE"/uninstall-notice.tmp &> /dev/null
-	printf "$(flatpak search --columns=description $appid | head -n1 )\n" |
-		tee -pa "$FLATSYNC_CACHE"/uninstall-notice.tmp &> /dev/null
-	uninstall2+=("$(flatpak search --columns=name $appid | head -n1 )")
+	printf "\b ${BRED}-${NC} $(flatpak search --columns=name $appid | head -n1): " |
+		tee -pa "$FLATSYNC_CACHE"/uninstall-notice.tmp &>/dev/null
+	printf "$(flatpak search --columns=description $appid | head -n1)\n" |
+		tee -pa "$FLATSYNC_CACHE"/uninstall-notice.tmp &>/dev/null
+	uninstall2+=("$(flatpak search --columns=name $appid | head -n1)")
 done
 
 printf "${BRED}To be uninstalled:${NC}\n"
-sleep 1s;
+sleep 1s
 cat "$FLATSYNC_CACHE"/uninstall-notice.tmp
 shred -u "$FLATSYNC_CACHE"/uninstall-notice.tmp
 ASWR="y"
@@ -32,11 +32,10 @@ if [ $ASWR = y ]; then
 		appid=${uninstallid[$index]}
 		app_name=${uninstall2[$index]}
 
-		flatpak uninstall --noninteractive "$appid" &>/dev/null & 
+		flatpak uninstall --noninteractive "$appid" &>/dev/null &
 		wait_with_spinner_loading "$app_name"
 
 	done
 else
 	sleep 1
 fi
-
