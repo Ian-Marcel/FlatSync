@@ -36,8 +36,8 @@ if [ -d "$FLATSYNC_GIT"/.git ]; then
 				break
 			elif [ "$NO_LIST" = N ] || [ "$NO_LIST" = No ]; then
 				git fetch -q
-				git pull -q --force
 				git reset --hard origin/HEAD
+				git pull -q
 				break
 			else
 				printf "Wrong answer, type either Yes or No! ${NC}\n"
