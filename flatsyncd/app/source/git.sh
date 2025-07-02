@@ -105,7 +105,7 @@ else
 		#while true; do
 		read -rp "URL: " NR_GIT_ORIGIN
 		# create: git_url_regex_funtion
-		git clone "$NR_GIT_ORIGIN" "$FLATSYNC_GIT"/
+		git clone -q "$NR_GIT_ORIGIN" "$FLATSYNC_GIT"/
 		#done
 		foreach_git_config_set not_ok
 	fi

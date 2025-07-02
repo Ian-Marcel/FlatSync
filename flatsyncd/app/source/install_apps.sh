@@ -30,7 +30,7 @@ if [ $ASWR = y ]; then
 		appid=${installid[$index]}
 		app_name=${install2[$index]}
 
-		flatpak install --noninteractive "$appid" &>/dev/null &
+		flatpak install --noninteractive flathub "$appid" &>/dev/null &
 		wait_with_spinner_loading "$app_name"
 
 	done
