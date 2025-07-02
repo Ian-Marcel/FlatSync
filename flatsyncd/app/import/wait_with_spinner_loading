@@ -19,3 +19,4 @@ wait_with_spinner_loading() {
 	done
 	printf "\r%s%*s${BGREEN}[ ✓ ]${NC}\n" "$process_title" "$(( 40 - ${#process_title} ))"
 }
+
