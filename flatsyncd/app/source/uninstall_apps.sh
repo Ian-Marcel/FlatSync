@@ -32,7 +32,7 @@ if [ $ASWR = y ]; then
 		appid=${uninstallid[$index]}
 		app_name=${uninstall2[$index]}
 
-		flatpak uninstall --noninteractive "$appid" & 
+		flatpak uninstall --noninteractive "$appid" &>/dev/null & 
 		wait_with_spinner_loading "$app_name"
 
 	done
