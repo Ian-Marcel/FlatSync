@@ -10,11 +10,11 @@ for index in "${!installid[@]}"; do
 	appid=${installid[$index]}
 
 	progress_bar_by_task_completion "$index" "$total"
-	printf "\b ${BGREEN}+${NC} $(flatpak search --columns=name $appid | tr -d "\n"): " |
+	printf "\b ${BGREEN}+${NC} $(flatpak search --columns=name $appid | head -n1 ): " |
 		tee -pa "$FLATSYNC_CACHE"/install-notice.tmp &> /dev/null
-	printf "$(flatpak search --columns=description $appid | tr -d "\n")\n" |
+	printf "$(flatpak search --columns=description $appid | head -n1 )\n" |
 		tee -pa "$FLATSYNC_CACHE"/install-notice.tmp &> /dev/null
-	install2+=("$(flatpak search --columns=name $appid | tr -d "\n")")
+	install2+=("$(flatpak search --columns=name $appid | head -n1 )")
 
 done
 
