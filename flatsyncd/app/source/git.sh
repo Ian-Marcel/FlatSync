@@ -4,7 +4,7 @@ shopt -s nocasematch
 # git config set --local
 import git_config_default_values
 foreach_git_config_set() {
-	if [ "$1" = '!' ]; then
+	if [ "$1" = 'not_ok' ]; then
 		for index in "${!git_preference[@]}"; do
 			if ! git config get --local "${git_preference[$index]}"; then
 				git config set --local "${git_preference[$index]}" "${git_preference_value[$index]}"
@@ -13,7 +13,7 @@ foreach_git_config_set() {
 				sleep 1s
 			fi
 		done
-	else
+	elif [ "$1" = 'ok' ]; then
 		for index in "${!git_preference[@]}"; do
 			git config set --local "${git_preference[$index]}" "${git_preference_value[$index]}"
 		done
@@ -36,7 +36,7 @@ if [ -d "$FLATSYNC_GIT"/.git ]; then
 				break
 			elif [ "$NO_LIST" = N ] || [ "$NO_LIST" = No ]; then
 				git fetch -q
-				git reset --hard origin/HEAD
+				git reset -q --hard origin/HEAD
 				git pull -q
 				break
 			else
@@ -44,6 +44,7 @@ if [ -d "$FLATSYNC_GIT"/.git ]; then
 			fi
 		done
 	else
+		printf "Updating repository\n"
 		git fetch -q
 		git pull -q
 	fi
@@ -106,7 +107,7 @@ else
 		# create: git_url_regex_funtion
 		git clone "$NR_GIT_ORIGIN" "$FLATSYNC_GIT"/
 		#done
-		foreach_git_config_set !
+		foreach_git_config_set not_ok
 	fi
 fi
 cd "$FLATSYNC_ROOT" || exit

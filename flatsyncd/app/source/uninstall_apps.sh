@@ -5,7 +5,7 @@ for appid in $(<"$FLATSYNC_CACHE"/uninstall); do
 	uninstallid+=("$appid")
 done
 
-total="$((${#uninstallid[@]} - 1))"
+total="${#uninstallid[@]}"
 for index in "${!uninstallid[@]}"; do
 	appid=${uninstallid[$index]}
 

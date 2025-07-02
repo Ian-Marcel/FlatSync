@@ -13,7 +13,7 @@ if diff "$FLATSYNC_CACHE"/remote_flatpaks "$FLATSYNC_CACHE"/local_flatpaks | gre
 		awk -F ">" '{ print $2 }' |
 		tee -p "$FLATSYNC_CACHE"/uninstall &>/dev/null
 else
-	sleep 2
+	sleep 1
 fi
 
 # comment.1
@@ -23,7 +23,7 @@ if diff "$FLATSYNC_CACHE"/remote_flatpaks "$FLATSYNC_CACHE"/local_flatpaks | gre
 		awk -F "<" '{ print $2 }' |
 		tee -p "$FLATSYNC_CACHE"/install &>/dev/null
 else
-	sleep 2
+	sleep 1
 fi
 
 set -euo pipefail

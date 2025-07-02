@@ -12,6 +12,9 @@ progress_bar_by_task_completion() {
 	local bar_todo_char="-"
 	local curr="$1"
 	local total="$2"
+	if [ "$total" -eq 1 ]; then
+		curr="$total"
+	fi
 
 	local percent=$(( 100 * curr / total ))
 	local done_slots=$(( curr * bar_size / total ))

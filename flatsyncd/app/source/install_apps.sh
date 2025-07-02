@@ -5,7 +5,7 @@ for appid in $(<"$FLATSYNC_CACHE"/install); do
 	installid+=("$appid")
 done
 
-total="$((${#installid[@]} - 1))"
+total="${#installid[@]}"
 for index in "${!installid[@]}"; do
 	appid=${installid[$index]}
 
@@ -15,7 +15,6 @@ for index in "${!installid[@]}"; do
 	printf "$(flatpak search --columns=description $appid | head -n1)\n" |
 		tee -pa "$FLATSYNC_CACHE"/install-notice.tmp &>/dev/null
 	install2+=("$(flatpak search --columns=name $appid | head -n1)")
-
 done
 
 printf "${BGREEN}To be installed:${NC}\n"
@@ -27,8 +26,6 @@ read -rp "Proceed? [y/n]: " ASWR
 
 if [ $ASWR = y ]; then
 	for index in "${!install2[@]}"; do
-		set -euo pipefail
-		trap 'printf "❌ \033[1;31m\b Error occurred! \033[1;33m\b Exiting...\033[0m\n" && exit 1' ERR
 
 		appid=${installid[$index]}
 		app_name=${install2[$index]}
