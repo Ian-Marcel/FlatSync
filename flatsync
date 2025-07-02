@@ -36,8 +36,6 @@ else
 	echo -e "${BYELLOW}Nothing to install${NC}"
 fi
 
-mv "$FLATSYNC_CACHE"/remote_flatpaks \
-	"$FLATSYNC_DATA"/history/synced_flatpaks-"$DATE".old
 shred -u "$FLATSYNC_CACHE"/*
 
 cd "$FLATSYNC_GIT" || exit
