@@ -10,7 +10,7 @@ foreach_git_config_set() {
 	if [ "$1" = 'not_ok' ]; then
 		for index in "${!git_preference[@]}"; do
 			if ! git config --get --local "${git_preference[$index]}"; then
-				git config --set --local "${git_preference[$index]}" "${git_preference_value[$index]}"
+				git config set --local "${git_preference[$index]}" "${git_preference_value[$index]}"
 			else
 				continue
 				sleep 1s
@@ -18,7 +18,7 @@ foreach_git_config_set() {
 		done
 	elif [ "$1" = 'ok' ]; then
 		for index in "${!git_preference[@]}"; do
-			git config --set --local "${git_preference[$index]}" "${git_preference_value[$index]}"
+			git config set --local "${git_preference[$index]}" "${git_preference_value[$index]}"
 		done
 	fi
 }
