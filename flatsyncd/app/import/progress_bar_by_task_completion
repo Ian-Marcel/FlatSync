@@ -29,11 +29,11 @@ progress_bar_by_task_completion() {
 		todo_str+="$bar_todo_char"
 	done
 
-	printf "\rProgress : [%s%s] %3d%%" \
+	printf "\rProgress : [%s%s] %3d%%\n" \
 		"$done_str" "$todo_str" "$percent"
 
-	if [ "$curr" -eq "$total" ]; then
-		printf "\n"	
-	fi
+	#if [ "$curr" -eq "$total" ]; then
+	#	printf "\n"	
+	#fi
 }
 

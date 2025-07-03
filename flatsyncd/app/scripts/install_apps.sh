@@ -7,7 +7,12 @@ for appid in $(<"$FLATSYNC_CACHE"/install); do
 	installid+=("$appid")
 done
 
-total="${#installid[@]}"
+if [ "${#installid[@]}" -eq 1 ]; then
+	total="${#installid[@]}"
+else
+	total=$(( ${#installid[@]} - 1 ))
+fi
+
 for index in "${!installid[@]}"; do
 	appid=${installid[$index]}
 
