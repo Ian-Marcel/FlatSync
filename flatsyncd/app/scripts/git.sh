@@ -2,6 +2,10 @@
 
 import git_config_default_values
 
+if ! [ -d "$FLATSYNC_GIT" ]; then
+	mkdir "$FLATSYNC_GIT"
+fi
+
 foreach_git_config_set() {
 	if [ "$1" = 'not_ok' ]; then
 		for index in "${!git_preference[@]}"; do
@@ -18,10 +22,6 @@ foreach_git_config_set() {
 		done
 	fi
 }
-
-if ! [ -d "$FLATSYNC_GIT" ]; then
-	mkdir "$FLATSYNC_GIT"
-fi
 
 if [ -d "$FLATSYNC_GIT"/.git ]; then
 	cd "$FLATSYNC_GIT" || exit
