@@ -7,11 +7,12 @@ for appid in $(<"$FLATSYNC_CACHE"/uninstall); do
 	uninstallid+=("$appid")
 done
 
-if [ "${#installid[@]}" -eq 1 ]; then
+if [ "${#uninstallid[@]}" -eq 1 ]; then
 	total=${#uninstallid[@]}
 else
 	total=$(( ${#uninstallid[@]} - 1 ))
 fi
+
 for index in "${!uninstallid[@]}"; do
 	appid=${uninstallid[$index]}
 
@@ -33,8 +34,6 @@ read -rp "Proceed? [y/n]: " ASWR
 
 if [ $ASWR = y ]; then
 	for index in "${!uninstall2[@]}"; do
-		set -euo pipefail
-		trap 'printf "❌ \033[1;31m\b Error occurred! \033[1;33m\b Exiting...\033[0m\n" && exit 1' ERR
 
 		appid=${uninstallid[$index]}
 		app_name=${uninstall2[$index]}
