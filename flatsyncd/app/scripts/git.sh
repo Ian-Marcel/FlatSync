@@ -7,10 +7,10 @@ if ! [ -d "$FLATSYNC_GIT" ]; then
 fi
 
 foreach_git_config_set() {
-	if [ "$1" = 'not_ok' ]; then
+	if [ "$1" = 'check_ok' ]; then
 		for index in "${!git_preference[@]}"; do
 			if ! git config --get --local "${git_preference[$index]}"; then
-				git config set --local "${git_preference[$index]}" "${git_preference_value[$index]}"
+				git config --add --local "${git_preference[$index]}" "${git_preference_value[$index]}"
 			else
 				continue
 				sleep 1s
@@ -18,7 +18,7 @@ foreach_git_config_set() {
 		done
 	elif [ "$1" = 'ok' ]; then
 		for index in "${!git_preference[@]}"; do
-			git config set --local "${git_preference[$index]}" "${git_preference_value[$index]}"
+			git config --add --local "${git_preference[$index]}" "${git_preference_value[$index]}"
 		done
 	fi
 }
@@ -112,7 +112,7 @@ else
 		# create: git_url_regex_funtion
 		git clone -q "$NR_GIT_ORIGIN" "$FLATSYNC_GIT"/
 		#done
-		foreach_git_config_set not_ok
+		foreach_git_config_set check_ok
 	fi
 fi
 cd "$FLATSYNC_ROOT" || exit
