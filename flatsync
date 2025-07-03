@@ -10,7 +10,7 @@ import() {
 	local library=$1
 	source "$FLATSYNC_DATA"/app/import/"$library"
 }
-source "$FLATSYNC_DATA"/app/source/check-if-FLATSYNC_DATA-dirs-exists.sh
+source "$FLATSYNC_SCRIPT"/check-if-FLATSYNC_DATA-dirs-exists.sh
 ######
 
 import pure_bash_functions

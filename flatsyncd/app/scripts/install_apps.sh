@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+import appid_regex
+
 printf "Processing installation data...\n"
 for appid in $(<"$FLATSYNC_CACHE"/install); do
 	installid+=("$appid")
@@ -10,11 +12,12 @@ for index in "${!installid[@]}"; do
 	appid=${installid[$index]}
 
 	progress_bar_by_task_completion "$index" "$total"
-	printf "\b ${BGREEN}+${NC} $(flatpak search --columns=name $appid | head -n1): " |
+	appid_regex
+	printf " ${BGREEN}+${NC} %s: %s \n" \
+		"$(flatpak search --columns=name "$appid" | head -n "$i" | tail -n 1)" \
+		"$(flatpak search --columns=description "$appid" | head -n "$i" | tail -n 1)" |
 		tee -pa "$FLATSYNC_CACHE"/install-notice.tmp &>/dev/null
-	printf "$(flatpak search --columns=description $appid | head -n1)\n" |
-		tee -pa "$FLATSYNC_CACHE"/install-notice.tmp &>/dev/null
-	install2+=("$(flatpak search --columns=name $appid | head -n1)")
+	install2+=("$(flatpak search --columns=name "$appid" | head -n "$i" | tail -n 1)")
 done
 
 printf "${BGREEN}To be installed:${NC}\n"

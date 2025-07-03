@@ -1,4 +1,9 @@
 #!/usr/bin/env bash
+
+if ! [ -d "$FLATSYNC_CACHE" ]; then
+	mkdir "$FLATSYNC_CACHE"
+fi
+
 set +e +u +o pipefail
 
 flatpak list --columns=application --app |

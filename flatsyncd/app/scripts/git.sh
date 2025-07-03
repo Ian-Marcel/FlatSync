@@ -1,8 +1,7 @@
 #!/usr/bin/env bash
 
-shopt -s nocasematch
-# git config set --local
 import git_config_default_values
+
 foreach_git_config_set() {
 	if [ "$1" = 'not_ok' ]; then
 		for index in "${!git_preference[@]}"; do
@@ -20,10 +19,15 @@ foreach_git_config_set() {
 	fi
 }
 
+if ! [ -d "$FLATSYNC_GIT" ]; then
+	mkdir "$FLATSYNC_GIT"
+fi
+
 if [ -d "$FLATSYNC_GIT"/.git ]; then
 	cd "$FLATSYNC_GIT" || exit
 	if ! [ -e remote_flatpaks ]; then
 		printf "Remote list not found! Is this you're first sync?${NC}\n"
+shopt -s nocasematch
 		while true; do
 			read -rp "(Y)es | (N)o : " NO_LIST
 			if [ "$NO_LIST" = Y ] || [ "$NO_LIST" = Yes ]; then
@@ -43,6 +47,7 @@ if [ -d "$FLATSYNC_GIT"/.git ]; then
 				printf "Wrong answer, type either Yes or No! ${NC}\n"
 			fi
 		done
+shopt -u nocasematch
 	else
 		printf "Updating repository\n"
 		git fetch -q
@@ -112,7 +117,6 @@ else
 fi
 cd "$FLATSYNC_ROOT" || exit
 
-shopt -u nocasematch
 # git config set --local user.name 'flatsync'
 # git config set --local user.email 'flatsync@fake.mail'
 ### Using SSH is one of the simplest—and most secure—ways to transfer Git data to hosting services such as GitHub, GitLab, Gitea, and others. Even if you choose not to protect your SSH key with a passphrase, SSH still provides robust security. For more details, see the official Git documentation on credential storage: https://git-scm.com/book/en/v2/Git-Tools-Credential-Storage.

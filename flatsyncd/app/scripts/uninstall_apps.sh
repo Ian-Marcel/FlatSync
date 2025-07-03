@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+import appid_regex
+
 printf "Processing uninstallation data...\n"
 for appid in $(<"$FLATSYNC_CACHE"/uninstall); do
 	uninstallid+=("$appid")
@@ -10,9 +12,10 @@ for index in "${!uninstallid[@]}"; do
 	appid=${uninstallid[$index]}
 
 	progress_bar_by_task_completion "$index" "$total"
-	printf "\b ${BRED}-${NC} $(flatpak search --columns=name $appid | head -n1): " |
-		tee -pa "$FLATSYNC_CACHE"/uninstall-notice.tmp &>/dev/null
-	printf "$(flatpak search --columns=description $appid | head -n1)\n" |
+	appid_regex
+	printf " ${BRED}-${NC} %s: %s \n" \
+		"$(flatpak search --columns=name "$appid" | head -n "$i" | tail -n 1)" \
+		"$(flatpak search --columns=description "$appid" | head -n "$i" | tail -n 1)" |
 		tee -pa "$FLATSYNC_CACHE"/uninstall-notice.tmp &>/dev/null
 	uninstall2+=("$(flatpak search --columns=name $appid | head -n1)")
 done
