@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-if ! [ -d "$FLATSYNC_CACHE" ]; then
-	mkdir "$FLATSYNC_CACHE"
-fi
+import check_directories
+
+check-dir_cache
 
 set +e +u +o pipefail
 

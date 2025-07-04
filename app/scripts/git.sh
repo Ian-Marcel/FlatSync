@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 
 import git_config_default_values
+import check_directories
 
-if ! [ -d "$FLATSYNC_GIT" ]; then
-	mkdir "$FLATSYNC_GIT"
-fi
+check-dir_git
+check-dir_ssh
 
 foreach_git_config_set() {
 	if [ "$1" = 'check_ok' ]; then
