@@ -10,7 +10,7 @@ done
 if [ "${#installid[@]}" -eq 1 ]; then
 	total="${#installid[@]}"
 else
-	total=$(( ${#installid[@]} - 1 ))
+	total=$((${#installid[@]} - 1))
 fi
 
 for index in "${!installid[@]}"; do

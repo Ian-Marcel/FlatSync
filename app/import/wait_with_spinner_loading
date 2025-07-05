@@ -12,11 +12,10 @@ wait_with_spinner_loading() {
 	local pid=$!
 	local process_title=$1
 
-	while kill -0 $pid &>/dev/null ; do
-		local i=$(( (i+1) %4 ))
-		printf "\r%s%*s[${BYELLOW} ${spin:$i:1} ${NC}]" "$process_title" "$(( 40 - ${#process_title} ))"
+	while kill -0 $pid &>/dev/null; do
+		local i=$(((i + 1) % 4))
+		printf "\r%s%*s[${BYELLOW} ${spin:$i:1} ${NC}]" "$process_title" "$((40 - ${#process_title}))"
 		sleep 0.4
 	done
-	printf "\r%s%*s${BGREEN}[ ✓ ]${NC}\n" "$process_title" "$(( 40 - ${#process_title} ))"
+	printf "\r%s%*s${BGREEN}[ ✓ ]${NC}\n" "$process_title" "$((40 - ${#process_title}))"
 }
-

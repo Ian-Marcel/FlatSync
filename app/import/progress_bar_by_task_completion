@@ -16,9 +16,9 @@ progress_bar_by_task_completion() {
 		local curr="$total"
 	fi
 
-	local percent=$(( 100 * curr / total ))
-	local done_slots=$(( curr * bar_size / total ))
-	local todo_slots=$(( bar_size - done_slots ))
+	local percent=$((100 * curr / total))
+	local done_slots=$((curr * bar_size / total))
+	local todo_slots=$((bar_size - done_slots))
 
 	local done_str=""
 	for ((i = 0; i < done_slots; i++)); do
@@ -33,7 +33,6 @@ progress_bar_by_task_completion() {
 		"$done_str" "$todo_str" "$percent"
 
 	if [ "$curr" -eq "$total" ]; then
-		printf "\n"	
+		printf "\n"
 	fi
 }
-

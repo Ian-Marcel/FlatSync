@@ -15,4 +15,3 @@ check-dir_ssh() {
 		mkdir -p "$FLATSYNC_SSH"
 	fi
 }
-

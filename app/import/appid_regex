@@ -10,4 +10,3 @@ appid_regex() {
 		((i++))
 	done
 }
-
