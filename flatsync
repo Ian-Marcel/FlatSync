@@ -9,7 +9,7 @@ FLATSYNC_DATA="$FLATSYNC_ROOT/data" # comment.5
 import() {
 	local FLATSYNC_IMPORTS="$FLATSYNC_ROOT"/app/import
 	local library=$1
-	source "$FLATSYNC_IMPORTS"/app/import/"$library"
+	source "$FLATSYNC_IMPORTS"/"$library"
 }
 #source "$FLATSYNC_SCRIPT"/check-if-FLATSYNC_DATA-dirs-exists.sh
 ######
