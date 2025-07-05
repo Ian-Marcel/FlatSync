@@ -14,19 +14,30 @@ if [ -d "$FLATSYNC_GIT"/.git ]; then
 		git reset -q --hard origin/HEAD
 		git fetch -q
 		git pull -q
+		if ! [ -e "$FLATSYNC_GIT"/remote_flatpaks ] || ! [ -e "$FLATSYNC_GIT"/last_updated_device ]; then
+			clear
+			printf "${BRED}!!!${NC} ERROR ${BRED}!!!${NC} ERROR ${BRED}!!!${NC} ERROR ${BRED}!!!${NC}\n
+			\rRequired files for synchronization weren't found neither locally nor remotely on the specified Git hosting platform.
+			\rIf this is your first sync attempt, delete your local sync repository at:\n
+			\r${BGREEN}$FLATSYNC_GIT ${NC}\n
+			\rThen, re-run '${BCYAN}flatsync${NC}', choose to create a new repository, and follow the instructions.\n
+			\r${BRED}!!!${NC} ERROR ${BRED}!!!${NC} ERROR ${BRED}!!!${NC} ERROR ${BRED}!!!${NC}\n"
+			sleep 1.4s
+			exit 22
+		fi
 	else
 		printf "Updating repository\n"
 		git fetch -q
 		git pull -q
 	fi
 else
-	printf "Oh oh, sync repository not found! \nIs this you're first sync or would you like to import a sync repository?${NC}\n"
+	printf "${BRED}Oh oh, sync repository not found!${NC} \nWish to ${BGREEN}create${NC} a new or will you ${BCYAN}import${NC} an existing one? ${NC}\n"
 	while true; do
 		read -rp $'\033[1;32mcreate(1) \033[0m|\033[1;36m import(2) \033[0m: ' NO_REPO
 		if [ "$NO_REPO" = 1 ]; then
 			git init --initial-branch=main
 			printf "${BYELLOW}SSH will be used for data transfering!${BGREEN} Here's the logicale:${NC}\n"
-			printf "\tUsing SSH is one of the simplest — and most secure — ways to transfer Git data to hosting services such as GitHub, GitLab, Gitea, and others.
+			printf "\tSSH is one of the simplest — and most secure — ways to transfer Git data to hosting services such as GitHub, GitLab, Gitea, and others.
 					\r\tEven if you choose not to protect your SSH key with a passphrase, SSH still provides robust security. For more details, see the official
 					\r\tGit documentation on credential storage: ${BCYAN}https://git-scm.com/book/en/v2/Git-Tools-Credential-Storage${NC}.
 					\r${BYELLOW}The SSH key for Flatsync is created automatically without a password, ${BGREEN}but in the future it will be given you the choice of setting one for it. ${NC}\n"
@@ -39,7 +50,7 @@ else
 				ssh-keygen -t ed25519 -f "$FLATSYNC_SSH"/flatsync_key -q -N "" -C "SSH key for Flatsync - a synchronizer for flatpak applications"
 				printf "SSH key created!\n"
 			fi
-			printf "Copy you're public key in the line bellow and add to your repository hosting provider:
+			printf "Copy you're public key in the line bellow and add to your Git hosting plataform:
 			\r${BGREEN}$(<"$FLATSYNC_SSH"/flatsync_key.pub)${NC}
 			\rYou're not sure how to add it, here are some videos for adding to GitHub and GitLab:
 			\rGitHub: ${BCYAN}https://youtu.be/iVJesFfzDGs?si=E4qserNj4-1jJuyy&t=54${NC}
@@ -58,7 +69,7 @@ else
 			sleep 2s
 			break
 		else
-			printf "Wrong answer, type either 1 or 2! ${NC}\n"
+			printf "${BRED}Wrong answer,${BYELLOW} type either 1 or 2! ${NC}\n"
 		fi
 	done
 	if [ "$NO_REPO" = 1 ]; then
@@ -70,7 +81,7 @@ else
 		exit 0
 	elif [ "$NO_REPO" = 2 ]; then
 		if ! [ -e "$FLATSYNC_SSH"/flatsync_key ] && ! [ -e "$FLATSYNC_SSH"/flatsync_key.pub ]; then
-			printf "\rSSH key also not found! Wish to create a new or will you import one? \n"
+			printf "\rSSH key also not found! Wish to ${BGREEN}create${NC} a new or will you ${BCYAN}import${NC} an existing one? \n"
 			while true; do
 				read -rp $'\033[1;32mcreate(1) \033[0m|\033[1;36m import(2) \033[0m: ' NO_SSH_KEY
 				if [ "$NO_SSH_KEY" = 1 ]; then
