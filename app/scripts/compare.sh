@@ -9,6 +9,7 @@ set +e +u +o pipefail
 if [ -e "$FLATSYNC_GIT"/last_updated_device ] &&
 	[ "$(<"$FLATSYNC_GIT"/last_updated_device)" = "$(</etc/hostname)" ]; then
 
+printf "same\n"
 	flatpak list --columns=application --app |
 		tee -p "$FLATSYNC_GIT"/remote_flatpaks &>/dev/null
 
