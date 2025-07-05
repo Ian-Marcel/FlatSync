@@ -22,7 +22,7 @@ for index in "${!uninstallid[@]}"; do
 		"$(flatpak search --columns=name "$appid" | head -n "$i" | tail -n 1)" \
 		"$(flatpak search --columns=description "$appid" | head -n "$i" | tail -n 1)" |
 		tee -pa "$FLATSYNC_CACHE"/uninstall-notice.tmp &>/dev/null
-	uninstall2+=("$(flatpak search --columns=name $appid | head -n1)")
+	uninstall2+=("$(flatpak search --columns=name "$appid" | head -n "$i" | tail -n 1)")
 done
 
 printf "${BRED}To be uninstalled:${NC}\n"
