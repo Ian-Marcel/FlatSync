@@ -100,7 +100,7 @@ else
 		exit 0
 	elif [ "$NO_REPO" = 2 ]; then
 		if ! [ -e "$FLATSYNC_SSH"/flatsync_key ] && ! [ -e "$FLATSYNC_SSH"/flatsync_key.pub ]; then
-			printf "SSH key not found! Wish to create a new or will you import one? \n"
+			printf "\rSSH key also not found! Wish to create a new or will you import one? \n"
 			while true; do
 				read -rp $'\033[1;32mcreate(1) \033[0m|\033[1;36m import(2) \033[0m: ' NO_SSH_KEY
 				if [ "$NO_SSH_KEY" = 1 ]; then
