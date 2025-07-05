@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 
-
+check-dir_cache() {
+	if ! [ -d "$FLATSYNC_CACHE" ]; then
+		mkdir -p "$FLATSYNC_CACHE"
+	fi
+}
 check-dir_git() {
 	if ! [ -d "$FLATSYNC_GIT" ]; then
 		mkdir -p "$FLATSYNC_GIT"

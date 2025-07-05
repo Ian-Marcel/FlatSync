@@ -7,27 +7,22 @@ check-dir_git
 check-dir_ssh
 
 foreach_git_config_set() {
-	if [ "$1" = 'check_ok' ]; then
-		for index in "${!git_preference[@]}"; do
-			if ! git config --get --local "${git_preference[$index]}"; then
-				git config --add --local "${git_preference[$index]}" "${git_preference_value[$index]}"
-			else
-				continue
-				sleep 1s
-			fi
-		done
-	elif [ "$1" = 'ok' ]; then
-		for index in "${!git_preference[@]}"; do
+	for index in "${!git_preference[@]}"; do
+		if [ "$(git config --get --local "${git_preference[$index]}")" != "${git_preference_value[$index]}" ]; then
+			git config --unset-all --local "${git_preference[$index]}"
 			git config --add --local "${git_preference[$index]}" "${git_preference_value[$index]}"
-		done
-	fi
+		else
+			continue
+			sleep 1s
+		fi
+	done
 }
 
 if [ -d "$FLATSYNC_GIT"/.git ]; then
 	cd "$FLATSYNC_GIT" || exit
 	if ! [ -e remote_flatpaks ]; then
 		printf "Remote list not found! Is this you're first sync?${NC}\n"
-shopt -s nocasematch
+		shopt -s nocasematch
 		while true; do
 			read -rp "(Y)es | (N)o : " NO_LIST
 			if [ "$NO_LIST" = Y ] || [ "$NO_LIST" = Yes ]; then
@@ -47,7 +42,7 @@ shopt -s nocasematch
 				printf "Wrong answer, type either Yes or No! ${NC}\n"
 			fi
 		done
-shopt -u nocasematch
+		shopt -u nocasematch
 	else
 		printf "Updating repository\n"
 		git fetch -q
@@ -67,22 +62,22 @@ else
 					\r${BYELLOW}The SSH key for Flatsync is created automatically without a password, in the future it will be given you the choice of setting one for it. ${NC}\n"
 			read -rp "Please read the text above and then hit ENTER to proceed " void
 			clear
-			if [ -e "$HOME"/.ssh/flatsync_key ] && [ -e "$HOME"/.ssh/flatsync_key.pub ]; then
+			if [ -e "$FLATSYNC_SSH"/flatsync_key ] && [ -e "$FLATSYNC_SSH"/flatsync_key.pub ]; then
 				sleep 1
 				printf "SSH key already exists! That's odd... \n"
 			else
-				ssh-keygen -t ed25519 -f "$HOME"/.ssh/flatsync_key -q -N "" -C "SSH key for Flatsync - a synchronizer for flatpak applications"
+				ssh-keygen -t ed25519 -f "$FLATSYNC_SSH"/flatsync_key -q -N "" -C "SSH key for Flatsync - a synchronizer for flatpak applications"
 				printf "SSH key created!\n"
 			fi
 			printf "Copy you're public key in the line bellow and add to your repository hosting provider:
-			\r${BGREEN}$(<"$HOME"/.ssh/flatsync_key.pub)${NC}
+			\r${BGREEN}$(<"$FLATSYNC_SSH"/flatsync_key.pub)${NC}
 			\rYou're not sure how to add it, here are some videos for adding to GitHub and GitLab:
 			\rGitHub: ${BCYAN}https://youtu.be/iVJesFfzDGs?si=E4qserNj4-1jJuyy&t=54${NC}
 			\rGitLab: ${BCYAN}https://youtu.be/mNtQ55quG9M?si=57nsYWVfpvd_4NfR&t=265${NC}\n"
 			sleep 10
 			read -rp $'\033[1;33mHit ENTER to proceed \033[0m' void
 			clear
-			foreach_git_config_set ok
+			foreach_git_config_set
 			printf "\rPlease provide the repository url, make sure it is for SSH! ${NC}\n"
 			#while true; do
 			read -rp "URL: " NR_GIT_ORIGIN
@@ -110,19 +105,14 @@ else
 		#while true; do
 		read -rp "URL: " NR_GIT_ORIGIN
 		# create: git_url_regex_funtion
-		git clone -q "$NR_GIT_ORIGIN" "$FLATSYNC_GIT"/
+		git clone -q "$NR_GIT_ORIGIN" "$FLATSYNC_GIT"/ \
+			--config="${git_preference[0]}"="${git_preference_value[0]}" \
+			--config="${git_preference[1]}"="${git_preference_value[1]}" \
+			--config="${git_preference[2]}"="${git_preference_value[2]}" \
+			--config="${git_preference[3]}"="${git_preference_value[3]}" \
+			--config="${git_preference[4]}"="${git_preference_value[4]}"
 		#done
-		foreach_git_config_set check_ok
+		foreach_git_config_set
 	fi
 fi
 cd "$FLATSYNC_ROOT" || exit
-
-# git config set --local user.name 'flatsync'
-# git config set --local user.email 'flatsync@fake.mail'
-### Using SSH is one of the simplest—and most secure—ways to transfer Git data to hosting services such as GitHub, GitLab, Gitea, and others. Even if you choose not to protect your SSH key with a passphrase, SSH still provides robust security. For more details, see the official Git documentation on credential storage: https://git-scm.com/book/en/v2/Git-Tools-Credential-Storage.
-# ssh-keygen -t ed25519 -f ~/.ssh/flatsync_key -q -N "" -C "SSH key for Flatsync - a synchronizer for flatpak applications"
-### if key above not found, ask user to import it or create another
-# git config set --local core.sshCommand 'ssh -o IdentitiesOnly=yes -i ~/.ssh/flatsync_key'
-# git config set --local user.signingKey '~/.ssh/flatsync_key.pub'
-# git config set --local gpg.format ssh
-# git config set --local commit.gpgsign true
