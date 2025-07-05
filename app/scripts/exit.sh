@@ -1,8 +1,10 @@
 #!/usr/bin/env bash
 
-for old_items in "$FLATSYNC_CACHE"/* ; do
-shred -u "$old_items"
-done
+if [ "$NO_TODO" -lt 2 ]; then
+	for old_items in "$FLATSYNC_CACHE"/*; do
+		shred -u "$old_items"
+	done
+fi
 
 cd "$FLATSYNC_GIT" || exit
 flatpak list --columns=application --app |
@@ -16,4 +18,3 @@ else
 	cd "$FLATSYNC_ROOT" || exit
 	exit 0
 fi
-
