@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 
-shred -u "$FLATSYNC_CACHE"/*
+for old_items in "$FLATSYNC_CACHE"/* ; do
+shred -u "$old_items"
+done
 
 cd "$FLATSYNC_GIT" || exit
 flatpak list --columns=application --app |
