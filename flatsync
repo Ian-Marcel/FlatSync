@@ -29,7 +29,6 @@ if [ -e "$FLATSYNC_CACHE"/uninstall ]; then
 else
 	echo -e "${BYELLOW}Nothing to remove${NC}"
 	NO_TODO=$((NO_TODO+1))
-	printf "$NO_TODO\n"
 fi
 
 if [ -e "$FLATSYNC_CACHE"/install ]; then
@@ -38,7 +37,6 @@ if [ -e "$FLATSYNC_CACHE"/install ]; then
 else
 	echo -e "${BYELLOW}Nothing to install${NC}"
 	NO_TODO=$((NO_TODO+1))
-	printf "$NO_TODO\n"
 fi
 
 source "$FLATSYNC_SCRIPT"/exit.sh
