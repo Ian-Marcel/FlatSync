@@ -6,44 +6,14 @@ import check_directories
 check-dir_git
 check-dir_ssh
 
-foreach_git_config_set() {
-	for index in "${!git_preference[@]}"; do
-		if [ "$(git config --get --local "${git_preference[$index]}")" != "${git_preference_value[$index]}" ]; then
-			git config --unset-all --local "${git_preference[$index]}"
-			git config --add --local "${git_preference[$index]}" "${git_preference_value[$index]}"
-		else
-			continue
-			sleep 1s
-		fi
-	done
-}
 clear
 cd "$FLATSYNC_GIT" || exit
 
 if [ -d "$FLATSYNC_GIT"/.git ]; then
-	if ! [ -e remote_flatpaks ]; then
-		printf "Remote list not found! Is this you're first sync?${NC}\n"
-		shopt -s nocasematch
-		while true; do
-			read -rp "(Y)es | (N)o : " NO_LIST
-			if [ "$NO_LIST" = Y ] || [ "$NO_LIST" = Yes ]; then
-				flatpak list --columns=application --app |
-					tee -p remote_flatpaks &>/dev/null
-				git add remote_flatpaks
-				git commit -q -m "$(date "%H:%M:%S - %d/%m/%Y")"
-				git push -q
-				exit 0
-				break
-			elif [ "$NO_LIST" = N ] || [ "$NO_LIST" = No ]; then
-				git reset -q --hard origin/HEAD
-				git fetch -q
-				git pull -q
-				break
-			else
-				printf "Wrong answer, type either Yes or No! ${NC}\n"
-			fi
-		done
-		shopt -u nocasematch
+	if ! [ -e "$FLATSYNC_GIT"/remote_flatpaks ] || ! [ -e "$FLATSYNC_GIT"/last_updated_device ]; then
+		git reset -q --hard origin/HEAD
+		git fetch -q
+		git pull -q
 	else
 		printf "Updating repository\n"
 		git fetch -q
