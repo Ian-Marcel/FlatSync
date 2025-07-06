@@ -8,9 +8,14 @@ Synchronize flatpak applications between devices.
 
 ## RoadMap
 
-- [ ] the remote_flatpaks file usually contains the most up-to-date list of installed apps, but this is not always the case. In the future, this review of the most up-to-date list should be a separate process in another script, using the metric of which list is the newest, with its metadata: last modified date.
+- [ ] Support exclusive applications on a single device
+  - A persistent file named `exclusive` stores the names of these applications.
+  - During synchronization:
+    - The system scans the `uninstall` file.
+    - If an application is found in both `exclusive` and `uninstall`, it is:
+      - Removed from `uninstall`.
+      - Removed from `localflatpaks`, which becomes the new `remoteflatpaks` after syncing.
 
-- [ ] some applications should be kept on only one device, so a persistent file called "exclusive" stores the name of these applications and during synchronization it scans the "uninstall" and if it finds an application that is in both files, it removes it from the "uninstall" and from the "localflatpaks" file, which after synchronization will be transformed into the new "remoteflatpaks".
 
 - - -
 
