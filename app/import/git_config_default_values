@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+
+git_preference=(
+	"user.name" # id = 0
+	"user.email"
+	"core.sshCommand"
+	"user.signingKey"
+	"gpg.format"
+)
+git_preference_value=(
+	"flatsync" # id = 0
+	"flatsync@fake.mail"
+	"ssh -o IdentitiesOnly=yes -i $FLATSYNC_SSH/flatsync_key"
+	"$FLATSYNC_SSH/flatsync_key.pub"
+	"ssh"
+)
+
+foreach_git_config_set() {
+	for index in "${!git_preference[@]}"; do
+		if [ "$(git config --get --local "${git_preference[$index]}")" != "${git_preference_value[$index]}" ]; then
+			git config --unset-all --local "${git_preference[$index]}"
+			git config --add --local "${git_preference[$index]}" "${git_preference_value[$index]}"
+		else
+			continue
+			sleep 1s
+		fi
+	done
+}
+

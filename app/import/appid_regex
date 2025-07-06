@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+appid_regex() {
+	i=1
+	queryid() {
+		flatpak search --columns=application "$appid" | head -n "$i" | tail -n 1
+	}
+
+	while [ "$(queryid)" != "$appid" ]; do
+		((i++))
+	done
+}
