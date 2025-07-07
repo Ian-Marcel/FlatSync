@@ -58,7 +58,10 @@ else
 			sleep 5
 			read -rp $'\033[1;33mPress ENTER to proceed \033[0m' void
 			clear
-			foreach_git_config_set
+			for index in "${!git_preference[@]}"; do
+				git config --unset-all --local "${git_preference[$index]}"
+				git config --add --local "${git_preference[$index]}" "${git_preference_value[$index]}"
+			done
 			printf "\rPlease provide the repository url, make sure it is for SSH! ${NC}\n"
 			read -rp "SSH URL [ex.: git@hosting.com:username/repository.git ]: " NR_GIT_ORIGIN
 			#git_url_regex_funtion # comment.?
@@ -125,7 +128,6 @@ else
 			--config="${git_preference[2]}"="${git_preference_value[2]}" \
 			--config="${git_preference[3]}"="${git_preference_value[3]}" \
 			--config="${git_preference[4]}"="${git_preference_value[4]}"
-		foreach_git_config_set
 	fi
 fi
 cd "$FLATSYNC_ROOT" || exit

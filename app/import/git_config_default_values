@@ -15,10 +15,3 @@ git_preference_value=(
 	"ssh"
 )
 
-foreach_git_config_set() {
-	for index in "${!git_preference[@]}"; do
-		git config --unset-all --local "${git_preference[$index]}"
-		git config --add --local "${git_preference[$index]}" "${git_preference_value[$index]}"
-	done
-}
-
