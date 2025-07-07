@@ -44,8 +44,8 @@ else
 			read -rp "Please read and understand the text above and then press ENTER to proceed " void
 			clear
 			if [ -e "$FLATSYNC_SSH"/flatsync_key ] && [ -e "$FLATSYNC_SSH"/flatsync_key.pub ]; then
-				sleep 1
 				printf "SSH key already exists! That's odd... \n"
+				sleep 1.4s
 			else
 				ssh-keygen -t ed25519 -f "$FLATSYNC_SSH"/flatsync_key -q -N "" -C "SSH key for Flatsync - a synchronizer for flatpak applications"
 				printf "SSH key created!\n"
@@ -61,7 +61,6 @@ else
 			for index in "${!git_preference[@]}"; do
 				git config --add --local "${git_preference[$index]}" "${git_preference_value[$index]}"
 			done
-			printf "ERROR?\n\n"
 			printf "\rPlease provide the repository url, make sure it is for SSH! ${NC}\n"
 			read -rp "SSH URL [ex.: git@hosting.com:username/repository.git ]: " NR_GIT_ORIGIN
 			#git_url_regex_funtion # comment.?
@@ -78,7 +77,8 @@ else
 	if [ "$NO_REPO" = 1 ]; then
 		flatpak list --columns=application --app |
 			tee -p remote_flatpaks &>/dev/null
-		git add remote_flatpaks
+		cat /etc/hostname | tee -p "$FLATSYNC_GIT"/last_updated_device &>/dev/null
+		git add remote_flatpaks last_updated_device
 		git commit -q -m "$(date "%H:%M:%S - %d/%m/%Y")"
 		git push -q -u origin main
 		exit 0
