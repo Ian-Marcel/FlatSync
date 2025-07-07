@@ -29,9 +29,9 @@ curl -sSL https://from.ianmarcel.dev/install/flatsync | bash
 - [ ] Addition of the `--quiet` flag
 	- By default `flatsync` is very verbose with which task is being run within the program at the time, even when running in the background(ex.: scheduled sync), for now, if you wish to omit any output from `flatsync`, add `&>/dev/null` at the end of the command. Here's an example:
 
-```sh 
-flatsync --auto &>/dev/null
-```
+		```sh 
+		flatsync --auto &>/dev/null
+		```
 
 - - -
 
