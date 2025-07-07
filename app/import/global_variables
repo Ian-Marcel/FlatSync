@@ -10,7 +10,7 @@ BRED='\033[1;31m'
 DATE=$(date "%H.%M.%S_%d.%m.%Y") # comment-3.1
 
 FLATSYNC_SCRIPT="$FLATSYNC_ROOT"/scripts
-FLATSYNC_CACHE="$HOME"/cache/flatsync
+FLATSYNC_CACHE="$HOME"/.cache/flatsync
 FLATSYNC_GIT="$FLATSYNC_DATA"/git
 FLATSYNC_SSH="$FLATSYNC_DATA"/ssh
 
