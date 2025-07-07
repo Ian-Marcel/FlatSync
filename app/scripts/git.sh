@@ -56,8 +56,11 @@ else
 			\rGitHub: ${BCYAN}https://youtu.be/iVJesFfzDGs?si=E4qserNj4-1jJuyy&t=54${NC}
 			\rGitLab: ${BCYAN}https://youtu.be/mNtQ55quG9M?si=57nsYWVfpvd_4NfR&t=265${NC}\n"
 			sleep 5
+			pwd
+			printf "${git_preference[2]}\n\n"
 			read -rp $'\033[1;33mPress ENTER to proceed \033[0m' void
 			clear
+			printf "ERROR?\n\n"
 			for index in "${!git_preference[@]}"; do
 				git config --unset-all --local "${git_preference[$index]}"
 				git config --add --local "${git_preference[$index]}" "${git_preference_value[$index]}"
