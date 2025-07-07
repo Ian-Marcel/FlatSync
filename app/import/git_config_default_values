@@ -17,7 +17,7 @@ git_preference_value=(
 
 foreach_git_config_set() {
 	for index in "${!git_preference[@]}"; do
-		if [ "$(git config --get --local "${git_preference[$index]}")" != "${git_preference_value[$index]}" ]; then
+		if ! git config --get --local "${git_preference[$index]}" ; then
 			git config --unset-all --local "${git_preference[$index]}"
 			git config --add --local "${git_preference[$index]}" "${git_preference_value[$index]}"
 		else

@@ -55,7 +55,7 @@ else
 			\rYou're not sure how to add it, here are some videos for adding to GitHub and GitLab:
 			\rGitHub: ${BCYAN}https://youtu.be/iVJesFfzDGs?si=E4qserNj4-1jJuyy&t=54${NC}
 			\rGitLab: ${BCYAN}https://youtu.be/mNtQ55quG9M?si=57nsYWVfpvd_4NfR&t=265${NC}\n"
-			sleep 10
+			sleep 5
 			read -rp $'\033[1;33mPress ENTER to proceed \033[0m' void
 			clear
 			foreach_git_config_set
