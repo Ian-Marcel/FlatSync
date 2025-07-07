@@ -5,6 +5,13 @@ Synchronize flatpak applications between devices.
 
 - - -
 
+## How to install
+
+Copy the follwing command and paste it in your terminal:
+
+```sh
+curl -sSL https://from.ianmarcel.dev/install/flatsync | bash
+```
 
 ## RoadMap
 
