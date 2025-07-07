@@ -10,8 +10,8 @@ git_preference=(
 git_preference_value=(
 	"flatsync" # id = 0
 	"flatsync@fake.mail"
-	"ssh -o IdentitiesOnly=yes -i $FLATSYNC_SSH/flatsync_key"
-	"$FLATSYNC_SSH/flatsync_key.pub"
+	"ssh -o IdentitiesOnly=yes -i "$FLATSYNC_SSH/flatsync_key""
+	""$FLATSYNC_SSH/flatsync_key.pub""
 	"ssh"
 )
 
