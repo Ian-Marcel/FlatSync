@@ -59,7 +59,6 @@ else
 			read -rp $'\033[1;33mPress ENTER to proceed \033[0m' void
 			clear
 			for index in "${!git_preference[@]}"; do
-				git config --unset-all --local "${git_preference[$index]}"
 				git config --add --local "${git_preference[$index]}" "${git_preference_value[$index]}"
 			done
 			printf "ERROR?\n\n"
