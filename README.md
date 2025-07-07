@@ -21,7 +21,7 @@ curl -sSL https://from.ianmarcel.dev/install/flatsync | bash
     - During synchronization the system scans the `uninstall` file.
     - If an application is found in both `exclusive` and `uninstall`, it is:
       - Removed from `uninstall`.
-      - Removed from `local_flatpaks`, which becomes the new `remote_flatpaks` after syncing.
+    - Also removed from the new `remote_flatpaks` after syncing.
 
 
 - - -
