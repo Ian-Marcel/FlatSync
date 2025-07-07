@@ -26,6 +26,11 @@ curl -sSL https://from.ianmarcel.dev/install/flatsync | bash
       	1. Removed from `uninstall`.
     3. It also be removed from the new `remote_flatpaks` after syncing.
 
+- [ ] Addition of the `--quiet` flag
+	- By default `flatsync` is very verbose with which task is being run within the program at the time, even when running in the background(ex.: scheduled sync), for now, if you wish to omit any output from `flatsync`, add `&>/dev/null` at the end of the command. Here's an example:
+	- ```sh 
+	flatsync --auto &>/dev/null
+	```
 
 - - -
 
