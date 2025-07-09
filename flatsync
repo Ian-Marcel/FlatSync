@@ -3,6 +3,12 @@
 ############
 set -euo pipefail
 trap 'printf "❌ \033[1;31m\b Error occurred! \033[1;33m\b Exiting...\033[0m\n" && exit 1' ERR
+if [ "${1-}" ]; then
+	FLAGS+=("$1") # comment.?
+fi
+if [ "${2-}" ]; then
+	FLAGS+=("$2") # comment.?
+fi
 FLATSYNC_ROOT="/usr/share/flatsync"			# comment.?
 FLATSYNC_DATA="$HOME/.local/share/flatsync" # comment.5
 import() {

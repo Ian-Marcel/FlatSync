@@ -1,12 +1,5 @@
 #!/usr/bin/env bash
 
-if [ "${1-}" ]; then
-	FLAGS+=("$1") # comment.?
-fi
-if [ "${2-}" ]; then
-	FLAGS+=("$2") # comment.?
-fi
-
 # comment.4 #############
 NC='\033[0m' # No Color
 BCYAN='\033[1;36m'
