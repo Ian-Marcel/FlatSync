@@ -14,7 +14,8 @@ curl -sSL https://from.ianmarcel.dev/install/flatsync | bash
 ```
 
 ## RoadMap
-
+- [x] Addition of a `--version` flag
+  - Very simple this one, it just tells you flatsync version installed in your device
 - [x] Addition of a `--auto` flag
   - By default, if an aplication is set to be (un)installed, `flatsync` will list the list of applications to be operated and prompt the user to confirm the operation. With `--auto`, `flatsync` will no longer prompt the user for confirmation, (un)installing apps automatically, which is very useful for scheduled syncs.
 
