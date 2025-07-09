@@ -1,19 +1,16 @@
 #!/usr/bin/env bash
 
 for flag in "$FLAG_1" "$FLAG_2" ;do
-	case "$flag" in
-		-q|--quiet)
-			export VERBOSE=0
-			;;
-		-a|--auto)
-			export AUTO_OP_FLATPAKS=1
-			;;
-		-aq|-qa)
-			export VERBOSE=0
-			export AUTO_OP_FLATPAKS=1
-			;;
-	esac
+	if [ -n "$flag" ] && { [ "$flag" = "--quiet" ] || [ "$flag" = "-q" ]; }; then
+		VERBOSE=0
+	elif [ -n "$flag" ] && { [ "$flag" = "--auto" ] || [ "$flag" = "-a" ]; }; then
+		AUTO_OP_FLATPAKS=1
+	elif [ -n "$flag" ] && { [ "$flag" = "-qa" ] || [ "$flag" = "-aq" ]; }; then
+		VERBOSE=0
+		AUTO_OP_FLATPAKS=1
+	fi
 done
+
 silencer_check() {
 	if [ "$VERBOSE" -eq 0 ]; then
 		"$@" >/dev/null
