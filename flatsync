@@ -18,6 +18,8 @@ import pure_bash_functions
 import progress_bar_by_task_completion
 import wait_with_spinner_loading
 
+printf "$VERBOSE"
+sleep 1
 silencer_check printf "Updating repository\n"
 sleep 2
 exit 1
