@@ -18,23 +18,13 @@ fi
 if [ "${2-}" ]; then
 	FLAGS+=("$2") # comment.?
 fi
-############
-
+###
 import global_variables
 import flags_handling
 import pure_bash_functions
 import progress_bar_by_task_completion
 import wait_with_spinner_loading
-
-printf "%s\n" "${FLAGS[@]}"
-printf "$VERBOSE\n"
-sleep 1
-silencer_check printf "Updating repository\n"
-sleep 2
-if [ "$AUTO_OP_FLATPAKS" = 0 ]; then
-	printf "Auto is not on! \n"
-fi
-exit 1
+############
 
 source "$FLATSYNC_SCRIPT"/git.sh
 
