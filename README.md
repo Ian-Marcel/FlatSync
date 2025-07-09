@@ -20,10 +20,10 @@ curl -sSL https://from.ianmarcel.dev/install/flatsync | bash
   - By default, if an aplication is set to be (un)installed, `flatsync` will list the list of applications to be operated and prompt the user to confirm the operation. With `--auto`, `flatsync` will no longer prompt the user for confirmation, (un)installing apps automatically, which is very useful for scheduled syncs.
 
 - [ ] Addition of the `--quiet` flag
-	- By default `flatsync` is quite verbose with which task is being run within the program at the time, even when running in the background(ex.: scheduled sync), for now, if you wish to omit any output from `flatsync`, add `&>/dev/null` at the end of the command. Here's an example:
+	- By default `flatsync` is quite verbose with which task is being run within the program at the time, even when running in the background(ex.: scheduled sync), for now, if you wish to omit standard output from `flatsync`, add `1>/dev/null` at the end of the command, it will still show error messages though. Here's an example:
 
 		```sh 
-		flatsync --auto &>/dev/null
+		flatsync --auto 1>/dev/null
 		```
 - [ ] Support for exclusive applications on a single device
   - A persistent file named `exclusive` stores the names of these applications.
