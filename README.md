@@ -16,6 +16,14 @@ curl -sSL https://from.ianmarcel.dev/install/flatsync | bash
 ### Updating
 The previous command also detects whether `flatsync` is installed and performs an installation or update accordingly.
 
+## Usage
+```sh
+flatsync [FLAGS]
+```
+### Flags available
+- `--version | -v`: Shows FlatSync's version.
+- `--auto | -a`: Automatically performs (un)installation.
+
 ## RoadMap
 - [x] Addition of a `--version` flag
   - Very simple this one, it just tells you flatsync version installed in your device
