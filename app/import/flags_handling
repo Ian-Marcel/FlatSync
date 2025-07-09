@@ -17,7 +17,7 @@ done
 
 silencer_check() {
 	if [ "$VERBOSE" = 0 ]; then
-		"$@" 1>/dev/null
+		"$@" >/dev/null
 	else
 		"$@"
 	fi
