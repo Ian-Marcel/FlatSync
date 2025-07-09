@@ -6,16 +6,16 @@ for flag in "$FLAG_1" "$FLAG_2" ;do
 			VERBOSE=0
 			;;
 		-a|--auto)
-			AUTO_OP=1
+			AUTO_OP_FLATPAKS=1
 			;;
 		-aq|-qa)
 			VERBOSE=0
-			AUTO_OP=1
+			AUTO_OP_FLATPAKS=1
 			;;
 	esac
 done
 silencer_check() {
-	if [ "$VERBOSE" = 0 ]; then
+	if [ "$VERBOSE" -eq 0 ]; then
 		"$@" 1>/dev/null
 	else
 		"$@"
