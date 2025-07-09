@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+
+for flag in "$FLAG_1" "$FLAG_2" ;do
+	case "$flag" in
+		-q|--quiet)
+			VERBOSE=0
+			;;
+		-a|--auto)
+			AUTO_OP=1
+			;;
+		-aq|-qa)
+			VERBOSE=0
+			AUTO_OP=1
+			;;
+	esac
+done
+
+silencer_check() {
+	if [ "$VERBOSE" = 0 ]; then
+		"$@" 1>/dev/null
+	else
+		"$@"
+	fi
+}
+

@@ -30,7 +30,9 @@ sleep 1s
 cat "$FLATSYNC_CACHE"/install-notice.tmp
 shred -u "$FLATSYNC_CACHE"/install-notice.tmp
 ASWR="y"
-read -rp "Proceed? [y/n]: " ASWR
+if [ "$AUTO_OP_FLATPAKS" = 0 ]; then
+	read -rp "Proceed? [y/n]: " ASWR
+fi
 
 if [ $ASWR = y ]; then
 	for index in "${!install2[@]}"; do

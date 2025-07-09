@@ -12,8 +12,9 @@ import() {
 }
 ############
 
-import pure_bash_functions
 import global_variables
+import flags_handling
+import pure_bash_functions
 import progress_bar_by_task_completion
 import wait_with_spinner_loading
 
@@ -25,7 +26,7 @@ if [ -e "$FLATSYNC_CACHE"/uninstall ]; then
 	printf "${BRED}Removing...${NC}\n"
 	source "$FLATSYNC_SCRIPT"/uninstall_apps.sh
 else
-	printf "${BYELLOW}Nothing to remove${NC}\n"
+	silencer_check printf "${BYELLOW}Nothing to remove${NC}\n"
 	NO_TODO=$((NO_TODO+1))
 fi
 
@@ -33,7 +34,7 @@ if [ -e "$FLATSYNC_CACHE"/install ]; then
 	printf "${BGREEN}Installing...${NC}\n"
 	source "$FLATSYNC_SCRIPT"/install_apps.sh
 else
-	printf "${BYELLOW}Nothing to install${NC}\n"
+	silencer_check printf "${BYELLOW}Nothing to install${NC}\n"
 	NO_TODO=$((NO_TODO+1))
 fi
 

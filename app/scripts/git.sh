@@ -6,7 +6,6 @@ import check_directories
 check-dir_git
 check-dir_ssh
 
-clear
 cd "$FLATSYNC_GIT" || exit
 
 if [ -d "$FLATSYNC_GIT"/.git ]; then
@@ -26,11 +25,12 @@ if [ -d "$FLATSYNC_GIT"/.git ]; then
 			exit 22
 		fi
 	else
-		printf "Updating repository\n"
+		silencer_check printf "Updating repository\n"
 		git fetch -q
 		git pull -q
 	fi
 else
+	clear
 	printf "${BRED}Oh oh, sync repository not found!${NC} \nWish to ${BGREEN}create${NC} a new or will you ${BCYAN}import${NC} an existing one? ${NC}\n"
 	while true; do
 		read -rp $'\033[1;32mcreate(1) \033[0m|\033[1;36m import(2) \033[0m: ' NO_REPO
