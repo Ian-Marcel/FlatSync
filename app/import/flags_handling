@@ -3,7 +3,7 @@
 for flag in "${FLAGS[@]}";do
 	case "$flag" in
 		-v|--version)
-			printf "flatsync: $FLATSYNC_VERSION\n"
+			printf "flatsync: ${FLATSYNC_VERSION}v\n"
 			exit 0
 			;;
 		-q|--quiet)
