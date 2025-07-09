@@ -16,9 +16,9 @@ for flag in "$FLAG_1" "$FLAG_2" ;do
 done
 silencer_check() {
 	if [ "$VERBOSE" -eq 0 ]; then
-		"$@" >/dev/null
+		$@ >/dev/null
 	else
-		"$@"
+		$@
 	fi
 }
 
