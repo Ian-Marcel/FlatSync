@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 
+set +e +u +o pipefail
 FLAG_1="$1" # comment.?
 FLAG_2="$2" # comment.?
+set -euo pipefail
 
 # start	comment.4 ####
 NC='\033[0m' # No Color
