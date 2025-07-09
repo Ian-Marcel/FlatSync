@@ -1,19 +1,15 @@
 #!/usr/bin/env bash
 
-# comment.? #############
 if [ "${1-}" ]; then
-	FLAG_1="$1"
+	FLAG_1="$1" # comment.?
 else
 	FLAG_1=""
 fi
-#########################
-# comment.? #############
 if [ "${2-}" ]; then
-	FLAG_2="$2"
+	FLAG_2="$2" # comment.?
 else
 	FLAG_2=""
 fi
-#########################
 
 # comment.4 #############
 NC='\033[0m' # No Color
