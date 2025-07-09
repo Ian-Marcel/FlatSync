@@ -1,17 +1,27 @@
 #!/usr/bin/env bash
 
-set +e +u +o pipefail
-FLAG_1="$1" # comment.?
-FLAG_2="$2" # comment.?
-set -euo pipefail
+# comment.? #############
+if [ "${1-}" ]; then
+	FLAG_1="$1"
+else
+	FLAG_1=""
+fi
+#########################
+# comment.? #############
+if [ "${2-}" ]; then
+	FLAG_2="$2"
+else
+	FLAG_2=""
+fi
+#########################
 
-# start	comment.4 ####
+# comment.4 #############
 NC='\033[0m' # No Color
 BCYAN='\033[1;36m'
 BGREEN='\033[1;32m'
 BYELLOW='\033[1;33m'
 BRED='\033[1;31m'
-# end	comment.4 ####
+#########################
 
 FLATSYNC_SCRIPT="$FLATSYNC_ROOT/scripts"
 FLATSYNC_CACHE="$HOME/.cache/flatsync"

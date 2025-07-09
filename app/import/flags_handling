@@ -14,10 +14,9 @@ for flag in "$FLAG_1" "$FLAG_2" ;do
 			;;
 	esac
 done
-
 silencer_check() {
 	if [ "$VERBOSE" = 0 ]; then
-		"$@" >/dev/null
+		"$@" 1>/dev/null
 	else
 		"$@"
 	fi
