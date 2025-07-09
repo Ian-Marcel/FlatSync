@@ -1,14 +1,10 @@
 #!/usr/bin/env bash
 
 if [ "${1-}" ]; then
-	FLAG_1="$1" # comment.?
-else
-	FLAG_1=""
+	FLAGS+=("$1") # comment.?
 fi
 if [ "${2-}" ]; then
-	FLAG_2="$2" # comment.?
-else
-	FLAG_2=""
+	FLAGS+=("$2") # comment.?
 fi
 
 # comment.4 #############
