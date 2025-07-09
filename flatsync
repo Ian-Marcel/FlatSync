@@ -19,6 +19,7 @@ import progress_bar_by_task_completion
 import wait_with_spinner_loading
 
 silencer_check printf "Updating repository\n"
+sleep 2
 exit 1
 source "$FLATSYNC_SCRIPT"/git.sh
 
