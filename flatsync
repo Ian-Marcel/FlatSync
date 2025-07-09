@@ -17,7 +17,8 @@ import pure_bash_functions
 import progress_bar_by_task_completion
 import wait_with_spinner_loading
 #import flags
-printf "${FLAGS[@]}\n"
+
+printf "%s\n" "${FLAGS[@]}"
 for flag in "${FLAGS[@]}";do
 	case "$flag" in
 		-q|--quiet)
