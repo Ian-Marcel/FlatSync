@@ -13,6 +13,9 @@ Simply copy the following command and paste it in your terminal:
 curl -sSL https://from.ianmarcel.dev/install/flatsync | bash
 ```
 
+### Updating
+The previous command also detects whether `flatsync` is installed and performs an installation or update accordingly.
+
 ## RoadMap
 - [x] Addition of a `--version` flag
   - Very simple this one, it just tells you flatsync version installed in your device
