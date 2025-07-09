@@ -3,14 +3,14 @@
 for flag in "$FLAG_1" "$FLAG_2" ;do
 	case "$flag" in
 		-q|--quiet)
-			VERBOSE=0
+			export VERBOSE=0
 			;;
 		-a|--auto)
-			AUTO_OP_FLATPAKS=1
+			export AUTO_OP_FLATPAKS=1
 			;;
 		-aq|-qa)
-			VERBOSE=0
-			AUTO_OP_FLATPAKS=1
+			export VERBOSE=0
+			export AUTO_OP_FLATPAKS=1
 			;;
 	esac
 done
