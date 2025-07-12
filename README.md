@@ -41,10 +41,6 @@ flatsync [FLAGS]
 
 - [x] Addition of the `--quiet` flag
 	- By default `flatsync` is quite verbose with which task is being run within the program at the time, even when running in the background(ex.: scheduled sync), for now, if you wish to omit standard output from `flatsync`, add `1>/dev/null` at the end of the command, it will still show error messages though. Here's an example:
-
-		```sh 
-		flatsync --auto 1>/dev/null
-		```
 - [ ] Support for synchronization of user flatpak overrides.
 	- Flatsync will sync the folder `overrides` in `~/.local/share/flatpak` together with the list of apps.
 - [ ] Support for exclusive applications on a single device
