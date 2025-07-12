@@ -24,6 +24,25 @@ The previous command also detects whether `flatsync` is installed and performs a
 
 - You can check latest version notes at the [releases page](https://github.com/Ian-Marcel/FlatSync/releases/latest).
 
+### Installing from source or a pre-release
+1. Remove current Flatsync installation:
+    ```shell
+    sudo rm -rf /usr/{local/bin,share}/flatsync
+    ```
+2. If you want to test a pre-release clone FlatSync repository on branch `stable`, if you're installing from source download `FlatSync.tar.gz` from the release page and extract it.
+    ```git
+    # if testing a pre-release
+    git clone --branch=stable https://github.com/Ian-Marcel/FlatSync.git
+    ```
+3. Then rename the folder `app/` to `flatsync/` and place it inside `/usr/share/` directory:
+    ```shell
+    sudo mv FlatSync/app /usr/share/flatsync
+    ```
+4. Finally, install `flatsync` command inside `/usr/local/bin/`:
+    ```shell
+    sudo install -o root -g root -m 0755 FlatSync/flatsync /usr/local/bin/flatsync
+    ```
+
 ## Usage
 ```sh
 flatsync [FLAGS]
@@ -41,7 +60,7 @@ flatsync [FLAGS]
 
 - [x] Addition of the `--quiet` flag
 	- By default `flatsync` is quite verbose with which task is being run within the program at the time, even when running in the background(ex.: scheduled sync), for now, if you wish to omit standard output from `flatsync`, add `1>/dev/null` at the end of the command, it will still show error messages though. Here's an example:
-- [ ] Support for synchronization of user flatpak overrides.
+- [x] Support for synchronization of user flatpak overrides.
 	- Flatsync will sync the folder `overrides` in `~/.local/share/flatpak` together with the list of apps.
 - [ ] Support for exclusive applications on a single device
   - A persistent file named `exclusive` stores the names of these applications.
