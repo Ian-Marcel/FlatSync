@@ -29,8 +29,9 @@ The previous command also detects whether `flatsync` is installed and performs a
 flatsync [FLAGS]
 ```
 ### Flags available
-- `--version | -v `: Shows FlatSync's version.
-- `--auto | -a `: Automatically performs (un)installation.
+- `--version` or `-v ` : Shows FlatSync's version, meant to be used alone.
+- `--auto` or `-a` : Automatically performs (un)installations. Can be combined with `--quiet` or `-q`.
+- `--quiet` or `-q` : Hide standard output, errors are still shown. Can be combined with `--auto` or `-a`.
 
 ## RoadMap
 - [x] Addition of a `--version` flag
@@ -38,13 +39,13 @@ flatsync [FLAGS]
 - [x] Addition of a `--auto` flag
   - By default, if an aplication is set to be (un)installed, `flatsync` will list the list of applications to be operated and prompt the user to confirm the operation. With `--auto`, `flatsync` will no longer prompt the user for confirmation, (un)installing apps automatically, which is very useful for scheduled syncs.
 
-- [ ] Addition of the `--quiet` flag
+- [x] Addition of the `--quiet` flag
 	- By default `flatsync` is quite verbose with which task is being run within the program at the time, even when running in the background(ex.: scheduled sync), for now, if you wish to omit standard output from `flatsync`, add `1>/dev/null` at the end of the command, it will still show error messages though. Here's an example:
 
 		```sh 
 		flatsync --auto 1>/dev/null
 		```
-- [ ] Sync overrides settings
+- [ ] Support for syncing overrides settings
 	- Flatsync will sync the folder `overrides` in `~/.local/share/flatpak` together with the list of apps.
 - [ ] Support for exclusive applications on a single device
   - A persistent file named `exclusive` stores the names of these applications.
