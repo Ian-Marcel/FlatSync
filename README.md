@@ -62,6 +62,8 @@ flatsync [FLAGS]
 	- By default `flatsync` is quite verbose with which task is being run within the program at the time, even when running in the background(ex.: scheduled sync), for now, if you wish to omit standard output from `flatsync`, add `1>/dev/null` at the end of the command, it will still show error messages though. Here's an example:
 - [x] [MINOR] Support for synchronization of user flatpak overrides.
 	- Flatsync will sync the folder `overrides` in `~/.local/share/flatpak` together with the list of apps.
+- [ ] [PATCH] Adding `machine_id` to `last_updated_device` for better distinguishing devices.
+    - FlatSync is checks the device name before syncing, it stores the device name together with the list of apps, but there'a problem, if >=2 devices have the same name, FlatSync will think that they're the same device, not syncing properly or worse, messing up with list of applications.
 - [ ] [MAJOR] Support for exclusive applications on a single device
   - A persistent file named `exclusive` stores the names of these applications.
   - How it goes:
@@ -69,8 +71,6 @@ flatsync [FLAGS]
     2. If an application is found in both `exclusive` and `uninstall`, it is:
       	1. Removed from `uninstall`.
     3. It also be removed from the new `remote_flatpaks` after syncing.
-- [ ] [PATCH] Adding `machine_id` to `last_updated_device` for better distinguishing devices.
-    - FlatSync is checks the device name before syncing, it stores the device name together with the list of apps, but there'a problem, if >=2 devices have the same name, FlatSync will think that they're the same device, not syncing properly or worse, messing up with list of applications.
 - [ ] [MAJOR] Support for custom remotes
 	- By default, flathub is the main remote for downloading the apps, but in future will be able to rank the remotes of machine from the first to try to install to the last.
 - - -
