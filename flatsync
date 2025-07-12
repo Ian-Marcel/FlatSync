@@ -31,7 +31,7 @@ source "$FLATSYNC_SCRIPT"/git.sh
 source "$FLATSYNC_SCRIPT"/compare.sh
 
 if [ -e "$FLATSYNC_CACHE"/uninstall ]; then
-	printf "${BRED}Removing...${NC}\n"
+	silencer_check printf "${BRED}Removing...${NC}\n"
 	source "$FLATSYNC_SCRIPT"/uninstall_apps.sh
 else
 	silencer_check printf "${BYELLOW}Nothing to remove${NC}\n"
@@ -39,7 +39,7 @@ else
 fi
 
 if [ -e "$FLATSYNC_CACHE"/install ]; then
-	printf "${BGREEN}Installing...${NC}\n"
+	silencer_check printf "${BGREEN}Installing...${NC}\n"
 	source "$FLATSYNC_SCRIPT"/install_apps.sh
 else
 	silencer_check printf "${BYELLOW}Nothing to install${NC}\n"

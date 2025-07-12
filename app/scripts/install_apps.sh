@@ -16,7 +16,7 @@ fi
 for index in "${!installid[@]}"; do
 	appid=${installid[$index]}
 
-	progress_bar_by_task_completion "$index" "$total"
+	silencer_check progress_bar_by_task_completion "$index" "$total"
 	appid_regex
 	printf " ${BGREEN}+${NC} %s: %s \n" \
 		"$(flatpak search --columns=name "$appid" | head -n "$i" | tail -n 1)" \
