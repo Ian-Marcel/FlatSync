@@ -2,7 +2,7 @@
 
 import appid_regex
 
-printf "Processing uninstallation data...\n"
+silencer_check printf "Processing uninstallation data...\n"
 for appid in $(<"$FLATSYNC_CACHE"/uninstall); do
 	uninstallid+=("$appid")
 done
@@ -25,9 +25,9 @@ for index in "${!uninstallid[@]}"; do
 	uninstall2+=("$(flatpak search --columns=name "$appid" | head -n "$i" | tail -n 1)")
 done
 
-printf "${BRED}To be uninstalled:${NC}\n"
+silencer_check printf "${BRED}To be uninstalled:${NC}\n"
 sleep 1s
-cat "$FLATSYNC_CACHE"/uninstall-notice.tmp
+silencer_check cat "$FLATSYNC_CACHE"/uninstall-notice.tmp
 shred -u "$FLATSYNC_CACHE"/uninstall-notice.tmp
 ASWR="y"
 if [ "$AUTO_OP_FLATPAKS" = 0 ]; then
@@ -41,7 +41,7 @@ if [ $ASWR = y ]; then
 		app_name=${uninstall2[$index]}
 
 		flatpak uninstall --noninteractive --assumeyes "$appid" &>/dev/null &
-		wait_with_spinner_loading "$app_name"
+		silencer_check wait_with_spinner_loading "$app_name"
 
 	done
 else

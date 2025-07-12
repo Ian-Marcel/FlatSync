@@ -2,7 +2,7 @@
 
 import appid_regex
 
-printf "Processing installation data...\n"
+silencer_check printf "Processing installation data...\n"
 for appid in $(<"$FLATSYNC_CACHE"/install); do
 	installid+=("$appid")
 done
@@ -25,9 +25,9 @@ for index in "${!installid[@]}"; do
 	install2+=("$(flatpak search --columns=name "$appid" | head -n "$i" | tail -n 1)")
 done
 
-printf "${BGREEN}To be installed:${NC}\n"
+silencer_check printf "${BGREEN}To be installed:${NC}\n"
 sleep 1s
-cat "$FLATSYNC_CACHE"/install-notice.tmp
+silencer_check cat "$FLATSYNC_CACHE"/install-notice.tmp
 shred -u "$FLATSYNC_CACHE"/install-notice.tmp
 ASWR="y"
 if [ "$AUTO_OP_FLATPAKS" = 0 ]; then
@@ -41,7 +41,7 @@ if [ $ASWR = y ]; then
 		app_name=${install2[$index]}
 
 		flatpak install --noninteractive --assumeyes flathub "$appid" &>/dev/null &
-		wait_with_spinner_loading "$app_name"
+		silencer_check wait_with_spinner_loading "$app_name"
 
 	done
 else
