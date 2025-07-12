@@ -61,8 +61,8 @@ else
 			for index in "${!git_preference[@]}"; do
 				git config --add --local "${git_preference[$index]}" "${git_preference_value[$index]}"
 			done
-			printf "\rPlease provide the repository url, make sure it is for SSH! ${NC}\n"
-			read -rp "SSH URL [ex.: git@hosting.com:username/repository.git ]: " NR_GIT_ORIGIN
+			printf "\rPlease provide the repository url, make sure it is for SSH! [ex.: ${BCYAN}git@hosting.com:username/repository.git ${NC}] \n"
+			read -rp "SSH URL: " NR_GIT_ORIGIN
 			#git_url_regex_funtion # comment.?
 			git remote add origin "$NR_GIT_ORIGIN"
 			break
@@ -120,8 +120,8 @@ else
 				fi
 			done
 		fi
-		printf "\rPlease provide the repository url, make sure it is for SSH! ${NC}\n"
-		read -rp "SSH URL [ex.: git@hosting.com:username/repository.git ]: " NR_GIT_ORIGIN
+		printf "\rPlease provide the repository url, make sure it is for SSH! [ex.: ${BCYAN}git@hosting.com:username/repository.git ${NC}] \n"
+		read -rp "SSH URL: " NR_GIT_ORIGIN
 		#git_url_regex_funtion # comment.?
 		git clone -q "$NR_GIT_ORIGIN" "$FLATSYNC_GIT"/ \
 			--config="${git_preference[0]}"="${git_preference_value[0]}" \
@@ -130,5 +130,7 @@ else
 			--config="${git_preference[3]}"="${git_preference_value[3]}" \
 			--config="${git_preference[4]}"="${git_preference_value[4]}"
 	fi
+	printf  "${BGREEN}Setup complete! ${NC}Now re-run ${BCYAN}flatsync${NC} to start synchronization.\n"
+	exit 0
 fi
 cd "$FLATSYNC_ROOT" || exit
