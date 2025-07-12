@@ -29,7 +29,7 @@ The previous command also detects whether `flatsync` is installed and performs a
     ```shell
     sudo rm -rf /usr/{local/bin,share}/flatsync
     ```
-2. If you want to test a pre-release clone FlatSync repository on branch `stable`, if you're installing from source download `FlatSync.tar.gz` from the release page and extract it.
+2. If you want to test a pre-release clone FlatSync repository on branch `stable`, if you're installing from source download `FlatSync.tar.gz` from the [release page](https://github.com/Ian-Marcel/FlatSync/releases) and extract it.
     ```git
     # if testing a pre-release
     git clone --branch=stable https://github.com/Ian-Marcel/FlatSync.git
