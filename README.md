@@ -29,7 +29,7 @@ The previous command also detects whether `flatsync` is installed and performs a
 flatsync [FLAGS]
 ```
 ### Flags available
-- `--version` or `-v ` : Shows FlatSync's version, meant to be used alone.
+- `--version` or `-v` : Shows FlatSync's version, meant to be used alone.
 - `--auto` or `-a` : Automatically performs (un)installations. Can be combined with `--quiet` or `-q`.
 - `--quiet` or `-q` : Hide standard output, errors are still shown. Can be combined with `--auto` or `-a`.
 
@@ -45,7 +45,7 @@ flatsync [FLAGS]
 		```sh 
 		flatsync --auto 1>/dev/null
 		```
-- [ ] Support for syncing overrides settings
+- [ ] Support for synchronization of user flatpak overrides.
 	- Flatsync will sync the folder `overrides` in `~/.local/share/flatpak` together with the list of apps.
 - [ ] Support for exclusive applications on a single device
   - A persistent file named `exclusive` stores the names of these applications.
