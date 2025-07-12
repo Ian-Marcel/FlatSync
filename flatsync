@@ -46,5 +46,7 @@ else
 	NO_TODO=$((NO_TODO+1))
 fi
 
+source "$FLATSYNC_SCRIPT"/override-sync.sh
+
 source "$FLATSYNC_SCRIPT"/exit.sh
 

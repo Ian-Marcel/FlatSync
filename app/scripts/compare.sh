@@ -6,11 +6,14 @@ check-dir_cache
 
 set +e +u +o pipefail
 
-if [ -e "$FLATSYNC_GIT"/last_updated_device ] &&
-	[ "$(<"$FLATSYNC_GIT"/last_updated_device)" = "$(</etc/hostname)" ]; then
+if [ -e "$FLATSYNC_GIT"/last_updated_device ] && [ "$(<"$FLATSYNC_GIT"/last_updated_device)" = "$(</etc/hostname)" ]; then
 
 	flatpak list --columns=application --app |
 		tee -p "$FLATSYNC_GIT"/remote_flatpaks &>/dev/null
+	if [ -d "$FLATSYNC_GIT"/overrides ]; then
+		rm -rf "$FLATSYNC_GIT"/overrides
+	fi
+	cp -aT "$HOME"/.local/share/flatpak/overrides "$FLATSYNC_GIT"/overrides
 
 else
 	flatpak list --columns=application --app |

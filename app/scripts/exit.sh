@@ -7,14 +7,17 @@ if [ "$NO_TODO" -lt 2 ]; then
 fi
 
 cd "$FLATSYNC_GIT" || exit
-flatpak list --columns=application --app |
-	tee -p remote_flatpaks &>/dev/null
+
+flatpak list --columns=application --app | tee -p remote_flatpaks &>/dev/null
+if [ -d "$FLATSYNC_GIT"/overrides ]; then
+	rm -rf "$FLATSYNC_GIT"/overrides
+fi
+cp -aT "$HOME"/.local/share/flatpak/overrides "$FLATSYNC_GIT"/overrides
 cat /etc/hostname | tee -p "$FLATSYNC_GIT"/last_updated_device &>/dev/null
+
 git add .
 if git commit -q -m "$(date "%H:%M:%S - %d/%m/%Y")" &>/dev/null; then
 	git push -q
-	cd "$FLATSYNC_ROOT" || exit
 else
-	cd "$FLATSYNC_ROOT" || exit
 	exit 0
 fi
