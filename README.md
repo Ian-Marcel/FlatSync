@@ -5,6 +5,12 @@ Synchronize flatpak applications between devices.
 
 - - -
 
+## How it works:
+1. Imagine that you have a laptop with Linux as the OS, it has the flatpaks apps A, B and C installed.
+2. Now imagine you have a PC also with Linux as the OS, but it only have the app A installed.
+- What FlatSync will do is that it will check the latest device and it will apply the changes to other devices.
+3. In this example lets say you're laptop is the latest, so flatsync will see that both laptop and PC have app A installed, but the PC doesn't have app B and C, so it will install them in the PC, now both devices have the same apps!
+
 ## How to install
 
 Simply copy the following command and paste it in your terminal:
@@ -45,7 +51,8 @@ flatsync [FLAGS]
     2. If an application is found in both `exclusive` and `uninstall`, it is:
       	1. Removed from `uninstall`.
     3. It also be removed from the new `remote_flatpaks` after syncing.
-
+- [ ] Support for custom remotes
+	- By default, flathub is the main remote for downloading the apps, but in future will be able to rank the remotes of machine from the first to try to install to the last.
 - - -
 
 - [Code commentaries](docs/comments.md)
