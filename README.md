@@ -44,6 +44,8 @@ flatsync [FLAGS]
 		```sh 
 		flatsync --auto 1>/dev/null
 		```
+- [ ] Sync overrides settings
+	- Flatsync will sync the folder `overrides` in `~/.local/share/flatpak` together with the list of apps.
 - [ ] Support for exclusive applications on a single device
   - A persistent file named `exclusive` stores the names of these applications.
   - How it goes:
