@@ -6,6 +6,7 @@ Synchronize flatpak applications between devices.
 - - -
 
 ## How it works:
+
 1. Imagine that you have a laptop with Linux as the OS, it has the flatpaks apps A, B and C installed.
 2. Now imagine you have a PC also with Linux as the OS, but it only have the app A installed.
 - What FlatSync will do is that it will check the latest device and it will apply the changes to other devices.
@@ -30,35 +31,41 @@ The previous command also detects whether `flatsync` is installed and performs a
     sudo rm -rf /usr/{local/bin,share}/flatsync
     ```
 2. If you want to test a pre-release clone FlatSync repository on branch `stable`, if you're installing from source download `FlatSync.tar.gz` from the [release page](https://github.com/Ian-Marcel/FlatSync/releases) and extract it.
-    ```shell
-wget https://github.com/Ian-Marcel/FlatSync/releases/download/VERSION/FlatSync.tar.gz
+
+    ```sh
+wget https://github.com/Ian-Marcel/FlatSync/releases/download/<VERSION>/FlatSync.tar.gz
     # Or
     git clone --branch=stable https://github.com/Ian-Marcel/FlatSync.git
     ```
 3. Then rename the folder `app/` to `flatsync/` and place it inside `/usr/share/` directory:
-    ```shell
+
+    ```sh
     sudo mv FlatSync/app /usr/share/flatsync
     ```
 4. Finally, install `flatsync` command inside `/usr/local/bin/`:
-    ```shell
+
+    ```sh
     sudo install -o root -g root -m 0755 FlatSync/flatsync /usr/local/bin/flatsync
     ```
 
 ## Usage
+
 ```sh
 flatsync [FLAGS]
 ```
+
 ### Flags available
+
 - `--version` or `-v` : Shows FlatSync's version, meant to be used alone.
 - `--auto` or `-a` : Automatically performs (un)installations. Can be combined with `--quiet` or `-q`.
 - `--quiet` or `-q` : Hide standard output, errors are still shown. Can be combined with `--auto` or `-a`.
 
 ## RoadMap
+
 - [x] [MINOR] Addition of a `--version` flag
   - Very simple this one, it just tells you flatsync version installed in your device
 - [x] [MINOR] Addition of a `--auto` flag
   - By default, if an aplication is set to be (un)installed, `flatsync` will list the list of applications to be operated and prompt the user to confirm the operation. With `--auto`, `flatsync` will no longer prompt the user for confirmation, (un)installing apps automatically, which is very useful for scheduled syncs.
-
 - [x] [MINOR] Addition of the `--quiet` flag
 	- By default `flatsync` is quite verbose with which task is being run within the program at the time, even when running in the background(ex.: scheduled sync), for now, if you wish to omit standard output from `flatsync`, add `1>/dev/null` at the end of the command, it will still show error messages though. Here's an example:
 - [x] [MINOR] Support for synchronization of user flatpak overrides.
@@ -74,8 +81,8 @@ flatsync [FLAGS]
     3. It also be removed from the new `remote_flatpaks` after syncing.
 - [ ] [MAJOR] Support for custom remotes
 	- By default, flathub is the main remote for downloading the apps, but in future will be able to rank the remotes of machine from the first to try to install to the last.
+
 - - -
 
 - [Code commentaries](docs/comments.md)
-
 - [License - GNU GPL V3](LICENSE)
