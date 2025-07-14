@@ -9,6 +9,7 @@ set +e +u +o pipefail
 if [ -e "$FLATSYNC_GIT"/last_updated_device ] && { [ "$(head "$FLATSYNC_GIT"/last_updated_device -n 1)" = "$(</etc/hostname)" ] && [ "$(tail "$FLATSYNC_GIT"/last_updated_device -n 1)" = "$(</etc/machine-id)" ]; }; then
 
 	silencer_check printf "This IS the same machine!\n"
+	NO_TODO=2
 	source "$FLATSYNC_SCRIPT"/exit.sh
 
 else

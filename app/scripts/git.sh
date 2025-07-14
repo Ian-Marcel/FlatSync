@@ -22,7 +22,7 @@ if [ -d "$FLATSYNC_GIT"/.git ]; then
 			\rThen, re-run '${BCYAN}flatsync${NC}', choose to create a new repository, and follow the instructions.\n
 			\r${BRED}!!!${NC} ERROR ${BRED}!!!${NC} ERROR ${BRED}!!!${NC} ERROR ${BRED}!!!${NC}\n"
 			sleep 1.4s
-			exit 22
+			exit 1
 		fi
 	else
 		silencer_check printf "Updating repository\n"
