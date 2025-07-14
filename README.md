@@ -57,8 +57,10 @@ flatsync [FLAGS]
 ### Flags available
 
 - `--version` or `-v` : Shows FlatSync's version, meant to be used alone.
-- `--auto` or `-a` : Automatically performs (un)installations. Can be combined with `--quiet` or `-q`.
-- `--quiet` or `-q` : Hide standard output, errors are still shown. Can be combined with `--auto` or `-a`.
+- `--auto` or `-a` : Automatically performs (un)installations.
+  - Can be combined with `--quiet` or `-q`.
+- `--quiet` or `-q` : Hide standard output, errors are still shown.
+  - Can be combined with `--auto` or `-a`.
 
 ## RoadMap
 
@@ -74,10 +76,10 @@ flatsync [FLAGS]
 #### ✅ [MINOR] Support for synchronization of user flatpak overrides.
 - Flatsync will sync the folder `overrides` in `~/.local/share/flatpak` together with the list of apps.
 
-#### [PATCH] Adding `machine_id` to `last_updated_device` for better distinguishing devices.
+#### 🩹 [PATCH] Adding `machine_id` to `last_updated_device` for better distinguishing devices.
 - FlatSync checks the device name before syncing, it stores the device name together with the list of apps, but there'a problem, if 2 or more devices have the same name, FlatSync will think that they're the same device, not syncing properly or/and worse, messing up with list of applications.
 
-#### [MAJOR] Support for exclusive applications on a single device
+#### 🏁 [MAJOR] Support for exclusive applications on a single device
 - A persistent file named `exclusive` stores the names of these applications.
 - How it goes:
   1. During synchronization the system scans the `uninstall` file (if exists).
@@ -86,7 +88,7 @@ flatsync [FLAGS]
      2. Removed from `install`.
      3. Removed from the new `remote_flatpaks` after syncing.
 
-#### [MAJOR] Support for custom remotes
+#### 🏁 [MAJOR] Support for custom remotes
 - By default, flathub is the main remote for downloading the apps, but in future will be able to rank the remotes of machine from the first to try to install to the last.
 
 - - -
