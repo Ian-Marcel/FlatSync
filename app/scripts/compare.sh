@@ -6,19 +6,18 @@ check-dir_cache
 
 set +e +u +o pipefail
 
-if [ -e "$FLATSYNC_GIT"/last_updated_device ] && [ "$(<"$FLATSYNC_GIT"/last_updated_device)" = "$(</etc/hostname)" ]; then
+if [ -e "$FLATSYNC_GIT"/last_updated_device ] && { [ "$(head "$FLATSYNC_GIT"/last_updated_device -n 1)" = "$(</etc/hostname)" ] && [ "$(tail "$FLATSYNC_GIT"/last_updated_device -n 1)" = "$(</etc/machine-id)" ] }; then
 
-	flatpak list --columns=application --app |
-		tee -p "$FLATSYNC_GIT"/remote_flatpaks &>/dev/null
-	if [ -d "$FLATSYNC_GIT"/overrides ]; then
-		rm -rf "$FLATSYNC_GIT"/overrides
-	fi
-	cp -aT "$HOME"/.local/share/flatpak/overrides "$FLATSYNC_GIT"/overrides
+	silencer_check printf "\nThis IS the same machine!\n"
+	source "$FLATSYNC_SCRIPT"/exit.sh
 
 else
+
+	silencer_check printf "\nThis is NOT the same machine!\n"
+
 	flatpak list --columns=application --app |
 		tee -p "$FLATSYNC_CACHE"/local_flatpaks &>/dev/null
-	mv "$FLATSYNC_GIT"/remote_flatpaks "$FLATSYNC_CACHE"/
+	cp "$FLATSYNC_GIT"/remote_flatpaks "$FLATSYNC_CACHE"/
 
 	# comment.2
 	if diff "$FLATSYNC_CACHE"/remote_flatpaks "$FLATSYNC_CACHE"/local_flatpaks | grep ">" &>/dev/null; then
@@ -39,6 +38,7 @@ else
 	else
 		sleep 1
 	fi
+
 fi
 
 set -euo pipefail

@@ -8,12 +8,14 @@ fi
 
 cd "$FLATSYNC_GIT" || exit
 
-flatpak list --columns=application --app | tee -p remote_flatpaks &>/dev/null
+flatpak list --columns=application --app |
+	tee -p remote_flatpaks &>/dev/null
 if [ -d "$FLATSYNC_GIT"/overrides ]; then
 	rm -rf "$FLATSYNC_GIT"/overrides
 fi
 cp -aT "$HOME"/.local/share/flatpak/overrides "$FLATSYNC_GIT"/overrides
-cat /etc/hostname | tee -p "$FLATSYNC_GIT"/last_updated_device &>/dev/null
+printf "%s\n%s" "$(</etc/hostname)" "$(</etc/machine-id)" |
+	tee -p ./last_updated_device 1>/dev/null
 
 git add .
 if git commit -q -m "$(date "%H:%M:%S - %d/%m/%Y")" &>/dev/null; then
@@ -21,3 +23,4 @@ if git commit -q -m "$(date "%H:%M:%S - %d/%m/%Y")" &>/dev/null; then
 else
 	exit 0
 fi
+exit 0
