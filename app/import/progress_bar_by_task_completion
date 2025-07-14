@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+# USAGE
+# progress_bar_by_task_completion [CURRENT TASK] [TOTAL NUMBER OF TASKS]
+
 progress_bar_by_task_completion() {
 	local NC='\033[0m' # No Color
 	local BCYAN='\033[1;36m'

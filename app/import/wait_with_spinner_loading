@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+# USAGE		NOTE: the "&" at the end of the line is crucial
+# task & <---'
+# wait_with_spinner_loading "TASK'S NAME"
+
 wait_with_spinner_loading() {
 	local NC='\033[0m' # No Color
 	local BCYAN='\033[1;36m'
