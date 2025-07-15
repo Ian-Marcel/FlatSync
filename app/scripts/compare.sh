@@ -6,7 +6,7 @@ check-dir_cache
 
 set +e +u +o pipefail
 
-if [ -e "$FLATSYNC_GIT"/last_updated_device ] && { [ "$(head "$FLATSYNC_GIT"/last_updated_device -n 1)" = "$(</etc/hostname)" ] && [ "$(tail "$FLATSYNC_GIT"/last_updated_device -n 1)" = "$(</etc/machine-id)" ]; }; then
+if [ -e "$FLATSYNC_GIT"/last_updated_device ] && { [ "$(head "$FLATSYNC_GIT"/last_updated_device -n 1)" = "$(</etc/hostname)" ] && [ "$(tail "$FLATSYNC_GIT"/last_updated_device -n 1)" = "$(cat /etc/machine-id | sha256sum | awk '{ print $1 }')" ]; }; then
 
 	silencer_check printf "This IS the same machine!\n"
 	NO_TODO=2
