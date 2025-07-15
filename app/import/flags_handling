@@ -25,7 +25,7 @@ for flag in "${FLAGS[@]}";do
 				"$(date "%mm%dd%Yy_%Hh%Mm%Ss")" "$(cat /etc/hostname)" "$(cat /etc/machine-id)" |
 				openssl dgst -sha512 |
 				awk '{ print $NF }' |
-				sudo tee -p /usr/share/flatsync/flatsync-id
+				sudo tee -p /usr/share/flatsync/flatsync-id 1>/dev/null
 			sudo chown root:root	/usr/share/flatsync/flatsync-id
 			sudo chmod 644			/usr/share/flatsync/flatsync-id
 			exit 0
