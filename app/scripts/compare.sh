@@ -4,9 +4,12 @@ import check_directories
 
 check-dir_cache
 
+LUD_HOSTNAME=$(head "$FLATSYNC_GIT"/last_updated_device -n 1)
+LUD_MACHINE_ID=$(tail "$FLATSYNC_GIT"/last_updated_device -n 1)
+HASHED_MACHINE_ID=$(cat /etc/machine-id | sha256sum | awk '{ print $1 }')
 set +e +u +o pipefail
 
-if [ -e "$FLATSYNC_GIT"/last_updated_device ] && { [ "$(head "$FLATSYNC_GIT"/last_updated_device -n 1)" = "$(cat /etc/hostname)" ] && [ "$(tail "$FLATSYNC_GIT"/last_updated_device -n 1)" = "$(cat /etc/machine-id | sha256sum | awk '{ print $1 }')" ]; }; then
+if [ -e "$FLATSYNC_GIT"/last_updated_device ] && { [ "$LUD_HOSTNAME" = "$(cat /etc/hostname)" ] && [ "$LUD_MACHINE_ID" = "$HASHED_MACHINE_ID" ]; }; then
 
 	silencer_check printf "Same device!\n"
 	NO_TODO=2
