@@ -25,29 +25,6 @@ The previous command also detects whether `flatsync` is installed and performs a
 
 - You can check latest version notes at the [releases page](https://github.com/Ian-Marcel/FlatSync/releases/latest).
 
-### Installing from source or a pre-release
-1. Remove current Flatsync installation:
-    ```shell
-    sudo rm -rf /usr/{local/bin,share}/flatsync
-    ```
-2. If you want to test a pre-release clone FlatSync repository on branch `stable`, if you're installing from source download `FlatSync.tar.gz` from the [release page](https://github.com/Ian-Marcel/FlatSync/releases) and extract it.
-
-    ```sh
-    wget https://github.com/Ian-Marcel/FlatSync/releases/download/<VERSION>/FlatSync.tar.gz
-    # Or
-    git clone --branch=stable https://github.com/Ian-Marcel/FlatSync.git
-    ```
-3. Then rename the folder `app/` to `flatsync/` and place it inside `/usr/share/` directory:
-
-    ```sh
-    sudo mv FlatSync/app /usr/share/flatsync
-    ```
-4. Finally, install `flatsync` command inside `/usr/local/bin/`:
-
-    ```sh
-    sudo install -o root -g root -m 0755 FlatSync/flatsync /usr/local/bin/flatsync
-    ```
-
 ## Usage
 
 ```sh
