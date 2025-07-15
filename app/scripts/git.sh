@@ -81,8 +81,6 @@ else
 		git add remote_flatpaks last_updated_device
 		git commit -q -m "$(date "%H:%M:%S - %d/%m/%Y")"
 		git push -q -u origin main
-		printf "${BGREEN}Repository succesufully created! Enjoy! ;-)${NC}\n"
-		exit 0
 	elif [ "$NO_REPO" = 2 ]; then
 		if ! [ -e "$FLATSYNC_SSH"/flatsync_key ] && ! [ -e "$FLATSYNC_SSH"/flatsync_key.pub ]; then
 			printf "\rSSH key also not found! Wish to ${BGREEN}create${NC} a new or will you ${BCYAN}import${NC} an existing one? \n"
