@@ -20,10 +20,10 @@ if [ "${2-}" ]; then
 fi
 ### Import local libraries
 import global_variables
-import flags_handling
 import pure_bash_functions
 import progress_bar_by_task_completion
 import wait_with_spinner_loading
+import flags_handling
 ############
 
 source "$FLATSYNC_SCRIPT"/git.sh

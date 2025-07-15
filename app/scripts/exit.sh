@@ -16,9 +16,8 @@ if [ -d "$FLATSYNC_GIT"/overrides ]; then
 fi
 cp -aT "$HOME"/.local/share/flatpak/overrides "$FLATSYNC_GIT"/overrides
 
-LUD_HASHED_MACHINE_ID=$(cat /etc/machine-id | sha256sum | awk '{ print $1 }')
-printf "%s\n%s" "$(cat /etc/hostname)" "$LUD_HASHED_MACHINE_ID" |
-	tee -p ./last_updated_device 1>/dev/null
+read -r LUD_FLATSYNC_ID < /usr/share/flatsync/flatsync-id
+printf "%s\n%s" "$(cat /etc/hostname)" "$LUD_FLATSYNC_ID" 1>last_updated_device
 ###
 git add .
 if git commit -q -m "$(date "%H:%M:%S - %d/%m/%Y")" &>/dev/null; then
