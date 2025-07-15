@@ -14,7 +14,7 @@ if [ -d "$FLATSYNC_GIT"/overrides ]; then
 	rm -rf "$FLATSYNC_GIT"/overrides
 fi
 cp -aT "$HOME"/.local/share/flatpak/overrides "$FLATSYNC_GIT"/overrides
-printf "%s\n%s" "$(</etc/hostname)" "$(cat /etc/machine-id | sha256sum | awk '{ print $1 }')" |
+printf "%s\n%s" "$(cat /etc/hostname)" "$(cat /etc/machine-id | sha256sum | awk '{ print $1 }')" |
 	tee -p ./last_updated_device 1>/dev/null
 
 git add .

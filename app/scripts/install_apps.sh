@@ -3,7 +3,7 @@
 import appid_regex
 
 silencer_check printf "Processing installation data...\n"
-for appid in $(<"$FLATSYNC_CACHE"/install); do
+for appid in $(cat "$FLATSYNC_CACHE"/install); do
 	installid+=("$appid")
 done
 

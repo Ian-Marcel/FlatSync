@@ -51,7 +51,7 @@ else
 				printf "SSH key created!\n"
 			fi
 			printf "Copy you're public key in the line bellow and add to your Git hosting plataform:
-			\r${BGREEN}$(<"$FLATSYNC_SSH"/flatsync_key.pub)${NC}
+			\r${BGREEN}$(cat "$FLATSYNC_SSH"/flatsync_key.pub)${NC}
 			\rYou're not sure how to add it, here are some videos for adding to GitHub and GitLab:
 			\rGitHub: ${BCYAN}https://youtu.be/iVJesFfzDGs?si=E4qserNj4-1jJuyy&t=54${NC}
 			\rGitLab: ${BCYAN}https://youtu.be/mNtQ55quG9M?si=57nsYWVfpvd_4NfR&t=265${NC}\n"
@@ -95,7 +95,7 @@ else
 					printf "SSH key created!\n"
 
 					printf "Copy you're public key in the line bellow and add to your repository hosting provider:
-					\r${BGREEN}$(<"$FLATSYNC_SSH"/flatsync_key.pub)${NC}\n"
+					\r${BGREEN}$(cat "$FLATSYNC_SSH"/flatsync_key.pub)${NC}\n"
 					sleep 2
 					read -rp $'\033[1;33mPress ENTER to proceed \033[0m' void
 					clear

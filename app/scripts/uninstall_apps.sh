@@ -3,7 +3,7 @@
 import appid_regex
 
 silencer_check printf "Processing uninstallation data...\n"
-for appid in $(<"$FLATSYNC_CACHE"/uninstall); do
+for appid in $(cat "$FLATSYNC_CACHE"/uninstall); do
 	uninstallid+=("$appid")
 done
 
