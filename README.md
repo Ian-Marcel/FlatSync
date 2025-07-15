@@ -76,7 +76,7 @@ flatsync [FLAGS]
 #### ✅ [MINOR] Support for synchronization of user flatpak overrides.
 - Flatsync will sync the folder `overrides` in `~/.local/share/flatpak` together with the list of apps.
 
-#### 🩹 [PATCH] Adding `machine_id` to `last_updated_device` for better distinguishing devices.
+#### ✅ [PATCH] Adding `machine_id` to `last_updated_device` for better distinguishing devices.
 - FlatSync checks the device name before syncing, it stores the device name together with the list of apps, but there'a problem, if 2 or more devices have the same name, FlatSync will think that they're the same device, not syncing properly or/and worse, messing up with list of applications.
 
 #### 🏁 [MAJOR] Support for exclusive applications on a single device
