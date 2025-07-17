@@ -38,23 +38,11 @@ flatsync [FLAGS]
   - Can be combined with `--quiet` or `-q`.
 - `--quiet` or `-q` : Hide standard output, errors are still shown.
   - Can be combined with `--auto` or `-a`.
+- `--id=`, meant to be used alone with the options below. 
+  - `--id=make` : creates a unique hash to identify the device in `/usr/share/flatsync/flatsync-id`.
+  - `--id=get` : shows you're ID for the current device from `/usr/share/flatsync/flatsync-id` (if exists).
 
 ## RoadMap
-
-#### ✅ [MINOR] Addition of a `--version` flag
-  - Very simple this one, it just tells you flatsync version installed in your device
-
-#### ✅ [MINOR] Addition of a `--auto` flag
-  - By default, if an aplication is set to be (un)installed, `flatsync` will list the list of applications to be operated and prompt the user to confirm the operation. With `--auto`, `flatsync` will no longer prompt the user for confirmation, (un)installing apps automatically, which is very useful for scheduled syncs.
-
-#### ✅ [MINOR] Addition of the `--quiet` flag
-- By default `flatsync` is quite verbose with which task is being run within the program at the time, even when running in the background(ex.: scheduled sync), for now, if you wish to omit standard output from `flatsync`, add `1>/dev/null` at the end of the command, it will still show error messages though.
-
-#### ✅ [MINOR] Support for synchronization of user flatpak overrides.
-- Flatsync will sync the folder `overrides` in `~/.local/share/flatpak` together with the list of apps.
-
-#### ✅ [PATCH] Adding `machine_id` to `last_updated_device` for better distinguishing devices.
-- FlatSync checks the device name before syncing, it stores the device name together with the list of apps, but there'a problem, if 2 or more devices have the same name, FlatSync will think that they're the same device, not syncing properly or/and worse, messing up with list of applications.
 
 #### 🏁 [MAJOR] Support for exclusive applications on a single device
 - A persistent file named `exclusive` stores the names of these applications.
