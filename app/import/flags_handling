@@ -16,18 +16,19 @@ for flag in "${FLAGS[@]}";do
 			VERBOSE=0
 			AUTO_OP_FLATPAKS=1
 			;;
-		--generate-id)
-			if [ ! -s /etc/machine-id ]; then
-				echo "ERROR flatsync: /etc/machine-id is empty or missing." >&2
-				exit 1
-			fi
+		--id=make)
 			printf "%s-%s-%s" \
-				"$(date "%mm%dd%Yy_%Hh%Mm%Ss")" "$(cat /etc/hostname)" "$(cat /etc/machine-id)" |
-				openssl dgst -sha512 |
-				awk '{ print $NF }' |
+				"$(date "%mm%dd%Yy_%Hh%Mm%Ss")" "$(cat /etc/hostname)" "$RANDOM" |
+				openssl dgst -sha512 -r |
+				awk '{ print $1 }' |
 				sudo tee -p /usr/share/flatsync/flatsync-id 1>/dev/null
 			sudo chown root:root	/usr/share/flatsync/flatsync-id
 			sudo chmod 644			/usr/share/flatsync/flatsync-id
+			exit 0
+			;;
+		--id=get)
+			printf "${BGREEN}The current ID of this device is:${NC}\n%s\n" \
+				"$(cat /usr/share/flatsync/flatsync-id)"
 			exit 0
 			;;
 	esac
