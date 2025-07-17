@@ -17,7 +17,7 @@ for flag in "${FLAGS[@]}";do
 			AUTO_OP_FLATPAKS=1
 			;;
 		--id=make)
-			if [ -s "$FLATSYNC_GIT"/last_updated_device ]; then
+			if [ -s "$FLATSYNC_GIT"/last_updated_device ] && [ -s /usr/share/flatsync/flatsync-id ]; then
 				read -r OLD_ID_LOCAL < /usr/share/flatsync/flatsync-id
 				LAST_ID=$(tail -n 1 "$FLATSYNC_GIT"/last_updated_device)
 				if [ "$OLD_ID_LOCAL" = "$LAST_ID" ]; then
