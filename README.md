@@ -33,14 +33,14 @@ flatsync [FLAGS]
 
 ### Flags available
 
-- `--version` or `-v` : Shows FlatSync's version, meant to be used alone.
-- `--auto` or `-a` : Automatically performs (un)installations.
-  - Can be combined with `--quiet` or `-q`.
 - `--quiet` or `-q` : Hide standard output, errors are still shown.
   - Can be combined with `--auto` or `-a`.
+- `--auto` or `-a` : Automatically performs (un)installations.
+  - Can be combined with `--quiet` or `-q`.
 - `--id=`, meant to be used alone with one of the options below. 
   - `make` : creates a identifier hash for your device, **requires** `sudo`.
   - `get` : shows you're ID for the current device.
+- `--version` or `-v` : Shows FlatSync's version, meant to be used alone.
 
 ## RoadMap
 
