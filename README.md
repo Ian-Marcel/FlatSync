@@ -39,8 +39,8 @@ flatsync [FLAGS]
 - `--quiet` or `-q` : Hide standard output, errors are still shown.
   - Can be combined with `--auto` or `-a`.
 - `--id=`, meant to be used alone with the options below. 
-  - `make` : creates a unique hash to identify the device in `/usr/share/flatsync/flatsync-id`.
-  - `get` : shows you're ID for the current device from `/usr/share/flatsync/flatsync-id` (if exists).
+  - `make` : creates a identifier hash for your device.
+  - `get` : shows you're ID for the current device.
 
 ## RoadMap
 
