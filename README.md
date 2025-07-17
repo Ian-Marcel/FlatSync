@@ -39,7 +39,7 @@ flatsync [FLAGS]
 - `--quiet` or `-q` : Hide standard output, errors are still shown.
   - Can be combined with `--auto` or `-a`.
 - `--id=`, meant to be used alone with the options below. 
-  - `make` : creates a identifier hash for your device.
+  - `make` : creates a identifier hash for your device, requires `sudo`.
   - `get` : shows you're ID for the current device.
 
 ## RoadMap
