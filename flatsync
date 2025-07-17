@@ -49,7 +49,6 @@ if [ -d "$FLATSYNC_GIT"/.git ]; then
 			\r${BGREEN}$FLATSYNC_GIT ${NC}\n
 			\rThen, re-run '${BCYAN}flatsync${NC}', choose to create a new repository, and follow the instructions.\n
 			\r${BRED}!!!${NC} ERROR ${BRED}!!!${NC} ERROR ${BRED}!!!${NC} ERROR ${BRED}!!!${NC}\n"
-			sleep 1.4s
 			exit 1
 		fi
 	else
@@ -83,7 +82,7 @@ else
 			\rYou're not sure how to add it, here are some videos for adding to GitHub and GitLab:
 			\rGitHub: ${BCYAN}https://youtu.be/iVJesFfzDGs?si=E4qserNj4-1jJuyy&t=54${NC}
 			\rGitLab: ${BCYAN}https://youtu.be/mNtQ55quG9M?si=57nsYWVfpvd_4NfR&t=265${NC}\n"
-			sleep 5
+			sleep 2.5s
 			read -rp $'\033[1;33mPress ENTER to proceed \033[0m' void
 			clear
 			for index in "${!git_preference[@]}"; do
@@ -95,8 +94,6 @@ else
 			git remote add origin "$NR_GIT_ORIGIN"
 			break
 		elif [ "$NO_REPO" = 2 ]; then
-			printf "Ok..."
-			sleep 2s
 			break
 		else
 			printf "${BRED}Wrong answer,${BYELLOW} type either 1 or 2! ${NC}\n"
@@ -117,11 +114,10 @@ else
 				if [ "$NO_SSH_KEY" = 1 ]; then
 					printf "Creating SSH key...\n"
 					ssh-keygen -t ed25519 -f "$FLATSYNC_SSH"/flatsync_key -q -N "" -C "SSH key for Flatsync - a synchronizer for flatpak applications"
-					sleep 0.8s
 					printf "SSH key created!\n"
 
 					printf "Copy you're public key in the line bellow and add to your repository hosting provider:
-					\r${BGREEN}$(cat "$FLATSYNC_SSH"/flatsync_key.pub)${NC}\n"
+					\r${BGREEN}%s${NC}\n" "$(cat "$FLATSYNC_SSH"/flatsync_key.pub)"
 					sleep 2
 					read -rp $'\033[1;33mPress ENTER to proceed \033[0m' void
 					clear
@@ -129,7 +125,6 @@ else
 					break
 				elif [ "$NO_SSH_KEY" = 2 ]; then
 					printf "Please place your imported key under the following path:\n%s\n" "$FLATSYNC_SSH"
-					sleep 1.4s
 
 					while ! [ -e "$FLATSYNC_SSH"/flatsync_key ] && ! [ -e "$FLATSYNC_SSH"/flatsync_key.pub ]; do
 						read -rp $'\033[1;33mPress ENTER to proceed \033[0m' void
@@ -189,8 +184,6 @@ else
 			grep ">" |
 			awk -F ">" '{ print $2 }' |
 			tee -p "$FLATSYNC_CACHE"/uninstall &>/dev/null
-	else
-		sleep 1
 	fi
 
 	# comment.1
@@ -199,8 +192,6 @@ else
 			grep "<" |
 			awk -F "<" '{ print $2 }' |
 			tee -p "$FLATSYNC_CACHE"/install &>/dev/null
-	else
-		sleep 1
 	fi
 
 fi
@@ -255,8 +246,6 @@ if [ $ASWR = y ]; then
 		silencer_check wait_with_spinner_loading "$app_name"
 
 	done
-else
-	sleep 1
 fi
 else
 	silencer_check printf "${BYELLOW}Nothing to remove${NC}\n"
@@ -309,8 +298,6 @@ if [ $ASWR = y ]; then
 		silencer_check wait_with_spinner_loading "$app_name"
 
 	done
-else
-	sleep 1
 fi
 else
 	silencer_check printf "${BYELLOW}Nothing to install${NC}\n"
