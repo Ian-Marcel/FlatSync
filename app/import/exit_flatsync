@@ -17,7 +17,7 @@ if [ -d "$FLATSYNC_GIT"/overrides ]; then
 fi
 cp -aT "$HOME"/.local/share/flatpak/overrides "$FLATSYNC_GIT"/overrides
 
-read -r LUD_FLATSYNC_ID < /usr/share/flatsync/flatsync-id
+LUD_FLATSYNC_ID=$(printf "%s" "$(cat /usr/share/flatsync/flatsync-id)")
 printf "%s\n%s" "$(cat /etc/hostname)" "$LUD_FLATSYNC_ID" 1>last_updated_device
 ###
 git add .
