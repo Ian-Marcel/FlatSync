@@ -18,8 +18,8 @@ for flag in "${FLAGS[@]}";do
 			;;
 		--id=make)
 			if [ -s "$FLATSYNC_GIT"/last_updated_device ] && [ -s /usr/share/flatsync/flatsync-id ]; then
-				read -r OLD_ID_LOCAL < /usr/share/flatsync/flatsync-id
-				LAST_ID=$(tail -n 1 "$FLATSYNC_GIT"/last_updated_device)
+				OLD_ID_LOCAL=$(printf "%s" "$(cat /usr/share/flatsync/flatsync-id)")
+				LAST_ID=$( tail -n 1 "$FLATSYNC_GIT"/last_updated_device )
 				if [ "$OLD_ID_LOCAL" = "$LAST_ID" ]; then
 					UPDATE_LUD=1
 				fi
