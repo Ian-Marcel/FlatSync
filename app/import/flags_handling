@@ -32,7 +32,7 @@ for flag in "${FLAGS[@]}";do
 			###
 			if [ "${UPDATE_LUD-}" ] && [ "$UPDATE_LUD" -eq 1 ]; then
 				cd "$FLATSYNC_GIT" || exit
-				read -r LUD_FLATSYNC_ID < /usr/share/flatsync/flatsync-id
+				LUD_FLATSYNC_ID=$(printf "%s" "$(cat /usr/share/flatsync/flatsync-id)")
 				printf "%s\n%s" "$(cat /etc/hostname)" "$LUD_FLATSYNC_ID" 1>last_updated_device
 				git add .
 				if git commit -q -m "$(date "%H:%M:%S - %d/%m/%Y")" &>/dev/null; then
