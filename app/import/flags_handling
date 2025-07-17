@@ -27,8 +27,12 @@ for flag in "${FLAGS[@]}";do
 			exit 0
 			;;
 		--id=get)
-			printf "${BGREEN}The current ID of this device is:${NC}\n%s\n" \
-				"$(cat /usr/share/flatsync/flatsync-id)"
+			if [ -s /usr/share/flatsync/flatsync-id ]; then
+				printf "${BGREEN}The current ID of this device is:${NC}\n%s\n" \
+					"$(cat /usr/share/flatsync/flatsync-id)"
+			else
+				printf "${BRED}No ID found!!! Run ${BCYAN}flatsync --id=make${BRED} to create it ${NC}\n"
+			fi
 			exit 0
 			;;
 	esac
