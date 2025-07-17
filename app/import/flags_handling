@@ -22,7 +22,6 @@ for flag in "${FLAGS[@]}";do
 				LAST_ID=$(tail -n 1 "$FLATSYNC_GIT"/last_updated_device)
 				if [ "$OLD_ID_LOCAL" = "$LAST_ID" ]; then
 					UPDATE_LUD=1
-				echo "Update!"
 				fi
 			fi
 			###
