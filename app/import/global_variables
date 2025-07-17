@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-FLATSYNC_VERSION="1.5.1"
+FLATSYNC_VERSION="1.5.2p"
 
 # comment.4 #############
 NC='\033[0m' # No Color
@@ -10,7 +10,6 @@ BYELLOW='\033[1;33m'
 BRED='\033[1;31m'
 #########################
 
-FLATSYNC_SCRIPT="$FLATSYNC_ROOT/scripts"
 FLATSYNC_CACHE="$HOME/.cache/flatsync"
 FLATSYNC_GIT="$FLATSYNC_DATA/git"
 FLATSYNC_SSH="$FLATSYNC_DATA/ssh"

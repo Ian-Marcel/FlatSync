@@ -17,13 +17,30 @@ for flag in "${FLAGS[@]}";do
 			AUTO_OP_FLATPAKS=1
 			;;
 		--id=make)
-			printf "%s-%s-%s" \
-				"$(date "%mm%dd%Yy_%Hh%Mm%Ss")" "$(cat /etc/hostname)" "$RANDOM" |
-				openssl dgst -sha512 -r |
-				awk '{ print $1 }' |
+			if [ -s "$FLATSYNC_GIT"/last_updated_device ]; then
+				read -r OLD_ID_LOCAL < /usr/share/flatsync/flatsync-id
+				LAST_ID=$(tail -n 1 "$FLATSYNC_GIT"/last_updated_device)
+				if [ "$OLD_ID_LOCAL" = "$LAST_ID" ]; then
+					UPDATE_LUD=1
+				fi
+			fi
+			###
+			printf "%s" "$(openssl rand -base64 32)" |
 				sudo tee -p /usr/share/flatsync/flatsync-id 1>/dev/null
 			sudo chown root:root	/usr/share/flatsync/flatsync-id
 			sudo chmod 644			/usr/share/flatsync/flatsync-id
+			###
+			if [ "${UPDATE_LUD-}" ] && [ "$UPDATE_LUD" -eq 1 ]; then
+				read -r LUD_FLATSYNC_ID < /usr/share/flatsync/flatsync-id
+				printf "%s\n%s" "$(cat /etc/hostname)" "$LUD_FLATSYNC_ID" 1>last_updated_device
+				git add .
+				if git commit -q -m "$(date "%H:%M:%S - %d/%m/%Y")" &>/dev/null; then
+					git push -q
+				else
+					exit 0
+				fi
+			fi
+			###
 			exit 0
 			;;
 		--id=get)
