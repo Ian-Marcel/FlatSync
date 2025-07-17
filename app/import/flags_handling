@@ -31,6 +31,7 @@ for flag in "${FLAGS[@]}";do
 			sudo chmod 644			/usr/share/flatsync/flatsync-id
 			###
 			if [ "${UPDATE_LUD-}" ] && [ "$UPDATE_LUD" -eq 1 ]; then
+				cd "$FLATSYNC_GIT" || exit
 				read -r LUD_FLATSYNC_ID < /usr/share/flatsync/flatsync-id
 				printf "%s\n%s" "$(cat /etc/hostname)" "$LUD_FLATSYNC_ID" 1>last_updated_device
 				git add .
