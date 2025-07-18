@@ -1,22 +1,21 @@
 #!/usr/bin/env bash
 
-for flag in "${FLAGS[@]}";do
-	case "$flag" in
-		-v|--version)
-			printf "flatsync: ${FLATSYNC_VERSION}v\n"
-			exit 0
-			;;
-		-q|--quiet)
-			VERBOSE=0
-			;;
-		-a|--auto)
-			AUTO_OP_FLATPAKS=1
-			;;
-		-aq|-qa)
-			VERBOSE=0
-			AUTO_OP_FLATPAKS=1
-			;;
-		--id=make)
+LOCKFILE=/run/user/$UID/flatsync.lock
+INTregex='^[0-9]+$'
+
+# Especific flags parsing
+for index in "${!FLAGS[@]}"; do
+	flag=${FLAGS["$index"]}
+	next_flag=${FLAGS["$(( index + 1 ))"]}
+	previous_flag=${FLAGS["$(( index - 1 ))"]}
+
+	if { [ "$flag" == "-s" ] || [ "$flag" == "--schedule" ] || [ "$flag" == "--create-schedule" ]; } && [[ "$next_flag" =~ $INTregex ]]; then
+		SCHDL_DUR=$(( next_flag * 60 ))
+	elif { [ "$previous_flag" == "-s" ] || [ "$previous_flag" == "--schedule" ]; } && [[ "$flag" =~ $INTregex ]];then
+		continue
+	fi
+
+	if [ "$flag" == "--id" ] && [ "$next_flag" == "create" ]; then
 			if [ -s "$FLATSYNC_GIT"/last_updated_device ] && [ -s /usr/share/flatsync/flatsync-id ]; then
 				OLD_ID_LOCAL=$(printf "%s" "$(cat /usr/share/flatsync/flatsync-id)")
 				LAST_ID=$( tail -n 1 "$FLATSYNC_GIT"/last_updated_device )
@@ -43,8 +42,7 @@ for flag in "${FLAGS[@]}";do
 			fi
 			###
 			exit 0
-			;;
-		--id=get)
+	elif [ "$flag" == "--id" ] && [ "$next_flag" == "get" ]; then
 			if [ -s /usr/share/flatsync/flatsync-id ]; then
 				printf "${BGREEN}The current ID of this device is:${NC}\n%s\n" \
 					"$(cat /usr/share/flatsync/flatsync-id)"
@@ -52,8 +50,67 @@ for flag in "${FLAGS[@]}";do
 				printf "${BRED}No ID found!!! Run ${BCYAN}flatsync --id=make${BRED} to create it ${NC}\n"
 			fi
 			exit 0
+	elif [ "$flag" == "--id" ] && { [ "$next_flag" != "get" ] && [ "$next_flag" != "create" ]; }; then
+		echo "Error! Flag '--id' requires an option ('create' or 'get')!"
+		exit 1
+	fi
+done
+
+# Main flag handling
+for flag in "${FLAGS[@]}";do
+	case "$flag" in
+		-v|--version)
+			printf "flatsync: ${FLATSYNC_VERSION}v\n"
+			exit 0
 			;;
-	esac
+		-q|--quiet)
+			VERBOSE=0
+			;;
+		-a|--auto)
+			AUTO_OP_FLATPAKS=1
+			;;
+		-aq|-qa)
+			VERBOSE=0
+			AUTO_OP_FLATPAKS=1
+			;;
+		--create-schedule)
+			if [ -z "$SCHDL_DUR" ];then
+				SCHDL_DUR=10
+			fi
+			cat > "$HOME"/.config/autostart/FlatSync.desktop <<EOF
+[Desktop Entry]
+Hidden=false
+Name=Flatsync
+Comment=Runs flatsync every 10 minutes
+Exec=/usr/local/bin/flatsync --auto --quiet --schedule $SCHDL_DUR
+Terminal=false
+Type=Application
+EOF
+;;
+--schedule|-s )
+	if [ -z "$SCHDL_DUR" ];then
+		SCHDL_DUR=600
+	fi
+	if [ -e "$LOCKFILE" ]; then
+		echo "Scheduler is already running (lockfile exists: $LOCKFILE)"
+		exit 1
+	else
+		touch "$LOCKFILE"
+	fi
+	while [ -e "$LOCKFILE" ]; do
+		echo "Schedule!"
+		sleep "$SCHDL_DUR"
+	done
+	echo "Schedule killed!"
+	;;
+--stop-schedule|-S )
+	rm -f "$LOCKFILE"
+	;;
+--kill-schedule|-k )
+	rm -f "$LOCKFILE"
+	rm -f "$HOME"/.config/autostart/FlatSync.desktop
+	;;
+esac
 done
 
 silencer_check() {
