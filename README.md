@@ -41,6 +41,7 @@ flatsync [FLAGS]
   - `make` : creates a identifier hash for your device, **requires** `sudo`.
   - `get` : shows you're ID for the current device.
 - `--version` or `-v` : Shows FlatSync's version, meant to be used alone.
+- `--debug` or `-D` added: FlatSync will be extr verbose, meant for development or troubleshooting.
 
 ## RoadMap
 
