@@ -105,6 +105,8 @@ for flag in "${FLAGS[@]}";do
 		--create-schedule)
 			if [ ! "${SCHDL_DUR-}" ];then
 				SCHDL_DUR=10
+			else
+				SCHDL_DUR=$(( SCHDL_DUR / 60 ))
 			fi
 			cat > "$HOME"/.config/autostart/FlatSync.desktop <<EOF
 [Desktop Entry]
