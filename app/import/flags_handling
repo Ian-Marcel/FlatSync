@@ -6,9 +6,9 @@ INTregex='^[0-9]+$'
 # Especific flags parsing
 for index in "${!FLAGS[@]}"; do
 	flag=${FLAGS["$index"]}
-	if [ ! "$index" -eq $(( ${FLAGS["$index"]} - 1 )) ]; then
+	while [ ! "$index" -eq $(( ${#FLAGS[@]} - 1 )) ]; do
 		next_flag=${FLAGS["$(( index + 1 ))"]}
-	fi
+	done
 	previous_flag=${FLAGS["$(( index - 1 ))"]}
 
 	if { [ "$flag" == "-s" ] || [ "$flag" == "--schedule" ] || [ "$flag" == "--create-schedule" ]; } && [[ "$next_flag" =~ $INTregex ]]; then
