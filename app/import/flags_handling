@@ -69,10 +69,37 @@ for flag in "${FLAGS[@]}";do
 		-a|--auto)
 			AUTO_OP_FLATPAKS=1
 			;;
-		-aq|-qa)
-			VERBOSE=0
+		-aq|-qa) VERBOSE=0
 			AUTO_OP_FLATPAKS=1
 			;;
+		--schedule|-s )
+			if [ -z "$SCHDL_DUR" ];then
+				SCHDL_DUR=600
+			fi
+			if [ -e "$LOCKFILE" ]; then
+				echo "Scheduler is already running (lockfile exists: $LOCKFILE). Run 'flatsync -S' to stop the current schedule."
+				exit 1
+			else
+				touch "$LOCKFILE"
+			fi
+			schdl_function() {
+				while [ -e "$LOCKFILE" ]; do
+					sleep "$SCHDL_DUR"
+					flatpak --auto --quiet
+				done
+				echo "Schedule killed!"
+			}
+		schdl_function >/dev/null 2>&1 &
+		;;
+		--stop-schedule|-S )
+			rm -f "$LOCKFILE"
+			exit 0
+		;;
+		--kill-schedule|-k )
+			rm -f "$LOCKFILE"
+			rm -f "$HOME"/.config/autostart/FlatSync.desktop
+			exit 0
+		;;
 		--create-schedule)
 			if [ -z "$SCHDL_DUR" ];then
 				SCHDL_DUR=10
@@ -86,31 +113,9 @@ Exec=/usr/local/bin/flatsync --auto --quiet --schedule $SCHDL_DUR
 Terminal=false
 Type=Application
 EOF
-;;
---schedule|-s )
-	if [ -z "$SCHDL_DUR" ];then
-		SCHDL_DUR=600
-	fi
-	if [ -e "$LOCKFILE" ]; then
-		echo "Scheduler is already running (lockfile exists: $LOCKFILE)"
-		exit 1
-	else
-		touch "$LOCKFILE"
-	fi
-	while [ -e "$LOCKFILE" ]; do
-		echo "Schedule!"
-		sleep "$SCHDL_DUR"
-	done
-	echo "Schedule killed!"
-	;;
---stop-schedule|-S )
-	rm -f "$LOCKFILE"
-	;;
---kill-schedule|-k )
-	rm -f "$LOCKFILE"
-	rm -f "$HOME"/.config/autostart/FlatSync.desktop
-	;;
-esac
+			exit 0
+		;;
+	esac
 done
 
 silencer_check() {
