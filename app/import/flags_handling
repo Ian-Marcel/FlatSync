@@ -3,12 +3,11 @@
 LOCKFILE=/run/user/$UID/flatsync.lock
 INTregex='^[0-9]+$'
 
+set +e +u +o pipefail
 # Especific flags parsing
 for index in "${!FLAGS[@]}"; do
 	flag=${FLAGS["$index"]}
-	while [ ! "$index" -eq $(( ${#FLAGS[@]} - 1 )) ]; do
-		next_flag=${FLAGS["$(( index + 1 ))"]}
-	done
+	next_flag=${FLAGS["$(( index + 1 ))"]}
 	previous_flag=${FLAGS["$(( index - 1 ))"]}
 
 	if { [ "$flag" == "-s" ] || [ "$flag" == "--schedule" ] || [ "$flag" == "--create-schedule" ]; } && [[ "$next_flag" =~ $INTregex ]]; then
@@ -57,6 +56,7 @@ for index in "${!FLAGS[@]}"; do
 		exit 1
 	fi
 done
+set -euo pipefail
 
 # Main flag handling
 for flag in "${FLAGS[@]}";do
@@ -75,7 +75,7 @@ for flag in "${FLAGS[@]}";do
 			AUTO_OP_FLATPAKS=1
 			;;
 		--schedule|-s )
-			if [ -z "$SCHDL_DUR" ];then
+			if [ ! "${SCHDL_DUR-}" ];then
 				SCHDL_DUR=600
 			fi
 			if [ -e "$LOCKFILE" ]; then
@@ -103,7 +103,7 @@ for flag in "${FLAGS[@]}";do
 			exit 0
 		;;
 		--create-schedule)
-			if [ -z "$SCHDL_DUR" ];then
+			if [ ! "${SCHDL_DUR-}" ];then
 				SCHDL_DUR=10
 			fi
 			cat > "$HOME"/.config/autostart/FlatSync.desktop <<EOF
