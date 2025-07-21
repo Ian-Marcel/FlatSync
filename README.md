@@ -29,28 +29,53 @@ The previous command also detects whether `flatsync` is installed and performs a
 
 ```sh
 flatsync [FLAGS]
-```
+````
 
-### Flags available
+### Flags
 
-- `--automatic` or `-a` : Automatically and quietly performs (un)installations.
-- `--schedule` or `-s` : Periodically runs FlatSync with a determinate amount of minutes after a normal execution. Default is 10 minutes.
-  ```shell
-  # Usage
-  flatsync -s 15 # This will run flatync normaly once and then keep running it each 15 minutes
+* `--automatic`, `-a`
+  Automatically and silently performs installations and removals.
+
+* `--schedule <minutes>`, `-s <minutes>`
+  Periodically runs FlatSync every `<minutes>` after an initial execution.
+  Default interval is **10 minutes**.
+  **Example:**
+
+  ```sh
+  flatsync -s 15
+  # Runs FlatSync once, then repeats every 15 minutes
   ```
-- `--create-schedule` : Create a `.desktop` file at `~/.config/autostart/`, with it FlatSync will automatically start after login with the flags `--automatic` and `--schedule 10`. the schedule timing can be be changed.
-  ```shell
-  # Usage
-  flatsync --create-schedule 15 # This will run flatync normaly once and then keep running it each 15 minutes
+
+- `--create-schedule [minutes]`
+  Creates a `.desktop` file in `~/.config/autostart/` to automatically run FlatSync at login
+  with `--automatic` and `--schedule`.
+  Default schedule timing is **10 minutes**.
+  **Example:**
+
+  ```sh
+  flatsync --create-schedule 30
+  # Runs once at login, then repeats every 30 minutes
   ```
-  - Note: if you want to schedule FlatSync in the current session, use the `--schedule` flag.
-#### Miscellaneous flags 
-- `--id`, meant to be used alone with one of the options below. 
-  - `create` : creates a identifier hash for your device, **requires** `sudo`.
-  - `get` : shows you're ID for the current device.
-- `--version` or `-v` : Shows FlatSync's version, meant to be used alone.
-- `--debug` or `-D` added: FlatSync will be extr verbose, meant for development or troubleshooting.
+
+  > Note: To apply the schedule FlatSync in the current session, re-run `flatsync` with `--schedule` and with the same interval.
+
+- `--stop-schedule`, `-S`
+  Stops the current scheduled process. Use `--kill-schedule` if the schedule was set via `--create-schedule`.
+
+- `--kill-schedule`, `-k`
+  Stops the schedule and removes the `.desktop` file from `~/.config/autostart/`.
+
+- `--id <action>`
+  Manage your device’s FlatSync ID. Use with one of the following actions:
+
+  - `create` — Generates a unique identifier for the device (requires `sudo`)
+  - `get` — Displays the current device ID
+
+- `--version`, `-v`
+  Displays the current version of FlatSync.
+
+- `--debug`, `-D`
+  Enables verbose debug output. Useful for development or troubleshooting.
 
 ## RoadMap
 
