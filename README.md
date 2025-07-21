@@ -33,12 +33,21 @@ flatsync [FLAGS]
 
 ### Flags available
 
-- `--quiet` or `-q` : Hide standard output, errors are still shown.
-  - Can be combined with `--auto` or `-a`.
-- `--auto` or `-a` : Automatically performs (un)installations.
-  - Can be combined with `--quiet` or `-q`.
-- `--id=`, meant to be used alone with one of the options below. 
-  - `make` : creates a identifier hash for your device, **requires** `sudo`.
+- `--automatic` or `-a` : Automatically and quietly performs (un)installations.
+- `--schedule` or `-s` : Periodically runs FlatSync with a determinate amount of minutes after a normal execution. Default is 10 minutes.
+  ```shell
+  # Usage
+  flatsync -s 15 # This will run flatync normaly once and then keep running it each 15 minutes
+  ```
+- `--create-schedule` : Create a `.desktop` file at `~/.config/autostart/`, with it FlatSync will automatically start after login with the flags `--automatic` and `--schedule 10`. the schedule timing can be be changed.
+  ```shell
+  # Usage
+  flatsync --create-schedule 15 # This will run flatync normaly once and then keep running it each 15 minutes
+  ```
+  - Note: if you want to schedule FlatSync in the current session, use the `--schedule` flag.
+#### Miscellaneous flags 
+- `--id`, meant to be used alone with one of the options below. 
+  - `create` : creates a identifier hash for your device, **requires** `sudo`.
   - `get` : shows you're ID for the current device.
 - `--version` or `-v` : Shows FlatSync's version, meant to be used alone.
 - `--debug` or `-D` added: FlatSync will be extr verbose, meant for development or troubleshooting.
