@@ -203,53 +203,59 @@ set -euo pipefail
 ############
 
 import appid_regex
+QUERY_FLATPAK_NAME=$(flatpak search --columns=name "$appid" | head -n "$i" | tail -n 1)
+QUERY_FLATPAK_DESCRIPTION=$(flatpak search --columns=description "$appid" | head -n "$i" | tail -n 1)
 
 #### Uninstalling apps
 if [ -e "$FLATSYNC_CACHE"/uninstall ]; then
 	silencer_check printf "${BRED}Removing...${NC}\n"
-silencer_check printf "Processing uninstallation data...\n"
-for appid in $(cat "$FLATSYNC_CACHE"/uninstall); do
-	uninstallid+=("$appid")
-done
+	silencer_check printf "Processing uninstallation data...\n"
 
-if [ "${#uninstallid[@]}" -eq 1 ]; then
-	total=${#uninstallid[@]}
-else
-	total=$((${#uninstallid[@]} - 1))
-fi
+	if [ "$AUTO_OP_FLATPAKS" = true ]; then 
+		for appid in $(cat "$FLATSYNC_CACHE"/uninstall); do
+			uninstallid+=("$appid")
+		done
 
-for index in "${!uninstallid[@]}"; do
-	appid=${uninstallid[$index]}
+		if [ "${#uninstallid[@]}" -eq 1 ]; then
+			total=${#uninstallid[@]}
+		else
+			total=$((${#uninstallid[@]} - 1))
+		fi
 
-	silencer_check progress_bar_by_task_completion "$index" "$total"
-	appid_regex
-	printf " ${BRED}-${NC} %s: %s \n" \
-		"$(flatpak search --columns=name "$appid" | head -n "$i" | tail -n 1)" \
-		"$(flatpak search --columns=description "$appid" | head -n "$i" | tail -n 1)" |
-		tee -pa "$FLATSYNC_CACHE"/uninstall-notice.tmp &>/dev/null
-	uninstall2+=("$(flatpak search --columns=name "$appid" | head -n "$i" | tail -n 1)")
-done
+		for index in "${!uninstallid[@]}"; do
+			appid=${uninstallid[$index]}
 
-silencer_check printf "${BRED}To be uninstalled:${NC}\n"
-sleep 1s
-silencer_check cat "$FLATSYNC_CACHE"/uninstall-notice.tmp
-shred -u "$FLATSYNC_CACHE"/uninstall-notice.tmp
-ASWR="y"
-if [ "$AUTO_OP_FLATPAKS" = 0 ]; then
-	read -rp "Proceed? [y/n]: " ASWR
-fi
+			silencer_check progress_bar_by_task_completion "$index" "$total"
+			appid_regex
+			printf " ${BRED}-${NC} %s: %s \n" \
+				"$QUERY_FLATPAK_NAME" \
+				"$QUERY_FLATPAK_DESCRIPTION" |
+				tee -pa "$FLATSYNC_CACHE"/uninstall-notice.tmp &>/dev/null
+			uninstall2+=("$QUERY_FLATPAK_NAME")
+		done
 
-if [ $ASWR = y ]; then
-	for index in "${!uninstall2[@]}"; do
+		silencer_check printf "${BRED}To be uninstalled:${NC}\n"
+		sleep 1.4s
+		silencer_check cat "$FLATSYNC_CACHE"/uninstall-notice.tmp
+		shred -u "$FLATSYNC_CACHE"/uninstall-notice.tmp
+	fi
 
-		appid=${uninstallid[$index]}
-		app_name=${uninstall2[$index]}
+	ASWR="y"
+	if [ "$AUTO_OP_FLATPAKS" = false ]; then
+		read -rp "Proceed? [y/n]: " ASWR
+	fi
 
-		flatpak uninstall --noninteractive --assumeyes "$appid" &>/dev/null &
-		silencer_check wait_with_spinner_loading "$app_name"
+	if [ $ASWR = y ] || [ $ASWR = Y ]; then
+		for index in "${!uninstall2[@]}"; do
 
-	done
-fi
+			appid=${uninstallid[$index]}
+			app_name=${uninstall2[$index]}
+
+			flatpak uninstall --noninteractive --assumeyes "$appid" &>/dev/null &
+			silencer_check wait_with_spinner_loading "$app_name"
+
+		done
+	fi
 else
 	silencer_check printf "${BGREEN}Nothing to remove${NC}\n"
 	NO_TODO=$((NO_TODO+1))
@@ -259,49 +265,53 @@ fi
 #### Installing apps
 if [ -e "$FLATSYNC_CACHE"/install ]; then
 	silencer_check printf "${BGREEN}Installing...${NC}\n"
-silencer_check printf "Processing installation data...\n"
-for appid in $(cat "$FLATSYNC_CACHE"/install); do
-	installid+=("$appid")
-done
+	silencer_check printf "Processing installation data...\n"
 
-if [ "${#installid[@]}" -eq 1 ]; then
-	total="${#installid[@]}"
-else
-	total=$((${#installid[@]} - 1))
-fi
+	if [ "$AUTO_OP_FLATPAKS" = true ]; then 
+		for appid in $(cat "$FLATSYNC_CACHE"/install); do
+			installid+=("$appid")
+		done
 
-for index in "${!installid[@]}"; do
-	appid=${installid[$index]}
+		if [ "${#installid[@]}" -eq 1 ]; then
+			total="${#installid[@]}"
+		else
+			total=$((${#installid[@]} - 1))
+		fi
 
-	silencer_check progress_bar_by_task_completion "$index" "$total"
-	appid_regex
-	printf " ${BGREEN}+${NC} %s: %s \n" \
-		"$(flatpak search --columns=name "$appid" | head -n "$i" | tail -n 1)" \
-		"$(flatpak search --columns=description "$appid" | head -n "$i" | tail -n 1)" |
-		tee -pa "$FLATSYNC_CACHE"/install-notice.tmp &>/dev/null
-	install2+=("$(flatpak search --columns=name "$appid" | head -n "$i" | tail -n 1)")
-done
+		for index in "${!installid[@]}"; do
+			appid=${installid[$index]}
 
-silencer_check printf "${BGREEN}To be installed:${NC}\n"
-sleep 1s
-silencer_check cat "$FLATSYNC_CACHE"/install-notice.tmp
-shred -u "$FLATSYNC_CACHE"/install-notice.tmp
-ASWR="y"
-if [ "$AUTO_OP_FLATPAKS" = 0 ]; then
-	read -rp "Proceed? [y/n]: " ASWR
-fi
+			silencer_check progress_bar_by_task_completion "$index" "$total"
+			appid_regex
+			printf " ${BGREEN}+${NC} %s: %s \n" \
+				"$QUERY_FLATPAK_NAME" \
+				"$QUERY_FLATPAK_DESCRIPTION" |
+				tee -pa "$FLATSYNC_CACHE"/install-notice.tmp &>/dev/null
+			install2+=("$QUERY_FLATPAK_NAME")
+		done
 
-if [ $ASWR = y ]; then
-	for index in "${!install2[@]}"; do
+		silencer_check printf "${BGREEN}To be installed:${NC}\n"
+		sleep 1.4s
+		silencer_check cat "$FLATSYNC_CACHE"/install-notice.tmp
+		shred -u "$FLATSYNC_CACHE"/install-notice.tmp
+	fi
 
-		appid=${installid[$index]}
-		app_name=${install2[$index]}
+	ASWR="y"
+	if [ "$AUTO_OP_FLATPAKS" = false ]; then
+		read -rp "Proceed? [y/n]: " ASWR
+	fi
 
-		flatpak install --noninteractive --assumeyes flathub "$appid" &>/dev/null &
-		silencer_check wait_with_spinner_loading "$app_name"
+	if [ $ASWR = y ] || [ $ASWR = Y ]; then
+		for index in "${!install2[@]}"; do
 
-	done
-fi
+			appid=${installid[$index]}
+			app_name=${install2[$index]}
+
+			flatpak install --noninteractive --assumeyes flathub "$appid" &>/dev/null &
+			silencer_check wait_with_spinner_loading "$app_name"
+
+		done
+	fi
 else
 	silencer_check printf "${BGREEN}Nothing to install${NC}\n"
 	NO_TODO=$((NO_TODO+1))

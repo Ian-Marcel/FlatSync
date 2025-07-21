@@ -10,18 +10,12 @@ for index in "${!FLAGS[@]}"; do
 	next_flag=${FLAGS["$(( index + 1 ))"]}
 	previous_flag=${FLAGS["$(( index - 1 ))"]}
 
-	if { [ "$flag" == "-s" ] || [ "$flag" == "--schedule" ] || [ "$flag" == "--create-schedule" ]; } && [[ "$next_flag" =~ $INTregex ]]; then
-		SCHDL_DUR=$(( next_flag * 60 ))
-	elif { [ "$previous_flag" == "-s" ] || [ "$previous_flag" == "--schedule" ]; } && [[ "$flag" =~ $INTregex ]];then
-		continue
-	fi
-
 	if [ "$flag" == "--id" ] && [ "$next_flag" == "create" ]; then
 			if [ -s "$FLATSYNC_GIT"/last_updated_device ] && [ -s /usr/share/flatsync/flatsync-id ]; then
 				OLD_ID_LOCAL=$(printf "%s" "$(cat /usr/share/flatsync/flatsync-id)")
 				LAST_ID=$( tail -n 1 "$FLATSYNC_GIT"/last_updated_device )
 				if [ "$OLD_ID_LOCAL" = "$LAST_ID" ]; then
-					UPDATE_LUD=1
+					UPDATE_LUD=true
 				fi
 			fi
 			###
@@ -30,7 +24,7 @@ for index in "${!FLAGS[@]}"; do
 			sudo chown root:root	/usr/share/flatsync/flatsync-id
 			sudo chmod 644			/usr/share/flatsync/flatsync-id
 			###
-			if [ "${UPDATE_LUD-}" ] && [ "$UPDATE_LUD" -eq 1 ]; then
+			if [ "${UPDATE_LUD-}" ] && [ "$UPDATE_LUD" = true ]; then
 				cd "$FLATSYNC_GIT" || exit
 				LUD_FLATSYNC_ID=$(printf "%s" "$(cat /usr/share/flatsync/flatsync-id)")
 				printf "%s\n%s" "$(cat /etc/hostname)" "$LUD_FLATSYNC_ID" 1>last_updated_device
@@ -55,6 +49,12 @@ for index in "${!FLAGS[@]}"; do
 		echo "Error! Flag '--id' requires an option ('create' or 'get')!"
 		exit 1
 	fi
+
+	if { [ "$flag" == "-s" ] || [ "$flag" == "--schedule" ] || [ "$flag" == "--create-schedule" ]; } && [[ "$next_flag" =~ $INTregex ]]; then
+		SCHDL_DUR=$(( next_flag * 60 ))
+	elif { [ "$previous_flag" == "-s" ] || [ "$previous_flag" == "--schedule" ]; } && [[ "$flag" =~ $INTregex ]];then
+		continue
+	fi
 done
 set -euo pipefail
 
@@ -65,14 +65,9 @@ for flag in "${FLAGS[@]}";do
 			printf "flatsync: ${FLATSYNC_VERSION}v\n"
 			exit 0
 			;;
-		-q|--quiet)
-			VERBOSE=0
-			;;
-		-a|--auto)
-			AUTO_OP_FLATPAKS=1
-			;;
-		-aq|-qa) VERBOSE=0
-			AUTO_OP_FLATPAKS=1
+		-a|--automatic)
+			AUTO_OP_FLATPAKS=true
+			VERBOSE=false
 			;;
 		--schedule|-s )
 			if [ ! "${SCHDL_DUR-}" ];then
@@ -82,14 +77,14 @@ for flag in "${FLAGS[@]}";do
 				echo "Scheduler is already running (lockfile exists: $LOCKFILE). Run 'flatsync -S' to stop the current schedule."
 				exit 1
 			else
-				touch "$LOCKFILE"
+				printf "%s" "$SCHDL_DUR" 1> "$LOCKFILE"
 			fi
 			schdl_function() {
 				while [ -e "$LOCKFILE" ]; do
 					sleep "$SCHDL_DUR"
-					flatpak --auto --quiet
+					flatpak --automatic
 				done
-				echo "Schedule killed!"
+				# printf "Schedule killed!\n"
 			}
 		schdl_function >/dev/null 2>&1 &
 		;;
@@ -113,7 +108,7 @@ for flag in "${FLAGS[@]}";do
 Hidden=false
 Name=Flatsync
 Comment=Runs flatsync every 10 minutes
-Exec=/usr/local/bin/flatsync --auto --quiet --schedule $SCHDL_DUR
+Exec=/usr/local/bin/flatsync --automatic --schedule $SCHDL_DUR
 Terminal=false
 Type=Application
 EOF
@@ -123,7 +118,7 @@ EOF
 done
 
 silencer_check() {
-	if [ "$VERBOSE" -eq 0 ]; then
+	if [ "$VERBOSE" = false ]; then
 		"$@" >/dev/null
 	else
 		"$@"

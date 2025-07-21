@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-FLATSYNC_VERSION="1.7.0"
+FLATSYNC_VERSION="1.7.1"
 
 # comment.4 #############
 NC='\033[0m' # No Color
@@ -15,7 +15,7 @@ FLATSYNC_CACHE="$HOME/.cache/flatsync"
 FLATSYNC_GIT="$FLATSYNC_DATA/git"
 FLATSYNC_SSH="$FLATSYNC_DATA/ssh"
 
-VERBOSE=1 # comment.?
-AUTO_OP_FLATPAKS=0 # comment.?
+VERBOSE=true # comment.?
+AUTO_OP_FLATPAKS=false # comment.?
 NO_TODO=0 # comment.?
 
