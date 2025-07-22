@@ -209,11 +209,11 @@ if [ -e "$FLATSYNC_CACHE"/uninstall ]; then
 	silencer_check printf "${BRED}Removing...${NC}\n"
 	silencer_check printf "Processing uninstallation data...\n"
 
-	if [ "$AUTO_OP_FLATPAKS" = false ]; then 
-		for appid in $(cat "$FLATSYNC_CACHE"/uninstall); do
-			uninstallid+=("$appid")
-		done
+	for appid in $(cat "$FLATSYNC_CACHE"/uninstall); do
+		uninstallid+=("$appid")
+	done
 
+	if [ "$AUTO_OP_FLATPAKS" = false ]; then 
 		if [ "${#uninstallid[@]}" -eq 1 ]; then
 			total=${#uninstallid[@]}
 		else
@@ -267,11 +267,11 @@ if [ -e "$FLATSYNC_CACHE"/install ]; then
 	silencer_check printf "${BGREEN}Installing...${NC}\n"
 	silencer_check printf "Processing installation data...\n"
 
-	if [ "$AUTO_OP_FLATPAKS" = false ]; then 
-		for appid in $(cat "$FLATSYNC_CACHE"/install); do
-			installid+=("$appid")
-		done
+	for appid in $(cat "$FLATSYNC_CACHE"/install); do
+		installid+=("$appid")
+	done
 
+	if [ "$AUTO_OP_FLATPAKS" = false ]; then 
 		if [ "${#installid[@]}" -eq 1 ]; then
 			total="${#installid[@]}"
 		else
