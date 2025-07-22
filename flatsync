@@ -246,13 +246,13 @@ if [ -e "$FLATSYNC_CACHE"/uninstall ]; then
 	fi
 
 	if [ $ASWR = y ] || [ $ASWR = Y ]; then
-		for index in "${!uninstall2[@]}"; do
+		for index in "${!uninstallid[@]}"; do
 
 			appid=${uninstallid[$index]}
-			app_name=${uninstall2[$index]}
 
 			flatpak uninstall --noninteractive --assumeyes "$appid" &>/dev/null &
 			if [ "$AUTO_OP_FLATPAKS" = false ]; then 
+				app_name=${uninstall2[$index]}
 				silencer_check wait_with_spinner_loading "$app_name"
 			else
 				silencer_check wait_with_spinner_loading "$appid"
@@ -311,10 +311,10 @@ if [ -e "$FLATSYNC_CACHE"/install ]; then
 		for index in "${!installid[@]}"; do
 
 			appid=${installid[$index]}
-			app_name=${install2[$index]}
 
 			flatpak install --noninteractive --assumeyes flathub "$appid" &>/dev/null &
 			if [ "$AUTO_OP_FLATPAKS" = false ]; then 
+				app_name=${install2[$index]}
 				silencer_check wait_with_spinner_loading "$app_name"
 			else
 				silencer_check wait_with_spinner_loading "$appid"
