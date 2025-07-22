@@ -269,13 +269,13 @@ fi
 #### Installing apps
 if [ -e "$FLATSYNC_CACHE"/install ]; then
 	silencer_check printf "${BGREEN}Installing...${NC}\n"
-	silencer_check printf "Processing installation data...\n"
 
 	for appid in $(cat "$FLATSYNC_CACHE"/install); do
 		installid+=("$appid")
 	done
 
 	if [ "$AUTO_OP_FLATPAKS" = false ]; then 
+	silencer_check printf "Processing installation data...\n"
 		if [ "${#installid[@]}" -eq 1 ]; then
 			total="${#installid[@]}"
 		else
@@ -308,7 +308,7 @@ if [ -e "$FLATSYNC_CACHE"/install ]; then
 	fi
 
 	if [ $ASWR = y ] || [ $ASWR = Y ]; then
-		for index in "${!install2[@]}"; do
+		for index in "${!installid[@]}"; do
 
 			appid=${installid[$index]}
 			app_name=${install2[$index]}
