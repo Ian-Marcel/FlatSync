@@ -203,12 +203,6 @@ set -euo pipefail
 ############
 
 import appid_regex
-if [ "$AUTO_OP_FLATPAKS" = false ]; then 
-	i=1
-	appid=''
-	QUERY_FLATPAK_NAME=$(flatpak search --columns=name "$appid" | head -n "$i" | tail -n 1)
-	QUERY_FLATPAK_DESCRIPTION=$(flatpak search --columns=description "$appid" | head -n "$i" | tail -n 1)
-fi
 
 #### Uninstalling apps
 if [ -e "$FLATSYNC_CACHE"/uninstall ]; then
@@ -231,6 +225,8 @@ if [ -e "$FLATSYNC_CACHE"/uninstall ]; then
 
 			silencer_check progress_bar_by_task_completion "$index" "$total"
 			appid_regex
+			QUERY_FLATPAK_NAME=$(flatpak search --columns=name "$appid" | head -n "$i" | tail -n 1)
+			QUERY_FLATPAK_DESCRIPTION=$(flatpak search --columns=description "$appid" | head -n "$i" | tail -n 1)
 			printf " ${BRED}-${NC} %s: %s \n" \
 				"$QUERY_FLATPAK_NAME" \
 				"$QUERY_FLATPAK_DESCRIPTION" |
@@ -287,6 +283,8 @@ if [ -e "$FLATSYNC_CACHE"/install ]; then
 
 			silencer_check progress_bar_by_task_completion "$index" "$total"
 			appid_regex
+			QUERY_FLATPAK_NAME=$(flatpak search --columns=name "$appid" | head -n "$i" | tail -n 1)
+			QUERY_FLATPAK_DESCRIPTION=$(flatpak search --columns=description "$appid" | head -n "$i" | tail -n 1)
 			printf " ${BGREEN}+${NC} %s: %s \n" \
 				"$QUERY_FLATPAK_NAME" \
 				"$QUERY_FLATPAK_DESCRIPTION" |
