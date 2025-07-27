@@ -4,21 +4,6 @@ LOCKFILE="/run/user/$UID/flatsync.lock"
 AUTOSTART_FILE="$HOME/.config/autostart/FlatSync.desktop"
 INTregex='^[0-9]+$'
 
-set +e +u +o pipefail
-# Especific flags parsing
-for index in "${!FLAGS[@]}"; do
-	flag=${FLAGS["$index"]}
-	next_flag=${FLAGS["$(( index + 1 ))"]}
-	previous_flag=${FLAGS["$(( index - 1 ))"]}
-
-	if { [ "$flag" == "-s" ] || [ "$flag" == "--schedule" ] || [ "$flag" == "--create-schedule" ]; } && [[ "$next_flag" =~ $INTregex ]]; then
-		SCHEDULE_DURATION=$(( next_flag * 60 ))
-	elif { [ "$previous_flag" == "-s" ] || [ "$previous_flag" == "--schedule" ]; } && [[ "$flag" =~ $INTregex ]];then
-		continue
-	fi
-done
-set -euo pipefail
-
 # Main flag handling
 while (( $# > 0 )) ; do
 	case "$1" in
