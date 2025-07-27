@@ -20,7 +20,7 @@ FLATSYNC_ROOT="/usr/share/flatsync"			# comment.?
 FLATSYNC_DATA="$HOME/.local/share/flatsync" # comment.5
 import() {
 	local FLATSYNC_IMPORTS="$FLATSYNC_ROOT/import"
-	local library=$1
+	local library=$@
 	source "$FLATSYNC_IMPORTS"/"$library"
 }
 ### Import local libraries
