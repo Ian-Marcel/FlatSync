@@ -1,16 +1,17 @@
 #!/usr/bin/env bash
 
 ############
-#### Flags collector
+#### Flags collector: detects if debugging flag is being used
+for flag in "$@" ; do
+	case "$flag" in
+		-D|--debug )
+			set -x
+			printf "DEBUG FLAG DETECTED!" &>/dev/null # 1
+			;;
+	esac
+done
+#### Flags collector array
 FLAGS+=("$@")
-#### Flags collector: detects debugging flag is being used
-check_debug() {
-	printf "%s" "${FLAGS[@]}" | grep -o "D"
-	printf "%s" "${FLAGS[@]}" | grep -o "debug"
-}
-if [ "-$(check_debug)" = "-D" ] || [ "--$(check_debug)" = "--debug" ]; then
-	set -x
-fi
 #### Error detector
 set -euo pipefail
 trap 'printf "\n\033[1;33mOps! \033[1;31m\b Something went wrong! \n\033[1;34mExiting...\033[0m\n" && rm -rf $HOME/.cache/flatsync /run/user/$UID/flatsync.lock && exit 1' INT TERM ERR

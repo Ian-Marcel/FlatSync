@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
-LOCKFILE=/run/user/$UID/flatsync.lock
+LOCKFILE="/run/user/$UID/flatsync.lock"
+AUTOSTART_FILE="$HOME/.config/autostart/FlatSync.desktop"
 INTregex='^[0-9]+$'
 
 set +e +u +o pipefail
@@ -10,48 +11,8 @@ for index in "${!FLAGS[@]}"; do
 	next_flag=${FLAGS["$(( index + 1 ))"]}
 	previous_flag=${FLAGS["$(( index - 1 ))"]}
 
-	if [ "$flag" == "--id" ] && [ "$next_flag" == "create" ]; then
-			if [ -s "$FLATSYNC_GIT"/last_updated_device ] && [ -s /usr/share/flatsync/flatsync-id ]; then
-				OLD_ID_LOCAL=$(printf "%s" "$(cat /usr/share/flatsync/flatsync-id)")
-				LAST_ID=$( tail -n 1 "$FLATSYNC_GIT"/last_updated_device )
-				if [ "$OLD_ID_LOCAL" = "$LAST_ID" ]; then
-					UPDATE_LUD=true
-				fi
-			fi
-			###
-			printf "%s" "$(openssl rand -base64 32)" |
-				sudo tee -p /usr/share/flatsync/flatsync-id 1>/dev/null
-			sudo chown root:root	/usr/share/flatsync/flatsync-id
-			sudo chmod 644			/usr/share/flatsync/flatsync-id
-			###
-			if [ "${UPDATE_LUD-}" ] && [ "$UPDATE_LUD" = true ]; then
-				cd "$FLATSYNC_GIT" || exit
-				LUD_FLATSYNC_ID=$(printf "%s" "$(cat /usr/share/flatsync/flatsync-id)")
-				printf "%s\n%s" "$(cat /etc/hostname)" "$LUD_FLATSYNC_ID" 1>last_updated_device
-				git add .
-				if git commit -q -m "$(date "%H:%M:%S - %d/%m/%Y")" &>/dev/null; then
-					git push -q
-				else
-					exit 0
-				fi
-			fi
-			###
-			exit 0
-	elif [ "$flag" == "--id" ] && [ "$next_flag" == "get" ]; then
-			if [ -s /usr/share/flatsync/flatsync-id ]; then
-				printf "${BGREEN}The current ID of this device is:${NC}\n%s\n" \
-					"$(cat /usr/share/flatsync/flatsync-id)"
-			else
-				printf "${BRED}No ID found!!! Run ${BCYAN}flatsync --id=make${BRED} to create it ${NC}\n"
-			fi
-			exit 0
-	elif [ "$flag" == "--id" ] && { [ "$next_flag" != "get" ] && [ "$next_flag" != "create" ]; }; then
-		echo "Error! Flag '--id' requires an option ('create' or 'get')!"
-		exit 1
-	fi
-
 	if { [ "$flag" == "-s" ] || [ "$flag" == "--schedule" ] || [ "$flag" == "--create-schedule" ]; } && [[ "$next_flag" =~ $INTregex ]]; then
-		SCHDL_DUR=$(( next_flag * 60 ))
+		SCHEDULE_DURATION=$(( next_flag * 60 ))
 	elif { [ "$previous_flag" == "-s" ] || [ "$previous_flag" == "--schedule" ]; } && [[ "$flag" =~ $INTregex ]];then
 		continue
 	fi
@@ -59,32 +20,47 @@ done
 set -euo pipefail
 
 # Main flag handling
-for flag in "${FLAGS[@]}";do
-	case "$flag" in
-		-v|--version)
+while (( $# > 0 )) ; do
+	case "$1" in
+		-D|--debug )
+			shift
+			continue
+			;;
+		-v|--version )
 			printf "flatsync: ${FLATSYNC_VERSION}v\n"
 			exit 0
 			;;
-		-a|--automatic)
+		-a|--automatic )
 			AUTO_OP_FLATPAKS=true
 			VERBOSE=false
 			;;
 		--schedule|-s )
-			if [ ! "${SCHDL_DUR-}" ];then
-				SCHDL_DUR=600
+			shift
+			int=$1
+			if [ -n "$int" ] && [[ ! "$int" =~ $INTregex ]]; then
+				printf "Error: \"%s\" is an invalid value! \n" "$int"
+				printf "Flag '-s'|'--schedule' doesn't support chars or floats.\n"
+
+				printf "SCHEDULE FLAG FAILED DUE TO INVALID VALUE!" &>/dev/null # 1
+				exit 1
+			else 
+				SCHEDULE_DURATION=$(( int * 60 ))
+			fi
+			if [ ! "${SCHEDULE_DURATION-}" ];then
+				SCHEDULE_DURATION=600
 			fi
 			if [ -e "$LOCKFILE" ]; then
-				echo "Scheduler is already running (lockfile exists: $LOCKFILE). Run 'flatsync -S' to stop the current schedule."
+				printf "Scheduler is already running (lockfile exists: %s)! \n" "$LOCKFILE"
+				printf "Run 'flatsync -S' to stop the current schedule. \n"
 				exit 1
 			else
-				printf "%s" "$SCHDL_DUR" 1> "$LOCKFILE"
+				printf "%s" "$SCHEDULE_DURATION" 1> "$LOCKFILE"
 			fi
 			schdl_function() {
 				while [ -e "$LOCKFILE" ]; do
-					sleep "$SCHDL_DUR"
+					sleep "$SCHEDULE_DURATION"
 					flatpak --automatic
 				done
-				# printf "Schedule killed!\n"
 			}
 		schdl_function >/dev/null 2>&1 &
 		;;
@@ -94,27 +70,92 @@ for flag in "${FLAGS[@]}";do
 		;;
 		--kill-schedule|-k )
 			rm -f "$LOCKFILE"
-			rm -f "$HOME"/.config/autostart/FlatSync.desktop
+			rm -f "$AUTOSTART_FILE"
 			exit 0
 		;;
-		--create-schedule)
-			if [ ! "${SCHDL_DUR-}" ];then
-				SCHDL_DUR=10
-			else
-				SCHDL_DUR=$(( SCHDL_DUR / 60 ))
+		--create-schedule )
+			shift
+			int=$1
+			if [ -n "$int" ] && [[ ! "$int" =~ $INTregex ]]; then
+				printf "Error: \"%s\" is an invalid value! \n" "$int"
+				printf "Flag '-s'|'--schedule' doesn't support chars or floats.\n"
+
+				printf "SCHEDULE FLAG FAILED DUE TO INVALID VALUE!" &>/dev/null # 1
+				exit 1
+			else 
+				SCHEDULE_DURATION=$(( int * 60 ))
 			fi
-			cat > "$HOME"/.config/autostart/FlatSync.desktop <<EOF
+			if [ ! "${SCHEDULE_DURATION-}" ];then
+				SCHEDULE_DURATION=10
+			else
+				SCHEDULE_DURATION=$(( SCHEDULE_DURATION / 60 ))
+			fi
+			cat > "$AUTOSTART_FILE" <<EOF
 [Desktop Entry]
 Hidden=false
 Name=Flatsync
-Comment=Runs flatsync every 10 minutes
-Exec=/usr/local/bin/flatsync --automatic --schedule $SCHDL_DUR
+Comment=Runs FlatSync periodically.
+Exec=/usr/local/bin/flatsync --automatic --schedule $SCHEDULE_DURATION
 Terminal=false
 Type=Application
 EOF
 			exit 0
-		;;
+			;;
+		--id )
+			shift
+			option=$1
+			if [ "$option" = "create" ]; then
+				if [ "$(whoami)" != root ]; then
+					if ! sudo -v ; then
+						echo -e "${BRED}Failed to elevate privileges! \n${BYELLOW}Exiting...${NC}\n"
+						exit 1
+					fi
+				fi
+				if [ -s "$FLATSYNC_GIT"/last_updated_device ] && [ -s /usr/share/flatsync/flatsync-id ]; then
+					OLD_ID_LOCAL=$(printf "%s" "$(cat /usr/share/flatsync/flatsync-id)")
+					LAST_ID=$( tail -n 1 "$FLATSYNC_GIT"/last_updated_device )
+					if [ "$OLD_ID_LOCAL" = "$LAST_ID" ]; then
+						UPDATE_LUD=true
+					fi
+				fi
+				###
+				printf "%s" "$(openssl rand -base64 32)" |
+					sudo tee -p /usr/share/flatsync/flatsync-id 1>/dev/null
+				sudo chown root:root	/usr/share/flatsync/flatsync-id
+				sudo chmod 644			/usr/share/flatsync/flatsync-id
+				###
+				if [ "${UPDATE_LUD-}" ] && [ "$UPDATE_LUD" = true ]; then
+					cd "$FLATSYNC_GIT" || exit
+					LUD_FLATSYNC_ID=$(printf "%s" "$(cat /usr/share/flatsync/flatsync-id)")
+					printf "%s\n%s" "$(cat /etc/hostname)" "$LUD_FLATSYNC_ID" 1>last_updated_device
+					git add .
+					if git commit -q -m "$(date "%H:%M:%S - %d/%m/%Y")" &>/dev/null; then
+						git push -q
+					else
+						exit 0
+					fi
+				fi
+				###
+				exit 0
+			elif [ "$option" = "get" ]; then
+				if [ -s /usr/share/flatsync/flatsync-id ] ; then
+					printf "${BGREEN}The current ID of this device is:${NC}\n%s\n" \
+						"$(cat /usr/share/flatsync/flatsync-id)"
+				else
+					printf "${BRED}No ID found!!! Run ${BCYAN}flatsync --id=make${BRED} to create it ${NC}\n"
+				fi
+				exit 0
+			elif  [ "$option" != "get" ] && [ "$option" != "create" ] ; then
+				echo "Error! Flag '--id' requires an option ('create' or 'get')!"
+				exit 1
+			fi
+			;;
+		-?* | * )
+			printf "Error: Unknown flag '%s'\n" "$1"
+			exit 1
+			;;
 	esac
+	shift
 done
 
 silencer_check() {
