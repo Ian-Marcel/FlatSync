@@ -28,7 +28,7 @@ while (( $# > 0 )) ; do
 			fi
 			if [[ ! "$int" =~ $INTregex ]]; then
 				printf "Error: \"%s\" is an invalid value! \n" "$int"
-				printf "Flag '-s'|'--schedule' doesn't support chars or floats.\n"
+				printf "Flag '-s' | '--schedule' doesn't support chars or floats.\n"
 
 				printf "SCHEDULE FLAG FAILED DUE TO INVALID VALUE!" &>/dev/null # 1
 				exit 1
@@ -36,7 +36,10 @@ while (( $# > 0 )) ; do
 				SCHEDULE_DURATION=$(( int * 60 ))
 			fi
 			if [ -e "$LOCKFILE" ]; then
+				CURRENT_SCHEDULE=$(head -n 1 "$LOCKFILE" )
+				CURRENT_DURATION=$(( CURRENT_SCHEDULE / 60 ))
 				printf "Scheduler is already running (lockfile exists: %s)! \n" "$LOCKFILE"
+				printf "* Currently FlatSync runs each: %s minutes\n" "$CURRENT_SCHEDULE"
 				printf "Run 'flatsync -S' to stop the current schedule. \n"
 				exit 1
 			else
@@ -45,7 +48,7 @@ while (( $# > 0 )) ; do
 			schedule_function() {
 				while [ -e "$LOCKFILE" ]; do
 					flatpak --automatic
-					sleep "$SCHEDULE_DURATION"
+					sleep ${SCHEDULE_DURATION}s
 				done
 			}
 		schedule_function >/dev/null 2>&1 &
