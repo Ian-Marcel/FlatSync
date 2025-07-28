@@ -39,7 +39,7 @@ while (( $# > 0 )) ; do
 				CURRENT_SCHEDULE=$(head -n 1 "$LOCKFILE" )
 				CURRENT_DURATION=$(( CURRENT_SCHEDULE / 60 ))
 				printf "Scheduler is already running (lockfile exists: %s)! \n" "$LOCKFILE"
-				printf "* Currently FlatSync runs each: %s minutes\n" "$CURRENT_SCHEDULE"
+				printf "* Currently FlatSync runs each: %s minutes\n" "$CURRENT_DURATION"
 				printf "Run 'flatsync -S' to stop the current schedule. \n"
 				exit 1
 			else
