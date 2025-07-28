@@ -7,15 +7,11 @@ Flags:
   -s, --schedule <minutes>
         Periodically runs FlatSync every <minutes> after an initial execution.
         Default interval is 10 minutes.
-        Example:
-          flatsync -s 15
 
       --perma-schedule <minutes>
         Creates a .desktop file in ~/.config/autostart/ to automatically run
         FlatSync at login with --automatic and --schedule.
         Default interval is 10 minutes.
-        Example:
-          flatsync --perma-schedule 30
         Note:
           To apply the schedule in the current session, re‑run flatsync with
           --schedule and the same interval.
@@ -29,7 +25,7 @@ Flags:
         ~/.config/autostart/.
 
       --id <action>
-        Manage your device’s FlatSync ID. Actions:
+        Actions:
           create  Generates a unique identifier for the device (requires sudo)
           get     Displays the current device ID
 
