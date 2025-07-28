@@ -51,7 +51,8 @@ while (( $# > 0 )) ; do
 					sleep ${SCHEDULE_DURATION}s
 				done
 			}
-		schedule_function &>/dev/null & >> "$LOCKFILE"
+		schedule_function &>/dev/null &
+		printf "\n%s" "$!" >> "$LOCKFILE"
 		exit 0
 		;;
 		-S | --stop-schedule )
