@@ -52,7 +52,7 @@ while (( $# > 0 )) ; do
 				done
 			}
 		schedule_function &>/dev/null &
-		printf "\n%s" "$!" >> "$LOCKFILE"
+		# printf "\n%s" "$!" >> "$LOCKFILE"
 		exit 0
 		;;
 		-S | --stop-schedule )
