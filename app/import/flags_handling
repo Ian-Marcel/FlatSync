@@ -38,8 +38,8 @@ while (( $# > 0 )) ; do
 			if [ -e "$LOCKFILE" ]; then
 				CURRENT_SCHEDULE=$(head -n 1 "$LOCKFILE" )
 				CURRENT_DURATION=$(( CURRENT_SCHEDULE / 60 ))
-				printf "Scheduler is already running (lockfile exists: %s)! \n" "$LOCKFILE"
-				printf " * Currently FlatSync runs each: %s minutes\n" "$CURRENT_DURATION"
+				printf "Scheduler is already enabled (lockfile exists: %s)! \n" "$LOCKFILE"
+				printf "  '---> Currently FlatSync runs each: %s minutes\n" "$CURRENT_DURATION"
 				printf "Run 'flatsync -S' to stop the current schedule. \n"
 				exit 1
 			else
@@ -64,7 +64,7 @@ while (( $# > 0 )) ; do
 			rm -f "$AUTOSTART_FILE"
 			exit 0
 		;;
-		--auto-schedule )
+		--perma-schedule )
 			shift
 			if [ ! "${1-}" ]; then
 				int=10
