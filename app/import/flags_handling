@@ -21,7 +21,7 @@ while (( $# > 0 )) ; do
 			;;
 		-s | --schedule )
 			shift
-			if [ "${1-}" ]; then
+			if [ ! "${1-}" ]; then
 				SCHEDULE_DURATION=600
 			else
 				int=$1
@@ -92,7 +92,7 @@ EOF
 			;;
 		--id )
 			shift
-			if [ "${1-}" ]; then
+			if [ ! "${1-}" ]; then
 				option="get"
 			else
 				option=$1
