@@ -47,7 +47,7 @@ while (( $# > 0 )) ; do
 			fi
 			schedule_function() {
 				while [ -e "$LOCKFILE" ]; do
-					flatpak --automatic
+					flatsync --automatic
 					sleep ${SCHEDULE_DURATION}s
 				done
 			}
