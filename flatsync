@@ -56,7 +56,7 @@ if [ -d "$FLATSYNC_GIT"/.git ]; then
 			git pull -q
 		}
 	upd_repo_funct &
-	silencer_check wait_with_spinner_loading "${BYELLOW}Updating repository${NC}"
+	silencer_check wait_with_spinner_loading "Updating repository"
 	fi
 else
 	clear
