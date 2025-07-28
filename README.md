@@ -20,6 +20,12 @@ Simply copy the following command and paste it in your terminal:
 curl -sSL https://from.ianmarcel.dev/install/flatsync | bash
 ```
 
+To test the experimental version use:
+
+```sh
+curl -sSL https://from.ianmarcel.dev/install/flatsync | EXPERIMENTAL=true bash
+```
+
 ### Updating
 The previous command also detects whether `flatsync` is installed and performs an installation or update accordingly.
 
