@@ -10,8 +10,6 @@ for flag in "$@" ; do
 			;;
 	esac
 done
-#### Flags collector array
-FLAGS+=("$@")
 #### Error detector
 set -euo pipefail
 trap 'printf "\n\033[1;33mOps! \033[1;31m\b Something went wrong! \n\033[1;34mExiting...\033[0m\n" && rm -rf $HOME/.cache/flatsync /run/user/$UID/flatsync.lock && exit 1' INT TERM ERR
