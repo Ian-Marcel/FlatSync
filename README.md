@@ -52,21 +52,21 @@ flatsync [FLAGS]
   # Runs FlatSync once, then repeats every 15 minutes
   ```
 
-- `--auto-schedule [minutes]`
+- `--perma-schedule <minutes>`
   Creates a `.desktop` file in `~/.config/autostart/` to automatically run FlatSync at login
   with `--automatic` and `--schedule`.
   Default schedule timing is **10 minutes**.
   **Example:**
 
   ```sh
-  flatsync --auto-schedule 30
+  flatsync --perma-schedule 30
   # Runs once at login, then repeats every 30 minutes
   ```
 
   > Note: To apply the schedule FlatSync in the current session, re-run `flatsync` with `--schedule` and with the same interval.
 
 - `--stop-schedule`, `-S`
-  Stops the current scheduled process. Use `--kill-schedule` if the schedule was set via `--create-schedule`.
+  Stops the current scheduled process. Use `--kill-schedule` if the `.dektop` file exists.
 
 - `--kill-schedule`, `-k`
   Stops the schedule and removes the `.desktop` file from `~/.config/autostart/`.
