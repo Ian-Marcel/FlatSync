@@ -28,7 +28,7 @@ source "$FLATSYNC_IMPORTS"/exit_flatsync
 ############
 
 #### Connecting to git
-import git_config_default_values
+source "$FLATSYNC_IMPORTS"/git_config_default_values
 
 check-dir_git
 check-dir_ssh
@@ -197,7 +197,7 @@ fi
 set -euo pipefail
 ############
 
-import appid_regex
+source "$FLATSYNC_IMPORTS"/appid_regex
 
 #### Uninstalling apps
 if [ -e "$FLATSYNC_CACHE"/uninstall ]; then

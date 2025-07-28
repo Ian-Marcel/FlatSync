@@ -21,15 +21,19 @@ while (( $# > 0 )) ; do
 			;;
 		-s | --schedule )
 			shift
-			int=$1
-			if [ -n "$int" ] && [[ ! "$int" =~ $INTregex ]]; then
-				printf "Error: \"%s\" is an invalid value! \n" "$int"
-				printf "Flag '-s'|'--schedule' doesn't support chars or floats.\n"
+			if [ -z "$1" ]; then
+				SCHEDULE_DURATION=600
+			else
+				int=$1
+				if [ -n "$int" ] && [[ ! "$int" =~ $INTregex ]]; then
+					printf "Error: \"%s\" is an invalid value! \n" "$int"
+					printf "Flag '-s'|'--schedule' doesn't support chars or floats.\n"
 
-				printf "SCHEDULE FLAG FAILED DUE TO INVALID VALUE!" &>/dev/null # 1
-				exit 1
-			else 
-				SCHEDULE_DURATION=$(( int * 60 ))
+					printf "SCHEDULE FLAG FAILED DUE TO INVALID VALUE!" &>/dev/null # 1
+					exit 1
+				else 
+					SCHEDULE_DURATION=$(( int * 60 ))
+				fi
 			fi
 			if [ ! "${SCHEDULE_DURATION-}" ];then
 				SCHEDULE_DURATION=600
@@ -88,7 +92,11 @@ EOF
 			;;
 		--id )
 			shift
-			option=$1
+			if [ -z "$1" ]; then
+				option="get"
+			else
+				option=$1
+			fi
 			if [ "$option" = "create" ]; then
 				if [ "$(whoami)" != root ]; then
 					if ! sudo -v ; then
