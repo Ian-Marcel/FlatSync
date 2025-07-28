@@ -22,7 +22,7 @@ while (( $# > 0 )) ; do
 		-s | --schedule )
 			shift
 			if [ ! "${1-}" ]; then
-				SCHEDULE_DURATION=600
+				int=10
 			else
 				int=$1
 			fi
