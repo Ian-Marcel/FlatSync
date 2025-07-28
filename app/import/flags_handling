@@ -25,18 +25,15 @@ while (( $# > 0 )) ; do
 				SCHEDULE_DURATION=600
 			else
 				int=$1
-				if [ -n "$int" ] && [[ ! "$int" =~ $INTregex ]]; then
-					printf "Error: \"%s\" is an invalid value! \n" "$int"
-					printf "Flag '-s'|'--schedule' doesn't support chars or floats.\n"
-
-					printf "SCHEDULE FLAG FAILED DUE TO INVALID VALUE!" &>/dev/null # 1
-					exit 1
-				else 
-					SCHEDULE_DURATION=$(( int * 60 ))
-				fi
 			fi
-			if [ ! "${SCHEDULE_DURATION-}" ];then
-				SCHEDULE_DURATION=600
+			if [[ ! "$int" =~ $INTregex ]]; then
+				printf "Error: \"%s\" is an invalid value! \n" "$int"
+				printf "Flag '-s'|'--schedule' doesn't support chars or floats.\n"
+
+				printf "SCHEDULE FLAG FAILED DUE TO INVALID VALUE!" &>/dev/null # 1
+				exit 1
+			else 
+				SCHEDULE_DURATION=$(( int * 60 ))
 			fi
 			if [ -e "$LOCKFILE" ]; then
 				printf "Scheduler is already running (lockfile exists: %s)! \n" "$LOCKFILE"
@@ -45,13 +42,13 @@ while (( $# > 0 )) ; do
 			else
 				printf "%s" "$SCHEDULE_DURATION" 1> "$LOCKFILE"
 			fi
-			schdl_function() {
+			schedule_function() {
 				while [ -e "$LOCKFILE" ]; do
-					sleep "$SCHEDULE_DURATION"
 					flatpak --automatic
+					sleep "$SCHEDULE_DURATION"
 				done
 			}
-		schdl_function >/dev/null 2>&1 &
+		schedule_function >/dev/null 2>&1 &
 		;;
 		-S | --stop-schedule )
 			rm -f "$LOCKFILE"
