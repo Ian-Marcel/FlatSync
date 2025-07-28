@@ -51,12 +51,9 @@ if [ -d "$FLATSYNC_GIT"/.git ]; then
 			exit 1
 		fi
 	else
-		upd_repo_funct() {
-			git fetch -q
-			git pull -q
-		}
-	upd_repo_funct &
-	silencer_check wait_with_spinner_loading "Updating repository"
+		silencer_check printf "Checking for updates...\n"
+		git fetch -q
+		git pull -q
 	fi
 else
 	clear
