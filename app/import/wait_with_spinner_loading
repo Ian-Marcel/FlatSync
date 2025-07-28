@@ -6,10 +6,8 @@
 
 wait_with_spinner_loading() {
 	local NC='\033[0m' # No Color
-	local BCYAN='\033[1;36m'
 	local BGREEN='\033[1;32m'
 	local BYELLOW='\033[1;33m'
-	local BRED='\033[1;31m'
 
 	local spin='-\|/'
 	local i=0
