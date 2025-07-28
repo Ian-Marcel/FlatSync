@@ -39,7 +39,7 @@ while (( $# > 0 )) ; do
 				CURRENT_SCHEDULE=$(head -n 1 "$LOCKFILE" )
 				CURRENT_DURATION=$(( CURRENT_SCHEDULE / 60 ))
 				printf "Scheduler is already running (lockfile exists: %s)! \n" "$LOCKFILE"
-				printf "* Currently FlatSync runs each: %s minutes\n" "$CURRENT_DURATION"
+				printf " * Currently FlatSync runs each: %s minutes\n" "$CURRENT_DURATION"
 				printf "Run 'flatsync -S' to stop the current schedule. \n"
 				exit 1
 			else
@@ -63,23 +63,23 @@ while (( $# > 0 )) ; do
 			rm -f "$AUTOSTART_FILE"
 			exit 0
 		;;
-		--create-schedule )
+		--auto-schedule )
 			shift
-			int=$1
-			if [ -n "$int" ] && [[ ! "$int" =~ $INTregex ]]; then
+			if [ ! "${1-}" ]; then
+				int=10
+			else
+				int=$1
+			fi
+			if [[ ! "$int" =~ $INTregex ]]; then
 				printf "Error: \"%s\" is an invalid value! \n" "$int"
 				printf "Flag '-s'|'--schedule' doesn't support chars or floats.\n"
 
 				printf "SCHEDULE FLAG FAILED DUE TO INVALID VALUE!" &>/dev/null # 1
 				exit 1
 			else 
-				SCHEDULE_DURATION=$(( int * 60 ))
+				SCHEDULE_DURATION=$int
 			fi
-			if [ ! "${SCHEDULE_DURATION-}" ];then
-				SCHEDULE_DURATION=10
-			else
-				SCHEDULE_DURATION=$(( SCHEDULE_DURATION / 60 ))
-			fi
+			
 			cat > "$AUTOSTART_FILE" <<EOF
 [Desktop Entry]
 Hidden=false
