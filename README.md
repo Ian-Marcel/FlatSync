@@ -39,10 +39,10 @@ flatsync [FLAGS]
 
 ### Flags
 
-* `--automatic`, `-a`
+- `--automatic`, `-a`
   Automatically and silently performs installations and removals.
 
-* `--schedule <minutes>`, `-s <minutes>`
+- `--schedule <minutes>`, `-s <minutes>`
   Periodically runs FlatSync every `<minutes>` after an initial execution.
   Default interval is **10 minutes**.
   **Example:**
@@ -82,6 +82,9 @@ flatsync [FLAGS]
 
 - `--debug`, `-D`
   Enables verbose debug output. Useful for development or troubleshooting.
+
+- `--help`, `-h`
+  Print the usage of FlatSync.
 
 ## RoadMap
 
