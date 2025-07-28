@@ -7,19 +7,19 @@ INTregex='^[0-9]+$'
 # Main flag handling
 while (( $# > 0 )) ; do
 	case "$1" in
-		-D|--debug )
+		-D | --debug )
 			shift
 			continue
 			;;
-		-v|--version )
+		-v | --version )
 			printf "flatsync: ${FLATSYNC_VERSION}v\n"
 			exit 0
 			;;
-		-a|--automatic )
+		-a | --automatic )
 			AUTO_OP_FLATPAKS=true
 			VERBOSE=false
 			;;
-		--schedule|-s )
+		-s | --schedule )
 			shift
 			int=$1
 			if [ -n "$int" ] && [[ ! "$int" =~ $INTregex ]]; then
@@ -49,11 +49,11 @@ while (( $# > 0 )) ; do
 			}
 		schdl_function >/dev/null 2>&1 &
 		;;
-		--stop-schedule|-S )
+		-S | --stop-schedule )
 			rm -f "$LOCKFILE"
 			exit 0
 		;;
-		--kill-schedule|-k )
+		-k | --kill-schedule )
 			rm -f "$LOCKFILE"
 			rm -f "$AUTOSTART_FILE"
 			exit 0
