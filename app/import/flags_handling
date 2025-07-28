@@ -49,6 +49,7 @@ while (( $# > 0 )) ; do
 				done
 			}
 		schedule_function >/dev/null 2>&1 &
+		exit 0
 		;;
 		-S | --stop-schedule )
 			rm -f "$LOCKFILE"
