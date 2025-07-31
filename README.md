@@ -1,7 +1,7 @@
 # FlatSync
 
 
-Synchronize flatpak applications between devices.
+Synchronize flatpak applications between _Linux_ devices through **Git**.
 
 - - -
 
