@@ -5,83 +5,83 @@ AUTOSTART_FILE="$HOME/.config/autostart/FlatSync.desktop"
 INTregex='^[0-9]+$'
 
 # Main flag handling
-while (( $# > 0 )) ; do
-	case "$1" in
-		-D | --debug )
-			shift
-			continue
-			;;
-		-v | --version )
-			printf "flatsync: ${FLATSYNC_VERSION}v\n"
-			exit 0
-			;;
-		-a | --automatic )
-			AUTO_OP_FLATPAKS=true
-			VERBOSE=false
-			;;
-		-s | --schedule )
-			shift
-			if [ ! "${1-}" ]; then
-				int=10
-			else
-				int=$1
-			fi
-			if [[ ! "$int" =~ $INTregex ]]; then
-				printf "Error: \"%s\" is an invalid value! \n" "$int"
-				printf "Flag '-s' | '--schedule' doesn't support chars or floats.\n"
+while (($# > 0)); do
+    case "$1" in
+    -D | --debug)
+        shift
+        continue
+        ;;
+    -v | --version)
+        printf "flatsync: ${FLATSYNC_VERSION}v\n"
+        exit 0
+        ;;
+    -a | --automatic)
+        AUTO_OP_FLATPAKS=true
+        VERBOSE=false
+        ;;
+    -s | --schedule)
+        shift
+        if [ ! "${1-}" ]; then
+            int=10
+        else
+            int=$1
+        fi
+        if [[ ! "$int" =~ $INTregex ]]; then
+            printf "Error: \"%s\" is an invalid value! \n" "$int"
+            printf "Flag '-s' | '--schedule' doesn't support chars or floats.\n"
 
-				printf "SCHEDULE FLAG FAILED DUE TO INVALID VALUE!" &>/dev/null # 1
-				exit 1
-			else 
-				SCHEDULE_DURATION=$(( int * 60 ))
-			fi
-			if [ -e "$LOCKFILE" ]; then
-				CURRENT_SCHEDULE=$(head -n 1 "$LOCKFILE" )
-				CURRENT_DURATION=$(( CURRENT_SCHEDULE / 60 ))
-				printf "Scheduler is already enabled (lockfile exists: %s)! \n" "$LOCKFILE"
-				printf "  '---> Currently FlatSync runs each: %s minutes\n" "$CURRENT_DURATION"
-				printf "Run 'flatsync -S' to stop the current schedule. \n"
-				exit 1
-			else
-				printf "%s" "$SCHEDULE_DURATION" 1> "$LOCKFILE"
-			fi
-			schedule_function() {
-				while [ -e "$LOCKFILE" ]; do
-					flatsync --automatic
-					sleep ${SCHEDULE_DURATION}s
-				done
-			}
-		schedule_function &>/dev/null &
-		# printf "\n%s" "$!" >> "$LOCKFILE"
-		exit 0
-		;;
-		-S | --stop-schedule )
-			rm -f "$LOCKFILE"
-			exit 0
-		;;
-		-k | --kill-schedule )
-			rm -f "$LOCKFILE"
-			rm -f "$AUTOSTART_FILE"
-			exit 0
-		;;
-		--perma-schedule )
-			shift
-			if [ ! "${1-}" ]; then
-				int=10
-			else
-				int=$1
-			fi
-			if [[ ! "$int" =~ $INTregex ]]; then
-				printf "Error: \"%s\" is an invalid value! \n" "$int"
-				printf "Flag '-s'|'--schedule' doesn't support chars or floats.\n"
+            printf "SCHEDULE FLAG FAILED DUE TO INVALID VALUE!" &>/dev/null # 1
+            exit 1
+        else
+            SCHEDULE_DURATION=$((int * 60))
+        fi
+        if [ -e "$LOCKFILE" ]; then
+            CURRENT_SCHEDULE=$(head -n 1 "$LOCKFILE")
+            CURRENT_DURATION=$((CURRENT_SCHEDULE / 60))
+            printf "Scheduler is already enabled (lockfile exists: %s)! \n" "$LOCKFILE"
+            printf "  '---> Currently FlatSync runs each: %s minutes\n" "$CURRENT_DURATION"
+            printf "Run 'flatsync -S' to stop the current schedule. \n"
+            exit 1
+        else
+            printf "%s" "$SCHEDULE_DURATION" 1>"$LOCKFILE"
+        fi
+        schedule_function() {
+            while [ -e "$LOCKFILE" ]; do
+                flatsync --automatic
+                sleep ${SCHEDULE_DURATION}s
+            done
+        }
+        schedule_function &>/dev/null &
+        # printf "\n%s" "$!" >> "$LOCKFILE"
+        exit 0
+        ;;
+    -S | --stop-schedule)
+        rm -f "$LOCKFILE"
+        exit 0
+        ;;
+    -k | --kill-schedule)
+        rm -f "$LOCKFILE"
+        rm -f "$AUTOSTART_FILE"
+        exit 0
+        ;;
+    --perma-schedule)
+        shift
+        if [ ! "${1-}" ]; then
+            int=10
+        else
+            int=$1
+        fi
+        if [[ ! "$int" =~ $INTregex ]]; then
+            printf "Error: \"%s\" is an invalid value! \n" "$int"
+            printf "Flag '-s'|'--schedule' doesn't support chars or floats.\n"
 
-				printf "SCHEDULE FLAG FAILED DUE TO INVALID VALUE!" &>/dev/null # 1
-				exit 1
-			else 
-				SCHEDULE_DURATION=$int
-			fi
-			
-			cat > "$AUTOSTART_FILE" <<EOF
+            printf "SCHEDULE FLAG FAILED DUE TO INVALID VALUE!" &>/dev/null # 1
+            exit 1
+        else
+            SCHEDULE_DURATION=$int
+        fi
+
+        cat >"$AUTOSTART_FILE" <<EOF
 [Desktop Entry]
 Hidden=false
 Name=Flatsync
@@ -90,73 +90,73 @@ Exec=/usr/local/bin/flatsync --automatic --schedule $SCHEDULE_DURATION
 Terminal=false
 Type=Application
 EOF
-			exit 0
-			;;
-		--id )
-			shift
-			if [ ! "${1-}" ]; then
-				option="get"
-			else
-				option=$1
-			fi
-			if [ "$option" = "create" ]; then
-				if [ "$(whoami)" != root ]; then
-					if ! sudo -v ; then
-						echo -e "${BRED}Failed to elevate privileges! \n${BYELLOW}Exiting...${NC}\n"
-						exit 1
-					fi
-				fi
-				if [ -s "$FLATSYNC_GIT"/last_updated_device ] && [ -s /usr/share/flatsync/flatsync-id ]; then
-					OLD_ID_LOCAL=$(printf "%s" "$(cat /usr/share/flatsync/flatsync-id)")
-					LAST_ID=$( tail -n 1 "$FLATSYNC_GIT"/last_updated_device )
-					if [ "$OLD_ID_LOCAL" = "$LAST_ID" ]; then
-						UPDATE_LUD=true
-					fi
-				fi
-				###
-				printf "%s" "$(openssl rand -base64 32)" |
-					sudo tee -p /usr/share/flatsync/flatsync-id 1>/dev/null
-				sudo chown root:root	/usr/share/flatsync/flatsync-id
-				sudo chmod 644			/usr/share/flatsync/flatsync-id
-				###
-				if [ "${UPDATE_LUD-}" ] && [ "$UPDATE_LUD" = true ]; then
-					cd "$FLATSYNC_GIT" || exit
-					LUD_FLATSYNC_ID=$(printf "%s" "$(cat /usr/share/flatsync/flatsync-id)")
-					printf "%s\n%s" "$(cat /etc/hostname)" "$LUD_FLATSYNC_ID" 1>last_updated_device
-					git add .
-					if git commit -q -m "$(date "%H:%M:%S - %d/%m/%Y")" &>/dev/null; then
-						git push -q
-					else
-						exit 0
-					fi
-				fi
-				###
-				exit 0
-			elif [ "$option" = "get" ]; then
-				if [ -s /usr/share/flatsync/flatsync-id ] ; then
-					printf "${BGREEN}The current ID of this device is:${NC}\n%s\n" \
-						"$(cat /usr/share/flatsync/flatsync-id)"
-				else
-					printf "${BRED}No ID found!!! Run ${BCYAN}flatsync --id=make${BRED} to create it ${NC}\n"
-				fi
-				exit 0
-			elif  [ "$option" != "get" ] && [ "$option" != "create" ] ; then
-				echo "Error! Flag '--id' requires an option ('create' or 'get')!"
-				exit 1
-			fi
-			;;
-		-?* | * )
-			printf "Error: Unknown flag '%s'\n" "$1"
-			exit 1
-			;;
-	esac
-	shift
+        exit 0
+        ;;
+    --id)
+        shift
+        if [ ! "${1-}" ]; then
+            option="get"
+        else
+            option=$1
+        fi
+        if [ "$option" = "create" ]; then
+            if [ "$(whoami)" != root ]; then
+                if ! sudo -v; then
+                    echo -e "${BRED}Failed to elevate privileges! \n${BYELLOW}Exiting...${NC}\n"
+                    exit 1
+                fi
+            fi
+            if [ -s "$FLATSYNC_GIT"/last_updated_device ] && [ -s /usr/share/flatsync/flatsync-id ]; then
+                OLD_ID_LOCAL=$(printf "%s" "$(cat /usr/share/flatsync/flatsync-id)")
+                LAST_ID=$(tail -n 1 "$FLATSYNC_GIT"/last_updated_device)
+                if [ "$OLD_ID_LOCAL" = "$LAST_ID" ]; then
+                    UPDATE_LUD=true
+                fi
+            fi
+            ###
+            printf "%s" "$(openssl rand -base64 32)" |
+                sudo tee -p /usr/share/flatsync/flatsync-id 1>/dev/null
+            sudo chown root:root /usr/share/flatsync/flatsync-id
+            sudo chmod 644 /usr/share/flatsync/flatsync-id
+            ###
+            if [ "${UPDATE_LUD-}" ] && [ "$UPDATE_LUD" = true ]; then
+                cd "$FLATSYNC_GIT" || exit
+                LUD_FLATSYNC_ID=$(printf "%s" "$(cat /usr/share/flatsync/flatsync-id)")
+                printf "%s\n%s" "$(cat /etc/hostname)" "$LUD_FLATSYNC_ID" 1>last_updated_device
+                git add .
+                if git commit -q -m "$(date "%H:%M:%S - %d/%m/%Y")" &>/dev/null; then
+                    git push -q
+                else
+                    exit 0
+                fi
+            fi
+            ###
+            exit 0
+        elif [ "$option" = "get" ]; then
+            if [ -s /usr/share/flatsync/flatsync-id ]; then
+                printf "${BGREEN}The current ID of this device is:${NC}\n%s\n" \
+                    "$(cat /usr/share/flatsync/flatsync-id)"
+            else
+                printf "${BRED}No ID found!!! Run ${BCYAN}flatsync --id=make${BRED} to create it ${NC}\n"
+            fi
+            exit 0
+        elif [ "$option" != "get" ] && [ "$option" != "create" ]; then
+            echo "Error! Flag '--id' requires an option ('create' or 'get')!"
+            exit 1
+        fi
+        ;;
+    -?* | *)
+        printf "Error: Unknown flag '%s'\n" "$1"
+        exit 1
+        ;;
+    esac
+    shift
 done
 
 silencer_check() {
-	if [ "$VERBOSE" = false ]; then
-		"$@" >/dev/null
-	else
-		"$@"
-	fi
+    if [ "$VERBOSE" = false ]; then
+        "$@" >/dev/null
+    else
+        "$@"
+    fi
 }

@@ -3,23 +3,23 @@
 ############
 #### Flags collector: detects if debugging flag is being used
 case "$*" in
-	*-D* | *--debug* )
-		set -x
-		printf "DEBUG FLAG DETECTED!" &>/dev/null # 1
-	;;
+*-D* | *--debug*)
+    set -x
+    printf "DEBUG FLAG DETECTED!" &>/dev/null # 1
+    ;;
 esac
 case "$*" in
-	*-h* | *--help* )
-		printf "HELP FLAG DETECTED!" &>/dev/null # 1
-		cat /usr/share/flatsync/help.txt
-		exit 0
-	;;
+*-h* | *--help*)
+    printf "HELP FLAG DETECTED!" &>/dev/null # 1
+    cat /usr/share/flatsync/help.txt
+    exit 0
+    ;;
 esac
 #### Error detector
 set -euo pipefail
 trap 'printf "\n\033[1;33mOps! \033[1;31m\b Something went wrong! \n\033[1;34mExiting...\033[0m\n" && rm -rf $HOME/.cache/flatsync /run/user/$UID/flatsync.lock && exit 1' INT TERM ERR
 #### Essentials settings
-FLATSYNC_ROOT="/usr/share/flatsync"			# comment.?
+FLATSYNC_ROOT="/usr/share/flatsync"         # comment.?
 FLATSYNC_DATA="$HOME/.local/share/flatsync" # comment.5
 FLATSYNC_IMPORTS="$FLATSYNC_ROOT/import"
 ### Import local libraries
@@ -32,6 +32,24 @@ source "$FLATSYNC_IMPORTS"/check_directories
 source "$FLATSYNC_IMPORTS"/exit_flatsync
 ############
 
+silencer_check printf "Checking network connectivity...\n"
+NET_CHECK_RESULT=$(ping -c 4 1.1.1.1 -q | grep "% packet loss" | cut -d , -f 3 | tr -d " " | cut -d % -f 1)
+case $NET_CHECK_RESULT in
+0)
+    silencer_check printf "Connection stable, you're good to go! \n"
+    ;;
+100)
+    silencer_check printf "Connection failed, aborting! \n"
+    exit 1
+    ;;
+*)
+    if [ $VERBOSE = "true" ]; then
+        printf "Connection unstable, syncing might be interrupted or take to long! \n"
+        read -rp $'\033[1;33mPress ENTER to proceed or press Ctrl+C to cancel.\033[0m' void
+    fi
+    ;;
+esac
+
 #### Connecting to git
 source "$FLATSYNC_IMPORTS"/git_config_default_values
 
@@ -41,122 +59,122 @@ check-dir_ssh
 cd "$FLATSYNC_GIT" || exit
 
 if [ -d "$FLATSYNC_GIT"/.git ]; then
-	if ! [ -e "$FLATSYNC_GIT"/remote_flatpaks ] || ! [ -e "$FLATSYNC_GIT"/last_updated_device ]; then
-		git reset -q --hard origin/HEAD
-		git fetch -q
-		git pull -q
-		if ! [ -e "$FLATSYNC_GIT"/remote_flatpaks ] || ! [ -e "$FLATSYNC_GIT"/last_updated_device ]; then
-			clear
-			printf "${BRED}!!!${NC} ERROR ${BRED}!!!${NC} ERROR ${BRED}!!!${NC} ERROR ${BRED}!!!${NC}\n
+    if ! [ -e "$FLATSYNC_GIT"/remote_flatpaks ] || ! [ -e "$FLATSYNC_GIT"/last_updated_device ]; then
+        git reset -q --hard origin/HEAD
+        git fetch -q
+        git pull -q
+        if ! [ -e "$FLATSYNC_GIT"/remote_flatpaks ] || ! [ -e "$FLATSYNC_GIT"/last_updated_device ]; then
+            clear
+            printf "${BRED}!!!${NC} ERROR ${BRED}!!!${NC} ERROR ${BRED}!!!${NC} ERROR ${BRED}!!!${NC}\n
 			\rRequired files for synchronization weren't found neither locally nor remotely on the specified Git hosting platform.
 			\rIf this is your first sync attempt, delete your local sync repository at:\n
 			\r${BGREEN}$FLATSYNC_GIT ${NC}\n
 			\rThen, re-run '${BCYAN}flatsync${NC}', choose to create a new repository, and follow the instructions.\n
 			\r${BRED}!!!${NC} ERROR ${BRED}!!!${NC} ERROR ${BRED}!!!${NC} ERROR ${BRED}!!!${NC}\n"
-			exit 1
-		fi
-	else
-		silencer_check printf "Checking for updates...\n"
-		git fetch -q
-		git pull -q
-	fi
+            exit 1
+        fi
+    else
+        silencer_check printf "Checking for updates...\n"
+        git fetch -q
+        git pull -q
+    fi
 else
-	clear
-	printf "${BRED}Oh oh, sync repository not found!${NC} \nWish to ${BGREEN}create${NC} a new or will you ${BCYAN}import${NC} an existing one? ${NC}\n"
-	while true; do
-		read -rp $'\033[1;32mcreate(1) \033[0m|\033[1;36m import(2) \033[0m: ' NO_REPO
-		if [ "$NO_REPO" = 1 ]; then
-			git init --initial-branch=main
-			printf "${BYELLOW}SSH will be used for data transfering!${BGREEN} Here's the logicale:${NC}\n"
-			printf "\tSSH is one of the simplest — and most secure — ways to transfer Git data to hosting services such as GitHub, GitLab, Gitea, and others.
+    clear
+    printf "${BRED}Oh oh, sync repository not found!${NC} \nWish to ${BGREEN}create${NC} a new or will you ${BCYAN}import${NC} an existing one? ${NC}\n"
+    while true; do
+        read -rp $'\033[1;32mcreate(1) \033[0m|\033[1;36m import(2) \033[0m: ' NO_REPO
+        if [ "$NO_REPO" = 1 ]; then
+            git init --initial-branch=main
+            printf "${BYELLOW}SSH will be used for data transfering!${BGREEN} Here's the logicale:${NC}\n"
+            printf "\tSSH is one of the simplest — and most secure — ways to transfer Git data to hosting services such as GitHub, GitLab, Gitea, and others.
 					\r\tEven if you choose not to protect your SSH key with a passphrase, SSH still provides robust security. For more details, see the official
 					\r\tGit documentation on credential storage: ${BCYAN}https://git-scm.com/book/en/v2/Git-Tools-Credential-Storage${NC}.
 					\r${BYELLOW}The SSH key for Flatsync is created automatically without a password, ${BGREEN}but in the future it will be given you the choice of setting one for it. ${NC}\n"
-			read -rp "Please read and understand the text above and then press ENTER to proceed " void
-			clear
-			if [ -e "$FLATSYNC_SSH"/flatsync_key ] && [ -e "$FLATSYNC_SSH"/flatsync_key.pub ]; then
-				printf "SSH key already exists! That's odd... \n"
-				sleep 1.4s
-			else
-				ssh-keygen -t ed25519 -f "$FLATSYNC_SSH"/flatsync_key -q -N "" -C "SSH key for Flatsync - a synchronizer for flatpak applications"
-				printf "SSH key created!\n"
-			fi
-			printf "Copy you're public key in the line bellow and add to your Git hosting plataform:
+            read -rp "Please read and understand the text above and then press ENTER to proceed " void
+            clear
+            if [ -e "$FLATSYNC_SSH"/flatsync_key ] && [ -e "$FLATSYNC_SSH"/flatsync_key.pub ]; then
+                printf "SSH key already exists! That's odd... \n"
+                sleep 1.4s
+            else
+                ssh-keygen -t ed25519 -f "$FLATSYNC_SSH"/flatsync_key -q -N "" -C "SSH key for Flatsync - a synchronizer for flatpak applications"
+                printf "SSH key created!\n"
+            fi
+            printf "Copy you're public key in the line bellow and add to your Git hosting plataform:
 			\r${BGREEN}$(cat "$FLATSYNC_SSH"/flatsync_key.pub)${NC}
 			\rYou're not sure how to add it, here are some videos for adding to GitHub and GitLab:
 			\rGitHub: ${BCYAN}https://youtu.be/iVJesFfzDGs?si=E4qserNj4-1jJuyy&t=54${NC}
 			\rGitLab: ${BCYAN}https://youtu.be/mNtQ55quG9M?si=57nsYWVfpvd_4NfR&t=265${NC}\n"
-			sleep 2.5s
-			read -rp $'\033[1;33mPress ENTER to proceed \033[0m' void
-			clear
-			for index in "${!git_preference[@]}"; do
-				git config --add --local "${git_preference[$index]}" "${git_preference_value[$index]}"
-			done
-			printf "\rPlease provide the repository url, make sure it is for SSH! [ex.: ${BCYAN}git@hosting.com:username/repository.git ${NC}] \n"
-			read -rp "SSH URL: " NR_GIT_ORIGIN
-			#git_url_regex_funtion # comment.?
-			git remote add origin "$NR_GIT_ORIGIN"
-			break
-		elif [ "$NO_REPO" = 2 ]; then
-			break
-		else
-			printf "${BRED}Wrong answer,${BYELLOW} type either 1 or 2! ${NC}\n"
-		fi
-	done
-	if [ "$NO_REPO" = 1 ]; then
-		flatpak list --columns=application --app |
-			tee -p remote_flatpaks &>/dev/null
-		cat /etc/hostname | tee -p "$FLATSYNC_GIT"/last_updated_device &>/dev/null
-		git add remote_flatpaks last_updated_device
-		git commit -q -m "$(date "%H:%M:%S - %d/%m/%Y")"
-		git push -q -u origin main
-	elif [ "$NO_REPO" = 2 ]; then
-		if ! [ -e "$FLATSYNC_SSH"/flatsync_key ] && ! [ -e "$FLATSYNC_SSH"/flatsync_key.pub ]; then
-			printf "\rSSH key also not found! Wish to ${BGREEN}create${NC} a new or will you ${BCYAN}import${NC} an existing one? \n"
-			while true; do
-				read -rp $'\033[1;32mcreate(1) \033[0m|\033[1;36m import(2) \033[0m: ' NO_SSH_KEY
-				if [ "$NO_SSH_KEY" = 1 ]; then
-					printf "Creating SSH key...\n"
-					ssh-keygen -t ed25519 -f "$FLATSYNC_SSH"/flatsync_key -q -N "" -C "SSH key for Flatsync - a synchronizer for flatpak applications"
-					printf "SSH key created!\n"
+            sleep 2.5s
+            read -rp $'\033[1;33mPress ENTER to proceed \033[0m' void
+            clear
+            for index in "${!git_preference[@]}"; do
+                git config --add --local "${git_preference[$index]}" "${git_preference_value[$index]}"
+            done
+            printf "\rPlease provide the repository url, make sure it is for SSH! [ex.: ${BCYAN}git@hosting.com:username/repository.git ${NC}] \n"
+            read -rp "SSH URL: " NR_GIT_ORIGIN
+            #git_url_regex_funtion # comment.?
+            git remote add origin "$NR_GIT_ORIGIN"
+            break
+        elif [ "$NO_REPO" = 2 ]; then
+            break
+        else
+            printf "${BRED}Wrong answer,${BYELLOW} type either 1 or 2! ${NC}\n"
+        fi
+    done
+    if [ "$NO_REPO" = 1 ]; then
+        flatpak list --columns=application --app |
+            tee -p remote_flatpaks &>/dev/null
+        cat /etc/hostname | tee -p "$FLATSYNC_GIT"/last_updated_device &>/dev/null
+        git add remote_flatpaks last_updated_device
+        git commit -q -m "$(date "%H:%M:%S - %d/%m/%Y")"
+        git push -q -u origin main
+    elif [ "$NO_REPO" = 2 ]; then
+        if ! [ -e "$FLATSYNC_SSH"/flatsync_key ] && ! [ -e "$FLATSYNC_SSH"/flatsync_key.pub ]; then
+            printf "\rSSH key also not found! Wish to ${BGREEN}create${NC} a new or will you ${BCYAN}import${NC} an existing one? \n"
+            while true; do
+                read -rp $'\033[1;32mcreate(1) \033[0m|\033[1;36m import(2) \033[0m: ' NO_SSH_KEY
+                if [ "$NO_SSH_KEY" = 1 ]; then
+                    printf "Creating SSH key...\n"
+                    ssh-keygen -t ed25519 -f "$FLATSYNC_SSH"/flatsync_key -q -N "" -C "SSH key for Flatsync - a synchronizer for flatpak applications"
+                    printf "SSH key created!\n"
 
-					printf "Copy you're public key in the line bellow and add to your repository hosting provider:
+                    printf "Copy you're public key in the line bellow and add to your repository hosting provider:
 					\r${BGREEN}%s${NC}\n" "$(cat "$FLATSYNC_SSH"/flatsync_key.pub)"
-					sleep 2
-					read -rp $'\033[1;33mPress ENTER to proceed \033[0m' void
-					clear
+                    sleep 2
+                    read -rp $'\033[1;33mPress ENTER to proceed \033[0m' void
+                    clear
 
-					break
-				elif [ "$NO_SSH_KEY" = 2 ]; then
-					printf "Please place your imported key under the following path:\n%s\n" "$FLATSYNC_SSH"
+                    break
+                elif [ "$NO_SSH_KEY" = 2 ]; then
+                    printf "Please place your imported key under the following path:\n%s\n" "$FLATSYNC_SSH"
 
-					while ! [ -e "$FLATSYNC_SSH"/flatsync_key ] && ! [ -e "$FLATSYNC_SSH"/flatsync_key.pub ]; do
-						read -rp $'\033[1;33mPress ENTER to proceed \033[0m' void
-						if ! [ -e "$FLATSYNC_SSH"/flatsync_key ] && ! [ -e "$FLATSYNC_SSH"/flatsync_key.pub ]; then
-							printf "Error! Imported keys not found! Are you sure you placed them in the path above?\n"
-						fi
-						sleep 0.8s
-					done
-					printf "Done!\n"
+                    while ! [ -e "$FLATSYNC_SSH"/flatsync_key ] && ! [ -e "$FLATSYNC_SSH"/flatsync_key.pub ]; do
+                        read -rp $'\033[1;33mPress ENTER to proceed \033[0m' void
+                        if ! [ -e "$FLATSYNC_SSH"/flatsync_key ] && ! [ -e "$FLATSYNC_SSH"/flatsync_key.pub ]; then
+                            printf "Error! Imported keys not found! Are you sure you placed them in the path above?\n"
+                        fi
+                        sleep 0.8s
+                    done
+                    printf "Done!\n"
 
-					break
-				else
-					printf "Wrong answer, type either 1 or 2! ${NC}\n"
-				fi
-			done
-		fi
-		printf "\rPlease provide the repository url, make sure it is for SSH! [ex.: ${BCYAN}git@hosting.com:username/repository.git ${NC}] \n"
-		read -rp "SSH URL: " NR_GIT_ORIGIN
-		#git_url_regex_funtion # comment.?
-		git clone -q "$NR_GIT_ORIGIN" "$FLATSYNC_GIT"/ \
-			--config="${git_preference[0]}"="${git_preference_value[0]}" \
-			--config="${git_preference[1]}"="${git_preference_value[1]}" \
-			--config="${git_preference[2]}"="${git_preference_value[2]}" \
-			--config="${git_preference[3]}"="${git_preference_value[3]}" \
-			--config="${git_preference[4]}"="${git_preference_value[4]}"
-	fi
-	printf  "${BGREEN}Setup complete! ${NC}Now re-run ${BCYAN}flatsync${NC} to start synchronization.\n"
-	exit 0
+                    break
+                else
+                    printf "Wrong answer, type either 1 or 2! ${NC}\n"
+                fi
+            done
+        fi
+        printf "\rPlease provide the repository url, make sure it is for SSH! [ex.: ${BCYAN}git@hosting.com:username/repository.git ${NC}] \n"
+        read -rp "SSH URL: " NR_GIT_ORIGIN
+        #git_url_regex_funtion # comment.?
+        git clone -q "$NR_GIT_ORIGIN" "$FLATSYNC_GIT"/ \
+            --config="${git_preference[0]}"="${git_preference_value[0]}" \
+            --config="${git_preference[1]}"="${git_preference_value[1]}" \
+            --config="${git_preference[2]}"="${git_preference_value[2]}" \
+            --config="${git_preference[3]}"="${git_preference_value[3]}" \
+            --config="${git_preference[4]}"="${git_preference_value[4]}"
+    fi
+    printf "${BGREEN}Setup complete! ${NC}Now re-run ${BCYAN}flatsync${NC} to start synchronization.\n"
+    exit 0
 fi
 ############
 
@@ -170,32 +188,32 @@ set +e +u +o pipefail
 
 if [ -e "$FLATSYNC_GIT"/last_updated_device ] && { [ "$LUD_HOSTNAME" = "$(cat /etc/hostname)" ] && [ "$LUD_FLATSYNC_ID" = "$FLATSYNC_ID" ]; }; then
 
-	NO_TODO=2
-	exit_flatsync
+    NO_TODO=2
+    exit_flatsync
 
 else
 
-	silencer_check printf "Different device!\n"
+    silencer_check printf "Different device!\n"
 
-	flatpak list --columns=application --app |
-		tee -p "$FLATSYNC_CACHE"/local_flatpaks &>/dev/null
-	cp "$FLATSYNC_GIT"/remote_flatpaks "$FLATSYNC_CACHE"/
+    flatpak list --columns=application --app |
+        tee -p "$FLATSYNC_CACHE"/local_flatpaks &>/dev/null
+    cp "$FLATSYNC_GIT"/remote_flatpaks "$FLATSYNC_CACHE"/
 
-	# comment.2
-	if diff "$FLATSYNC_CACHE"/remote_flatpaks "$FLATSYNC_CACHE"/local_flatpaks | grep ">" &>/dev/null; then
-		diff "$FLATSYNC_CACHE"/remote_flatpaks "$FLATSYNC_CACHE"/local_flatpaks |
-			grep ">" |
-			awk -F ">" '{ print $2 }' |
-			tee -p "$FLATSYNC_CACHE"/uninstall &>/dev/null
-	fi
+    # comment.2
+    if diff "$FLATSYNC_CACHE"/remote_flatpaks "$FLATSYNC_CACHE"/local_flatpaks | grep ">" &>/dev/null; then
+        diff "$FLATSYNC_CACHE"/remote_flatpaks "$FLATSYNC_CACHE"/local_flatpaks |
+            grep ">" |
+            awk -F ">" '{ print $2 }' |
+            tee -p "$FLATSYNC_CACHE"/uninstall &>/dev/null
+    fi
 
-	# comment.1
-	if diff "$FLATSYNC_CACHE"/remote_flatpaks "$FLATSYNC_CACHE"/local_flatpaks | grep "<" &>/dev/null; then
-		diff "$FLATSYNC_CACHE"/remote_flatpaks "$FLATSYNC_CACHE"/local_flatpaks |
-			grep "<" |
-			awk -F "<" '{ print $2 }' |
-			tee -p "$FLATSYNC_CACHE"/install &>/dev/null
-	fi
+    # comment.1
+    if diff "$FLATSYNC_CACHE"/remote_flatpaks "$FLATSYNC_CACHE"/local_flatpaks | grep "<" &>/dev/null; then
+        diff "$FLATSYNC_CACHE"/remote_flatpaks "$FLATSYNC_CACHE"/local_flatpaks |
+            grep "<" |
+            awk -F "<" '{ print $2 }' |
+            tee -p "$FLATSYNC_CACHE"/install &>/dev/null
+    fi
 
 fi
 
@@ -206,136 +224,135 @@ source "$FLATSYNC_IMPORTS"/appid_regex
 
 #### Uninstalling apps
 if [ -e "$FLATSYNC_CACHE"/uninstall ]; then
-	silencer_check printf "${BRED}Removing...${NC}\n"
-	silencer_check printf "Processing uninstallation data...\n"
+    silencer_check printf "${BRED}Removing...${NC}\n"
+    silencer_check printf "Processing uninstallation data...\n"
 
-	for appid in $(cat "$FLATSYNC_CACHE"/uninstall); do
-		uninstallid+=("$appid")
-	done
+    for appid in $(cat "$FLATSYNC_CACHE"/uninstall); do
+        uninstallid+=("$appid")
+    done
 
-	if [ "$AUTO_OP_FLATPAKS" = false ]; then 
-		if [ "${#uninstallid[@]}" -eq 1 ]; then
-			total=${#uninstallid[@]}
-		else
-			total=$((${#uninstallid[@]} - 1))
-		fi
+    if [ "$AUTO_OP_FLATPAKS" = false ]; then
+        if [ "${#uninstallid[@]}" -eq 1 ]; then
+            total=${#uninstallid[@]}
+        else
+            total=$((${#uninstallid[@]} - 1))
+        fi
 
-		for index in "${!uninstallid[@]}"; do
-			appid=${uninstallid[$index]}
+        for index in "${!uninstallid[@]}"; do
+            appid=${uninstallid[$index]}
 
-			silencer_check progress_bar_by_task_completion "$index" "$total"
-			appid_regex
-			QUERY_FLATPAK_NAME=$(flatpak search --columns=name "$appid" | head -n "$i" | tail -n 1)
-			QUERY_FLATPAK_DESCRIPTION=$(flatpak search --columns=description "$appid" | head -n "$i" | tail -n 1)
-			printf " ${BRED}-${NC} %s: %s \n" \
-				"$QUERY_FLATPAK_NAME" \
-				"$QUERY_FLATPAK_DESCRIPTION" |
-				tee -pa "$FLATSYNC_CACHE"/uninstall-notice.tmp &>/dev/null
-			uninstall2+=("$QUERY_FLATPAK_NAME")
-		done
+            silencer_check progress_bar_by_task_completion "$index" "$total"
+            appid_regex
+            QUERY_FLATPAK_NAME=$(flatpak search --columns=name "$appid" | head -n "$i" | tail -n 1)
+            QUERY_FLATPAK_DESCRIPTION=$(flatpak search --columns=description "$appid" | head -n "$i" | tail -n 1)
+            printf " ${BRED}-${NC} %s: %s \n" \
+                "$QUERY_FLATPAK_NAME" \
+                "$QUERY_FLATPAK_DESCRIPTION" |
+                tee -pa "$FLATSYNC_CACHE"/uninstall-notice.tmp &>/dev/null
+            uninstall2+=("$QUERY_FLATPAK_NAME")
+        done
 
-		silencer_check printf "${BRED}To be uninstalled:${NC}\n"
-		sleep 1.4s
-		silencer_check cat "$FLATSYNC_CACHE"/uninstall-notice.tmp
-		shred -u "$FLATSYNC_CACHE"/uninstall-notice.tmp
-	fi
+        silencer_check printf "${BRED}To be uninstalled:${NC}\n"
+        sleep 1.4s
+        silencer_check cat "$FLATSYNC_CACHE"/uninstall-notice.tmp
+        shred -u "$FLATSYNC_CACHE"/uninstall-notice.tmp
+    fi
 
-	ASWR="y"
-	if [ "$AUTO_OP_FLATPAKS" = false ]; then
-		read -rp "Proceed? [y/n]: " ASWR
-	fi
+    ASWR="y"
+    if [ "$AUTO_OP_FLATPAKS" = false ]; then
+        read -rp "Proceed? [y/n]: " ASWR
+    fi
 
-	if [ $ASWR = y ] || [ $ASWR = Y ]; then
-		for index in "${!uninstallid[@]}"; do
+    if [ $ASWR = y ] || [ $ASWR = Y ]; then
+        for index in "${!uninstallid[@]}"; do
 
-			appid=${uninstallid[$index]}
+            appid=${uninstallid[$index]}
 
-			flatpak uninstall --noninteractive --assumeyes "$appid" &>/dev/null &
-			if [ "$AUTO_OP_FLATPAKS" = false ]; then 
-				app_name=${uninstall2[$index]}
-				silencer_check wait_with_spinner_loading "$app_name"
-			else
-				silencer_check wait_with_spinner_loading "$appid"
-			fi
+            flatpak uninstall --noninteractive --assumeyes "$appid" &>/dev/null &
+            if [ "$AUTO_OP_FLATPAKS" = false ]; then
+                app_name=${uninstall2[$index]}
+                silencer_check wait_with_spinner_loading "$app_name"
+            else
+                silencer_check wait_with_spinner_loading "$appid"
+            fi
 
-		done
-	fi
+        done
+    fi
 else
-	silencer_check printf "${BGREEN}Nothing to remove${NC}\n"
-	NO_TODO=$((NO_TODO+1))
+    silencer_check printf "${BGREEN}Nothing to remove${NC}\n"
+    NO_TODO=$((NO_TODO + 1))
 fi
 ############
 
 #### Installing apps
 if [ -e "$FLATSYNC_CACHE"/install ]; then
-	silencer_check printf "${BGREEN}Installing...${NC}\n"
+    silencer_check printf "${BGREEN}Installing...${NC}\n"
 
-	for appid in $(cat "$FLATSYNC_CACHE"/install); do
-		installid+=("$appid")
-	done
+    for appid in $(cat "$FLATSYNC_CACHE"/install); do
+        installid+=("$appid")
+    done
 
-	if [ "$AUTO_OP_FLATPAKS" = false ]; then 
-	silencer_check printf "Processing installation data...\n"
-		if [ "${#installid[@]}" -eq 1 ]; then
-			total="${#installid[@]}"
-		else
-			total=$((${#installid[@]} - 1))
-		fi
+    if [ "$AUTO_OP_FLATPAKS" = false ]; then
+        silencer_check printf "Processing installation data...\n"
+        if [ "${#installid[@]}" -eq 1 ]; then
+            total="${#installid[@]}"
+        else
+            total=$((${#installid[@]} - 1))
+        fi
 
-		for index in "${!installid[@]}"; do
-			appid=${installid[$index]}
+        for index in "${!installid[@]}"; do
+            appid=${installid[$index]}
 
-			silencer_check progress_bar_by_task_completion "$index" "$total"
-			appid_regex
-			QUERY_FLATPAK_NAME=$(flatpak search --columns=name "$appid" | head -n "$i" | tail -n 1)
-			QUERY_FLATPAK_DESCRIPTION=$(flatpak search --columns=description "$appid" | head -n "$i" | tail -n 1)
-			printf " ${BGREEN}+${NC} %s: %s \n" \
-				"$QUERY_FLATPAK_NAME" \
-				"$QUERY_FLATPAK_DESCRIPTION" |
-				tee -pa "$FLATSYNC_CACHE"/install-notice.tmp &>/dev/null
-			install2+=("$QUERY_FLATPAK_NAME")
-		done
+            silencer_check progress_bar_by_task_completion "$index" "$total"
+            appid_regex
+            QUERY_FLATPAK_NAME=$(flatpak search --columns=name "$appid" | head -n "$i" | tail -n 1)
+            QUERY_FLATPAK_DESCRIPTION=$(flatpak search --columns=description "$appid" | head -n "$i" | tail -n 1)
+            printf " ${BGREEN}+${NC} %s: %s \n" \
+                "$QUERY_FLATPAK_NAME" \
+                "$QUERY_FLATPAK_DESCRIPTION" |
+                tee -pa "$FLATSYNC_CACHE"/install-notice.tmp &>/dev/null
+            install2+=("$QUERY_FLATPAK_NAME")
+        done
 
-		silencer_check printf "${BGREEN}To be installed:${NC}\n"
-		sleep 1.4s
-		silencer_check cat "$FLATSYNC_CACHE"/install-notice.tmp
-		shred -u "$FLATSYNC_CACHE"/install-notice.tmp
-	fi
+        silencer_check printf "${BGREEN}To be installed:${NC}\n"
+        sleep 1.4s
+        silencer_check cat "$FLATSYNC_CACHE"/install-notice.tmp
+        shred -u "$FLATSYNC_CACHE"/install-notice.tmp
+    fi
 
-	ASWR="y"
-	if [ "$AUTO_OP_FLATPAKS" = false ]; then
-		read -rp "Proceed? [y/n]: " ASWR
-	fi
+    ASWR="y"
+    if [ "$AUTO_OP_FLATPAKS" = false ]; then
+        read -rp "Proceed? [y/n]: " ASWR
+    fi
 
-	if [ $ASWR = y ] || [ $ASWR = Y ]; then
-		for index in "${!installid[@]}"; do
+    if [ $ASWR = y ] || [ $ASWR = Y ]; then
+        for index in "${!installid[@]}"; do
 
-			appid=${installid[$index]}
+            appid=${installid[$index]}
 
-			flatpak install --noninteractive --assumeyes flathub "$appid" &>/dev/null &
-			if [ "$AUTO_OP_FLATPAKS" = false ]; then 
-				app_name=${install2[$index]}
-				silencer_check wait_with_spinner_loading "$app_name"
-			else
-				silencer_check wait_with_spinner_loading "$appid"
-			fi
+            flatpak install --noninteractive --assumeyes flathub "$appid" &>/dev/null &
+            if [ "$AUTO_OP_FLATPAKS" = false ]; then
+                app_name=${install2[$index]}
+                silencer_check wait_with_spinner_loading "$app_name"
+            else
+                silencer_check wait_with_spinner_loading "$appid"
+            fi
 
-		done
-	fi
+        done
+    fi
 else
-	silencer_check printf "${BGREEN}Nothing to install${NC}\n"
-	NO_TODO=$((NO_TODO+1))
+    silencer_check printf "${BGREEN}Nothing to install${NC}\n"
+    NO_TODO=$((NO_TODO + 1))
 fi
 ############
 
 #### Synchronizing override setting's
 if [ -d "$HOME"/.local/share/flatpak/overrides ] && [ -d "$FLATSYNC_GIT"/overrides ]; then
-	rm -rf "$HOME"/.local/share/flatpak/overrides
-	cp -aT "$FLATSYNC_GIT"/overrides "$HOME"/.local/share/flatpak/overrides
+    rm -rf "$HOME"/.local/share/flatpak/overrides
+    cp -aT "$FLATSYNC_GIT"/overrides "$HOME"/.local/share/flatpak/overrides
 elif [ -d "$FLATSYNC_GIT"/overrides ] && ! [ -d "$HOME"/.local/share/flatpak/overrides ]; then
-	cp -aT "$FLATSYNC_GIT"/overrides "$HOME"/.local/share/flatpak/overrides
+    cp -aT "$FLATSYNC_GIT"/overrides "$HOME"/.local/share/flatpak/overrides
 fi
 ############
 
 exit_flatsync
-
