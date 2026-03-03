@@ -32,20 +32,20 @@ source "$FLATSYNC_IMPORTS"/check_directories
 source "$FLATSYNC_IMPORTS"/exit_flatsync
 ############
 
-silencer_check printf "Checking network connectivity...\n"
-NET_CHECK_RESULT=$(ping -c 4 1.1.1.1 -q | grep "% packet loss" | cut -d , -f 3 | tr -d " " | cut -d % -f 1)
+silencer_check printf "${BYELLOW}Checking network connectivity...${NC}\n"
+NET_CHECK_RESULT=$(ping -c 4 1.1.1.1 -q 2>/dev/null | grep "% packet loss" | cut -d , -f 3 | tr -d " " | cut -d % -f 1 || printf "false")
 case $NET_CHECK_RESULT in
 0)
-    silencer_check printf "Connection stable, you're good to go! \n"
+    silencer_check printf "${BGREEN}Connection stable, you're good to go! ${NC}\n"
     ;;
 100)
-    silencer_check printf "Connection failed, aborting! \n"
+    silencer_check printf "${BRED}Connection failed, aborting! ${NC}\n"
     exit 1
     ;;
 *)
     if [ $VERBOSE = "true" ]; then
-        printf "Connection unstable, syncing might be interrupted or take to long! \n"
-        read -rp $'\033[1;33mPress ENTER to proceed or press Ctrl+C to cancel.\033[0m' void
+        printf "${BYELLOW}Connection unstable, syncing might be interrupted or take to long! ${NC}\n"
+        read -rp $'\033[1;33mPress ENTER to proceed or Ctrl+C to cancel.\033[0m' void
     fi
     ;;
 esac
@@ -75,7 +75,7 @@ if [ -d "$FLATSYNC_GIT"/.git ]; then
             exit 1
         fi
     else
-        silencer_check printf "Checking for updates...\n"
+        silencer_check printf "${BLBLUE}Checking for updates...${NC}\n"
         git fetch -q
         git pull -q
     fi
