@@ -2,7 +2,7 @@
 
 LOCKFILE="/run/user/$UID/flatsync.lock"
 AUTOSTART_FILE="$HOME/.config/autostart/FlatSync.desktop"
-INTregex='^[0-9]+$'
+INT_REGEX='^[0-9]+$'
 
 # Main flag handling
 while (($# > 0)); do
@@ -26,7 +26,7 @@ while (($# > 0)); do
         else
             int=$1
         fi
-        if [[ ! "$int" =~ $INTregex ]]; then
+        if [[ ! "$int" =~ $INT_REGEX ]]; then
             printf "Error: \"%s\" is an invalid value! \n" "$int"
             printf "Flag '-s' | '--schedule' doesn't support chars or floats.\n"
 
@@ -57,6 +57,7 @@ while (($# > 0)); do
         ;;
     -S | --stop-schedule)
         rm -f "$LOCKFILE"
+        printf "Flatsync deactivated — will not run automatically for this session."
         exit 0
         ;;
     -k | --kill-schedule)
@@ -71,7 +72,7 @@ while (($# > 0)); do
         else
             int=$1
         fi
-        if [[ ! "$int" =~ $INTregex ]]; then
+        if [[ ! "$int" =~ $INT_REGEX ]]; then
             printf "Error: \"%s\" is an invalid value! \n" "$int"
             printf "Flag '-s'|'--schedule' doesn't support chars or floats.\n"
 
