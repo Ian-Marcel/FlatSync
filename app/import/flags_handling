@@ -57,7 +57,7 @@ while (($# > 0)); do
         ;;
     -S | --stop-schedule)
         rm -f "$LOCKFILE"
-        printf "Flatsync deactivated — will not run automatically for this session."
+        printf "Flatsync deactivated — will not run automatically for this session. \n"
         exit 0
         ;;
     -k | --kill-schedule)
