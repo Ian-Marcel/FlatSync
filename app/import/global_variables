@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-FLATSYNC_VERSION="1.8.5"
+FLATSYNC_VERSION="1.8.6"
 
 # comment.4 #############
 NC='\033[0m' # No Color

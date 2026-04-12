@@ -58,7 +58,7 @@ while (($# > 0)); do
     -S | --stop-schedule)
         if [ -e "$LOCKFILE" ]; then
             rm -f "$LOCKFILE"
-            kill "$(ps aux | grep "flatsync -s" | grep -v grep | tr -s ' ' | cut -d' ' -f2)"
+            kill $(ps aux | grep "flatsync" | grep -v grep | tr -s ' ' | cut -d ' ' -f 2)
             printf "Flatsync deactivated — will not run automatically for this session. \n"
         else
             printf "Flatsync isn't running anyway — nothing to deactivate. \n"
@@ -69,7 +69,7 @@ while (($# > 0)); do
         if [ -e "$LOCKFILE" ] || [ -e "$AUTOSTART_FILE" ]; then
             rm -f "$LOCKFILE"
             rm -f "$AUTOSTART_FILE"
-            kill "$(ps aux | grep "flatsync -s" | grep -v grep | tr -s ' ' | cut -d ' ' -f 2)"
+            kill $(ps aux | grep "flatsync" | grep -v grep | tr -s ' ' | cut -d ' ' -f 2)
             printf "Flatsync killed — will not run automatically anymore. \n"
         else
             printf "Flatsync isn't setup to run — nothing to kill. \n"
