@@ -52,13 +52,16 @@ while (($# > 0)); do
             done
         }
         schedule_function &>/dev/null &
+        CURRENT_DURATION=$((SCHEDULE_DURATION / 60))
+        printf "FlatSync will run each %s minutes from now on." "$CURRENT_DURATION"
         # printf "\n%s" "$!" >> "$LOCKFILE"
         exit 0
         ;;
     -S | --stop-schedule)
         if [ -e "$LOCKFILE" ]; then
+            flatsync_processes="$(ps aux | grep -E "flatsync -s|--automatic" | grep -v grep | tr -s ' ' | cut -d ' ' -f 2 | tr '\n' ' ')"
+            kill $flatsync_processes 1>/dev/null
             rm -f "$LOCKFILE"
-            kill $(ps aux | grep "flatsync" | grep -v grep | tr -s ' ' | cut -d ' ' -f 2)
             printf "Flatsync deactivated — will not run automatically for this session. \n"
         else
             printf "Flatsync isn't running anyway — nothing to deactivate. \n"
@@ -67,9 +70,10 @@ while (($# > 0)); do
         ;;
     -k | --kill-schedule)
         if [ -e "$LOCKFILE" ] || [ -e "$AUTOSTART_FILE" ]; then
+            flatsync_processes="$(ps aux | grep -E "flatsync -s|--automatic" | grep -v grep | tr -s ' ' | cut -d ' ' -f 2 | tr '\n' ' ')"
+            kill $flatsync_processes 1>/dev/null
             rm -f "$LOCKFILE"
             rm -f "$AUTOSTART_FILE"
-            kill $(ps aux | grep "flatsync" | grep -v grep | tr -s ' ' | cut -d ' ' -f 2)
             printf "Flatsync killed — will not run automatically anymore. \n"
         else
             printf "Flatsync isn't setup to run — nothing to kill. \n"
@@ -102,6 +106,7 @@ Exec=/usr/local/bin/flatsync --automatic --schedule $SCHEDULE_DURATION
 Terminal=false
 Type=Application
 EOF
+        printf "FlatSync will run each %s minutes on next login." "$SCHEDULE_DURATION"
         exit 0
         ;;
     --id)
