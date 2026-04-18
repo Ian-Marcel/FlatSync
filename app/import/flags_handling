@@ -69,9 +69,12 @@ while (($# > 0)); do
         exit 0
         ;;
     -k | --kill-schedule)
-        if [ -e "$LOCKFILE" ] || [ -e "$AUTOSTART_FILE" ]; then
+        if [ -e "$LOCKFILE" ] && [ -e "$AUTOSTART_FILE" ]; then
             flatsync_processes="$(ps aux | grep -E "flatsync -s|--automatic" | grep -v grep | tr -s ' ' | cut -d ' ' -f 2 | tr '\n' ' ')"
-            kill $flatsync_processes 1>/dev/null
+            rm -f "$LOCKFILE"
+            rm -f "$AUTOSTART_FILE"
+            printf "Flatsync killed — will not run automatically anymore. \n"
+        elif [ -e "$AUTOSTART_FILE" ]; then
             rm -f "$LOCKFILE"
             rm -f "$AUTOSTART_FILE"
             printf "Flatsync killed — will not run automatically anymore. \n"

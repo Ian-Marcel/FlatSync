@@ -1,31 +1,32 @@
 #!/usr/bin/env bash
 
 exit_flatsync() {
-if [ "$NO_TODO" -lt 2 ]; then
-	for old_items in "$FLATSYNC_CACHE"/*; do
-		shred -u "$old_items"
-	done
-fi
-###
-cd "$FLATSYNC_GIT" || exit
+    if [ "$NO_TODO" -lt 2 ]; then
+        for old_items in "$FLATSYNC_CACHE"/*; do
+            shred -u "$old_items"
+        done
+    fi
+    ###
+    cd "$FLATSYNC_GIT" || exit 1
 
-flatpak list --columns=application --app |
-	tee -p remote_flatpaks &>/dev/null
+    flatpak list --columns=application --app |
+        tee -p remote_flatpaks &>/dev/null
 
-if [ -d "$FLATSYNC_GIT"/overrides ]; then
-	rm -rf "$FLATSYNC_GIT"/overrides
-fi
-cp -aT "$HOME"/.local/share/flatpak/overrides "$FLATSYNC_GIT"/overrides
+    if [ -d "$FLATSYNC_GIT"/overrides ]; then
+        rm -rf "$FLATSYNC_GIT"/overrides
+    fi
+    cp -aT "$HOME"/.local/share/flatpak/overrides "$FLATSYNC_GIT"/overrides
 
-LUD_FLATSYNC_ID=$(printf "%s" "$(cat /usr/share/flatsync/flatsync-id)")
-printf "%s\n%s" "$(cat /etc/hostname)" "$LUD_FLATSYNC_ID" 1>last_updated_device
-###
-git add .
-if git commit -q -m "$(date "%H:%M:%S - %d/%m/%Y")" &>/dev/null; then
-	git push -q
-else
-	exit 0
-fi
-exit 0
+    LUD_FLATSYNC_ID=$(</usr/share/flatsync/flatsync-id)
+    printf "%s\n%s" "$HOSTNAME" "$LUD_FLATSYNC_ID" 1>last_updated_device
+    ###
+    git add .
+    if git commit -q -m "$(date "%H:%M:%S - %d/%m/%Y")" &>/dev/null; then
+        git push -q
+    else
+        silencer_check printf "${BGREEN}Nothing to sync. ${NC}\n"
+        exit 0
+    fi
+    silencer_check printf "${BGREEN}Sync completed! ${NC}\n"
+    exit 0
 }
-
