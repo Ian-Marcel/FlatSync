@@ -105,7 +105,7 @@ while (($# > 0)); do
 Hidden=false
 Name=Flatsync
 Comment=Runs FlatSync periodically.
-Exec=/usr/local/bin/flatsync --schedule $SCHEDULE_DURATION
+Exec=/usr/local/bin/flatsync --stop-schedule && /usr/local/bin/flatsync --schedule $SCHEDULE_DURATION
 Terminal=false
 Type=Application
 EOF
