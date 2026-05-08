@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-LOCKFILE="/run/user/$UID/flatsync.lock"
+LOCKFILE="$HOME/.local/state/flatsync.lock"
 AUTOSTART_FILE="$HOME/.config/autostart/FlatSync.desktop"
 INT_REGEX='^[0-9]+$'
 
