@@ -112,7 +112,7 @@ while (($# > 0)); do
 [Desktop Entry]
 Type=Application
 Name=Flatsync
-Exec=/usr/local/bin/flatsync --schedule 1
+Exec=/usr/local/bin/flatsync --schedule $SCHEDULE_DURATION
 X-GNOME-Autostart-enabled=true
 Hidden=false
 Comment=Runs FlatSync periodically.
