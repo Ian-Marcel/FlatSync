@@ -63,8 +63,6 @@ while (($# > 0)); do
         ;;
     -S | --stop-schedule)
         if [ -e "$LOCKFILE" ]; then
-            # flatsync_processes=$(tail -n1 "$LOCKFILE")
-            # kill $flatsync_processes 1>/dev/null
             kill "$(cat /run/user/$UID/flatsync.pid)" &&
                 rm /run/user/$UID/flatsync.pid
             rm -f "$LOCKFILE"
@@ -76,9 +74,9 @@ while (($# > 0)); do
         ;;
     -k | --kill-schedule)
         if [ -e "$LOCKFILE" ] && [ -e "$AUTOSTART_FILE" ]; then
-            flatsync_processes="$(ps aux | grep -E "flatsync -s|--automatic" | grep -v grep | tr -s ' ' | cut -d ' ' -f 2 | tr '\n' ' ')"
+            kill "$(cat /run/user/$UID/flatsync.pid)" &&
+                rm /run/user/$UID/flatsync.pid
             rm -f "$LOCKFILE"
-            rm -f "$AUTOSTART_FILE"
             printf "Flatsync killed — will not run automatically anymore. \n"
         elif [ -e "$AUTOSTART_FILE" ]; then
             rm -f "$LOCKFILE"
@@ -112,12 +110,13 @@ while (($# > 0)); do
         fi
         cat >"$AUTOSTART_FILE" <<EOF
 [Desktop Entry]
-Hidden=false
-Name=Flatsync
-Comment=Runs FlatSync periodically.
-Exec=/usr/local/bin/flatsync --schedule $SCHEDULE_DURATION
-Terminal=false
 Type=Application
+Name=Flatsync
+Exec=/usr/local/bin/flatsync --schedule 1
+X-GNOME-Autostart-enabled=true
+Hidden=false
+Comment=Runs FlatSync periodically.
+Terminal=false
 EOF
         printf "FlatSync will run each %s minutes on next login." "$SCHEDULE_DURATION"
         exit 0
