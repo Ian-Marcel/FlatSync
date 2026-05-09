@@ -27,9 +27,9 @@ source "$FLATSYNC_IMPORTS"/global_variables
 source "$FLATSYNC_IMPORTS"/pure_bash_functions
 source "$FLATSYNC_IMPORTS"/progress_bar_by_task_completion
 source "$FLATSYNC_IMPORTS"/wait_with_spinner_loading
-source "$FLATSYNC_IMPORTS"/flags_handling
 source "$FLATSYNC_IMPORTS"/check_directories
 source "$FLATSYNC_IMPORTS"/exit_flatsync
+source "$FLATSYNC_IMPORTS"/flags_handling
 ############
 
 silencer_check printf "${BYELLOW}Checking network connectivity...${NC}\n"

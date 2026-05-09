@@ -1,8 +1,11 @@
 #!/usr/bin/env bash
 
-LOCKFILE="$HOME/.local/state/flatsync.lock"
+LOCKFILE=/run/user/"$UID"/flatsync.lock
 AUTOSTART_FILE="$HOME/.config/autostart/FlatSync.desktop"
 INT_REGEX='^[0-9]+$'
+
+# function check-dir_cache
+check-dir_cache
 
 # Main flag handling
 while (($# > 0)); do
@@ -18,14 +21,13 @@ while (($# > 0)); do
     -a | --automatic)
         AUTO_OP_FLATPAKS=true
         VERBOSE=false
+        touch "$FLATSYNC_CACHE/running_automaticaly"
+        sleep 1s
+        rm "$FLATSYNC_CACHE/running_automaticaly"
         ;;
     -s | --schedule)
         shift
-        if [ ! "${1-}" ]; then
-            int=10
-        else
-            int=$1
-        fi
+        int=${1:-10}
         if [[ ! "$int" =~ $INT_REGEX ]]; then
             printf "Error: \"%s\" is an invalid value! \n" "$int"
             printf "Flag '-s' | '--schedule' doesn't support chars or floats.\n"
@@ -36,31 +38,35 @@ while (($# > 0)); do
             SCHEDULE_DURATION=$((int * 60))
         fi
         if [ -e "$LOCKFILE" ]; then
-            CURRENT_SCHEDULE=$(head -n 1 "$LOCKFILE")
+            CURRENT_SCHEDULE=$(cat "$FLATSYNC_CACHE"/shedule_duration)
             CURRENT_DURATION=$((CURRENT_SCHEDULE / 60))
             printf "Scheduler is already enabled (lockfile exists: %s)! \n" "$LOCKFILE"
             printf "  '---> Currently FlatSync runs each: %s minutes\n" "$CURRENT_DURATION"
             printf "Run 'flatsync -S' to stop the current schedule. \n"
             exit 1
         else
-            printf "%s" "$SCHEDULE_DURATION" 1>"$LOCKFILE"
+            printf "%s" "$SCHEDULE_DURATION" >"$FLATSYNC_CACHE"/shedule_duration
         fi
+        touch "$LOCKFILE"
         schedule_function() {
             while [ -e "$LOCKFILE" ]; do
                 flatsync --automatic
                 sleep ${SCHEDULE_DURATION}s
             done
         }
-        schedule_function &>/dev/null &
+        # flock -n "$LOCKFILE" -c schedule_function >/dev/null 2>&1 &
+        schedule_function &
+        printf "%s" "$!" >"${LOCKFILE%%.*}.pid"
         CURRENT_DURATION=$((SCHEDULE_DURATION / 60))
-        printf "FlatSync will run each %s minutes from now on." "$CURRENT_DURATION"
-        # printf "\n%s" "$!" >> "$LOCKFILE"
+        printf "FlatSync will run each %s minutes from now on. \n" "$CURRENT_DURATION"
         exit 0
         ;;
     -S | --stop-schedule)
         if [ -e "$LOCKFILE" ]; then
-            flatsync_processes="$(ps aux | grep -E "flatsync -s|--automatic" | grep -v grep | tr -s ' ' | cut -d ' ' -f 2 | tr '\n' ' ')"
-            kill $flatsync_processes 1>/dev/null
+            # flatsync_processes=$(tail -n1 "$LOCKFILE")
+            # kill $flatsync_processes 1>/dev/null
+            kill "$(cat /run/user/$UID/flatsync.pid)" &&
+                rm /run/user/$UID/flatsync.pid
             rm -f "$LOCKFILE"
             printf "Flatsync deactivated — will not run automatically for this session. \n"
         else
@@ -85,11 +91,7 @@ while (($# > 0)); do
         ;;
     --perma-schedule)
         shift
-        if [ ! "${1-}" ]; then
-            int=10
-        else
-            int=$1
-        fi
+        int=${1:-10}
         if [[ ! "$int" =~ $INT_REGEX ]]; then
             printf "Error: \"%s\" is an invalid value! \n" "$int"
             printf "Flag '-s'|'--schedule' doesn't support chars or floats.\n"
@@ -100,6 +102,14 @@ while (($# > 0)); do
             SCHEDULE_DURATION=$int
         fi
 
+        if [[ -e "$AUTOSTART_FILE" ]]; then
+            CURRENT_SCHEDULE=$(cat "$FLATSYNC_CACHE"/shedule_duration)
+            CURRENT_DURATION=$((CURRENT_SCHEDULE / 60))
+            printf "Permanent scheduler is already enabled (autostart file exists: %s)! \n" "$AUTOSTART_FILE"
+            printf "   '---> Currently FlatSync runs each: %s minutes\n" "$CURRENT_DURATION"
+            printf "Run 'flatsync -k' to stop the current schedule. \n"
+            exit 1
+        fi
         cat >"$AUTOSTART_FILE" <<EOF
 [Desktop Entry]
 Hidden=false
