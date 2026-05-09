@@ -118,7 +118,7 @@ Hidden=false
 Comment=Runs FlatSync periodically.
 Terminal=false
 EOF
-        printf "FlatSync will run each %s minutes on next login." "$SCHEDULE_DURATION"
+        printf "FlatSync will run each %s minutes on next login. \n" "$SCHEDULE_DURATION"
         exit 0
         ;;
     --id)
