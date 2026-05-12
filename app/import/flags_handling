@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
-LOCKFILE=/run/user/"$UID"/flatsync.lock
-AUTOSTART_FILE="$HOME/.config/systemd/user/flatsync.service"
+SERVICE_DIR="$HOME/.config/systemd/user/"
 INT_REGEX='^[0-9]+$'
 
 # function check-dir_cache
@@ -23,74 +22,17 @@ while (($# > 0)); do
         VERBOSE=false
         printf "Last run: \n%s" $(date "%H:%M:%S - %d/%m/%Y") >"$FLATSYNC_CACHE/running_automaticaly"
         ;;
-    -s | --schedule)
+    -R | --remove-systemd)
+        systemctl --user disable --now flatsync.timer >/dev/null 2>&1 || true
+        rm -f "$SERVICE_DIR"/flatsync.{timer,service}
+        systemctl --user daemon-reload
+        ;;
+    -S | --systemd)
         shift
         int=${1:-10}
         if [[ ! "$int" =~ $INT_REGEX ]]; then
             printf "Error: \"%s\" is an invalid value! \n" "$int"
-            printf "Flag '-s' | '--schedule' doesn't support chars or floats.\n"
-
-            printf "SCHEDULE FLAG FAILED DUE TO INVALID VALUE!" &>/dev/null # 1
-            exit 1
-        else
-            SCHEDULE_DURATION=$((int * 60))
-        fi
-        if [ -e "$LOCKFILE" ]; then
-            CURRENT_SCHEDULE=$(cat "$FLATSYNC_CACHE"/shedule_duration)
-            CURRENT_DURATION=$((CURRENT_SCHEDULE / 60))
-            printf "Scheduler is already enabled (lockfile exists: %s)! \n" "$LOCKFILE"
-            printf "  '---> Currently FlatSync runs each: %s minutes\n" "$CURRENT_DURATION"
-            printf "Run 'flatsync -S' to stop the current schedule. \n"
-            exit 1
-        else
-            printf "%s" "$SCHEDULE_DURATION" >"$FLATSYNC_CACHE"/shedule_duration
-        fi
-        touch "$LOCKFILE"
-        schedule_function() {
-            while [ -e "$LOCKFILE" ]; do
-                flatsync --automatic
-                sleep ${SCHEDULE_DURATION}s
-            done
-        }
-        # flock -n "$LOCKFILE" -c schedule_function >/dev/null 2>&1 &
-        schedule_function &
-        printf "%s" "$!" >"${LOCKFILE%%.*}.pid"
-        CURRENT_DURATION=$((SCHEDULE_DURATION / 60))
-        printf "FlatSync will run each %s minutes from now on. \n" "$CURRENT_DURATION"
-        exit 0
-        ;;
-    -S | --stop-schedule)
-        if [ -e "$LOCKFILE" ]; then
-            kill "$(cat /run/user/$UID/flatsync.pid)" &&
-                rm /run/user/$UID/flatsync.pid
-            rm -f "$LOCKFILE"
-            printf "Flatsync deactivated — will not run automatically for this session. \n"
-        else
-            printf "Flatsync isn't running anyway — nothing to deactivate. \n"
-        fi
-        exit 0
-        ;;
-    -k | --kill-schedule)
-        if [ -e "$LOCKFILE" ] && [ -e "$AUTOSTART_FILE" ]; then
-            systemctl --user disable --now flatsync.service
-            rm -f "$AUTOSTART_FILE"
-            systemctl --user daemon-reload
-            printf "Flatsync killed — will not run automatically anymore. \n"
-        elif [ -e "$AUTOSTART_FILE" ]; then
-            rm -f "$LOCKFILE"
-            rm -f "$AUTOSTART_FILE"
-            printf "Flatsync killed — will not run automatically anymore. \n"
-        else
-            printf "Flatsync isn't setup to run — nothing to kill. \n"
-        fi
-        exit 0
-        ;;
-    -SYS | --system-schedule)
-        shift
-        int=${1:-10}
-        if [[ ! "$int" =~ $INT_REGEX ]]; then
-            printf "Error: \"%s\" is an invalid value! \n" "$int"
-            printf "Flag '-s'|'--schedule' doesn't support chars or floats.\n"
+            printf "Flag '-S'|'--systemd' doesn't support chars or floats.\n"
 
             printf "SCHEDULE FLAG FAILED DUE TO INVALID VALUE!" &>/dev/null # 1
             exit 1
@@ -99,30 +41,35 @@ while (($# > 0)); do
             mkdir -p "$HOME"/.config/systemd/user
         fi
 
-        if [[ -e "$AUTOSTART_FILE" ]]; then
-            CURRENT_SCHEDULE=$(cat "$FLATSYNC_CACHE"/shedule_duration)
-            CURRENT_DURATION=$((CURRENT_SCHEDULE / 60))
-            printf "Permanent scheduler is already enabled (autostart file exists: %s)! \n" "$AUTOSTART_FILE"
-            # printf "   '---> Currently FlatSync runs each: %s minutes\n" "$CURRENT_DURATION"
-            printf "Run 'flatsync -k' to stop the current schedule. \n"
-            exit 1
+        if systemctl --user is-enabled --quiet flatsync.timer; then
+            systemctl --user disable --now flatsync.timer >/dev/null 2>&1 || true
         fi
-        cat >"$AUTOSTART_FILE" <<EOF
+        cat >"$SERVICE_DIR"/flatsync.service <<EOF
 [Unit]
-Description=FlatSync periodic runner
-After=network.target
+Description=Run FlatSync
 
 [Service]
-Type=simple
-ExecStart=/usr/local/bin/flatsync --schedule $SCHEDULE_DURATION
-Restart=on-failure
+Type=oneshot
+ExecStart=/usr/local/bin/flatsync --automatic
+Nice=10
+IOSchedulingClass=best-effort
+IOSchedulingPriority=7
+EOF
+        cat >"$SERVICE_DIR"/flatsync.timer <<EOF
+[Unit]
+Description=Run FlatSync every ${SCHEDULE_DURATION} minutes
+
+[Timer]
+OnBootSec=1min
+OnUnitActiveSec=${SCHEDULE_DURATION}min
+Persistent=true
 
 [Install]
-WantedBy=default.target
+WantedBy=timers.target
 EOF
         systemctl --user daemon-reload
-        systemctl --user enable --now flatsync.service
-        printf "FlatSync will run each %s minutes from on. \n" "$SCHEDULE_DURATION"
+        systemctl --user enable --now flatsync.timer
+        printf "FlatSync will run every %s minutes from now on.\n" "$SCHEDULE_DURATION"
         exit 0
         ;;
     --id)
