@@ -31,60 +31,66 @@ The previous command also detects whether `flatsync` is installed and performs a
 
 - You can check latest version notes at the [releases page](https://github.com/Ian-Marcel/FlatSync/releases/latest).
 
+### Uninstall
+Just run the following command and it will remove flatsync objects:
+```sh
+sudo rm -rf /usr/{local/bin,share}/flatsync
+```
+
 ## Usage
 
 ```sh
 flatsync [FLAGS]
-````
+```
 
 ### Flags
 
-- `--automatic`, `-a`
-  Automatically and silently performs installations and removals.
+* `--automatic`, `-a`
+  Automatically and silently performs Flatpak installations and removals.
 
-- `--schedule <minutes>`, `-s <minutes>`
-  Periodically runs FlatSync every `<minutes>` after an initial execution.
+* `--systemd <minutes>`, `-S <minutes>`
+  Creates and enables a user-level `systemd` timer for FlatSync.
+
+  The timer automatically runs FlatSync every `<minutes>`.
   Default interval is **10 minutes**.
+
   **Example:**
 
   ```sh
-  flatsync -s 15
-  # Runs FlatSync once, then repeats every 15 minutes
+  flatsync -S 15
+  # Runs FlatSync automatically every 15 minutes
   ```
 
-- `--perma-schedule <minutes>`
-  Creates a `.desktop` file in `~/.config/autostart/` to automatically run FlatSync at login
-  with `--automatic` and `--schedule`.
-  Default schedule timing is **10 minutes**.
+  This creates:
+
+  ```text
+  ~/.config/systemd/user/flatsync.service
+  ~/.config/systemd/user/flatsync.timer
+  ```
+
+* `--remove-systemd`, `-R`
+  Stops, disables, and removes the FlatSync `systemd` timer and service files.
+
   **Example:**
 
   ```sh
-  flatsync --perma-schedule 30
-  # Runs once at login, then repeats every 30 minutes
+  flatsync -R
   ```
 
-  > Note: To apply the schedule FlatSync in the current session, re-run `flatsync` with `--schedule` and with the same interval.
-
-- `--stop-schedule`, `-S`
-  Stops the current scheduled process. Use `--kill-schedule` if the `.dektop` file exists.
-
-- `--kill-schedule`, `-k`
-  Stops the schedule and removes the `.desktop` file from `~/.config/autostart/`.
-
-- `--id <action>`
+* `--id <action>`
   Manage your device’s FlatSync ID. Use with one of the following actions:
 
-  - `create` — Generates a unique identifier for the device (requires `sudo`)
-  - `get` — Displays the current device ID
+  * `create` — Generates a unique identifier for the device (requires `sudo`)
+  * `get` — Displays the current device ID
 
-- `--version`, `-v`
-  Displays the current version of FlatSync.
+* `--version`, `-v`
+  Displays the current FlatSync version.
 
-- `--debug`, `-D`
+* `--debug`, `-D`
   Enables verbose debug output. Useful for development or troubleshooting.
 
-- `--help`, `-h`
-  Print the usage of FlatSync.
+* `--help`, `-h`
+  Displays FlatSync usage information.
 
 ## RoadMap
 
