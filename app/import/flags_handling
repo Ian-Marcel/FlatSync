@@ -20,7 +20,7 @@ while (($# > 0)); do
     -a | --automatic)
         AUTO_OP_FLATPAKS=true
         VERBOSE=false
-        printf "Last run: \n%s" $(date "%H:%M:%S - %d/%m/%Y") >"$FLATSYNC_CACHE/running_automaticaly"
+        printf "Last run: \n%s" "$(date "%H:%M:%S - %d/%m/%Y")" >"$FLATSYNC_CACHE/running_automaticaly"
         ;;
     -R | --remove-systemd)
         systemctl --user disable --now flatsync.timer >/dev/null 2>&1 || true
