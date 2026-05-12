@@ -115,7 +115,6 @@ After=network.target
 [Service]
 Type=simple
 ExecStart=/usr/local/bin/flatsync --schedule $SCHEDULE_DURATION
-ExecStop=/usr/local/bin/flatsync --stop-schedule
 Restart=on-failure
 
 [Install]
