@@ -21,9 +21,7 @@ while (($# > 0)); do
     -a | --automatic)
         AUTO_OP_FLATPAKS=true
         VERBOSE=false
-        touch "$FLATSYNC_CACHE/running_automaticaly"
-        sleep 1s
-        rm "$FLATSYNC_CACHE/running_automaticaly"
+        printf "Last run: \n%s" $(date "%H:%M:%S - %d/%m/%Y") >"$FLATSYNC_CACHE/running_automaticaly"
         ;;
     -s | --schedule)
         shift
@@ -74,10 +72,9 @@ while (($# > 0)); do
         ;;
     -k | --kill-schedule)
         if [ -e "$LOCKFILE" ] && [ -e "$AUTOSTART_FILE" ]; then
-            kill "$(cat /run/user/$UID/flatsync.pid)" &&
-                rm /run/user/$UID/flatsync.pid
-            rm -f "$LOCKFILE"
+            systemctl --user disable --now flatsync.service
             rm -f "$AUTOSTART_FILE"
+            systemctl --user daemon-reload
             printf "Flatsync killed — will not run automatically anymore. \n"
         elif [ -e "$AUTOSTART_FILE" ]; then
             rm -f "$LOCKFILE"
@@ -88,7 +85,7 @@ while (($# > 0)); do
         fi
         exit 0
         ;;
-    --perma-schedule)
+    -SYS | --system-schedule)
         shift
         int=${1:-10}
         if [[ ! "$int" =~ $INT_REGEX ]]; then
