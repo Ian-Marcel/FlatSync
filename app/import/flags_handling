@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 LOCKFILE=/run/user/"$UID"/flatsync.lock
-AUTOSTART_FILE="$HOME/.config/autostart/FlatSync.desktop"
+AUTOSTART_FILE="$HOME/.config/systemd/user/flatsync.service"
 INT_REGEX='^[0-9]+$'
 
 # function check-dir_cache
@@ -99,27 +99,34 @@ while (($# > 0)); do
             exit 1
         else
             SCHEDULE_DURATION=$int
+            mkdir -p "$HOME"/.config/systemd/user
         fi
 
         if [[ -e "$AUTOSTART_FILE" ]]; then
             CURRENT_SCHEDULE=$(cat "$FLATSYNC_CACHE"/shedule_duration)
             CURRENT_DURATION=$((CURRENT_SCHEDULE / 60))
             printf "Permanent scheduler is already enabled (autostart file exists: %s)! \n" "$AUTOSTART_FILE"
-            printf "   '---> Currently FlatSync runs each: %s minutes\n" "$CURRENT_DURATION"
+            # printf "   '---> Currently FlatSync runs each: %s minutes\n" "$CURRENT_DURATION"
             printf "Run 'flatsync -k' to stop the current schedule. \n"
             exit 1
         fi
         cat >"$AUTOSTART_FILE" <<EOF
-[Desktop Entry]
-Type=Application
-Name=Flatsync
-Exec=/usr/local/bin/flatsync --schedule $SCHEDULE_DURATION
-X-GNOME-Autostart-enabled=true
-Hidden=false
-Comment=Runs FlatSync periodically.
-Terminal=false
+[Unit]
+Description=FlatSync periodic runner
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/flatsync --schedule $SCHEDULE_DURATION
+ExecStop=/usr/local/bin/flatsync --stop-schedule
+Restart=on-failure
+
+[Install]
+WantedBy=default.target
 EOF
-        printf "FlatSync will run each %s minutes on next login. \n" "$SCHEDULE_DURATION"
+        systemctl --user daemon-reload
+        systemctl --user enable --now flatsync.service
+        printf "FlatSync will run each %s minutes from on. \n" "$SCHEDULE_DURATION"
         exit 0
         ;;
     --id)
