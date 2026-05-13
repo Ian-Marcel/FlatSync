@@ -26,6 +26,7 @@ while (($# > 0)); do
         systemctl --user disable --now flatsync.timer >/dev/null 2>&1 || true
         rm -f "$SERVICE_DIR"/flatsync.{timer,service}
         systemctl --user daemon-reload
+        exit 0
         ;;
     -S | --systemd)
         shift
@@ -43,6 +44,9 @@ while (($# > 0)); do
 
         if systemctl --user is-enabled --quiet flatsync.timer; then
             systemctl --user disable --now flatsync.timer >/dev/null 2>&1 || true
+            CH_SCHEDULE=true
+        else
+            CH_SCHEDULE=false
         fi
         cat >"$SERVICE_DIR"/flatsync.service <<EOF
 [Unit]
@@ -62,23 +66,26 @@ Description=Run FlatSync every ${SCHEDULE_DURATION} minutes
 [Timer]
 OnBootSec=1min
 OnUnitActiveSec=${SCHEDULE_DURATION}min
+AccuracySec=1s
 Persistent=true
 
 [Install]
 WantedBy=timers.target
 EOF
         systemctl --user daemon-reload
-        systemctl --user enable --now flatsync.timer
+        if [ $CH_SCHEDULE = true ]; then
+            systemctl --user enable --now flatsync.timer
+        elif [ $CH_SCHEDULE = false ]; then
+            systemctl --user reset-failed
+            systemctl --user enable flatsync.timer
+            systemctl --user restart flatsync.timer
+        fi
         printf "FlatSync will run every %s minutes from now on.\n" "$SCHEDULE_DURATION"
         exit 0
         ;;
     --id)
         shift
-        if [ ! "${1-}" ]; then
-            option="get"
-        else
-            option=$1
-        fi
+        option=${1:-"get"}
         if [ "$option" = "create" ]; then
             if [ "$(whoami)" != root ]; then
                 if ! sudo -v; then
