@@ -86,7 +86,8 @@ EOF
     --id)
         shift
         option=${1:-"get"}
-        if [ "$option" = "create" ]; then
+        case "$option" in
+        "create")
             if [ "$(whoami)" != root ]; then
                 if ! sudo -v; then
                     echo -e "${BRED}Failed to elevate privileges! \n${BYELLOW}Exiting...${NC}\n"
@@ -101,12 +102,12 @@ EOF
                 fi
             fi
             ###
-            printf "%s" "$(openssl rand -base64 32)" |
-                sudo tee -p /usr/share/flatsync/flatsync-id 1>/dev/null
+            printf "%s" "$(openssl rand -base64 32)" >/usr/share/flatsync/flatsync-id
             sudo chown root:root /usr/share/flatsync/flatsync-id
             sudo chmod 644 /usr/share/flatsync/flatsync-id
             ###
-            if [ "${UPDATE_LUD-}" ] && [ "$UPDATE_LUD" = true ]; then
+            UPDATE_LUD=${UPDATE_LUD:-"true"}
+            if [ "$UPDATE_LUD" = true ]; then
                 cd "$FLATSYNC_GIT" || exit
                 LUD_FLATSYNC_ID=$(printf "%s" "$(cat /usr/share/flatsync/flatsync-id)")
                 printf "%s\n%s" "$(cat /etc/hostname)" "$LUD_FLATSYNC_ID" 1>last_updated_device
@@ -119,7 +120,8 @@ EOF
             fi
             ###
             exit 0
-        elif [ "$option" = "get" ]; then
+            ;;
+        "get")
             if [ -s /usr/share/flatsync/flatsync-id ]; then
                 printf "${BGREEN}The current ID of this device is:${NC}\n%s\n" \
                     "$(cat /usr/share/flatsync/flatsync-id)"
@@ -127,10 +129,12 @@ EOF
                 printf "${BRED}No ID found!!! Run ${BCYAN}flatsync --id=make${BRED} to create it ${NC}\n"
             fi
             exit 0
-        elif [ "$option" != "get" ] && [ "$option" != "create" ]; then
+            ;;
+        *)
             echo "Error! Flag '--id' requires an option ('create' or 'get')!"
             exit 1
-        fi
+            ;;
+        esac
         ;;
     -?* | *)
         printf "Error: Unknown flag '%s'\n" "$1"
