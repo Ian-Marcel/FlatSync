@@ -7,10 +7,7 @@ exit_flatsync_grace() {
         done
     fi
     ###
-    if ! cd "$FLATSYNC_GIT"; then
-        echo "Error! Flatsync git repository not found at: \n$FLATSYNC_GIT\nExiting"
-        rm /run/user/$UID/flatsync.lock && exit 1
-    fi
+    cd "$FLATSYNC_GIT"
 
     flatpak list --columns=application --app |
         tee -p remote_flatpaks &>/dev/null

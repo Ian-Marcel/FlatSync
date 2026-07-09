@@ -67,10 +67,7 @@ source "$FLATSYNC_IMPORTS"/git_config_default_values
 check-dir_git
 check-dir_ssh
 
-if ! cd "$FLATSYNC_GIT"; then
-    echo "Error! Flatsync git repository not found at: \n$FLATSYNC_GIT\nExiting"
-    rm /run/user/$UID/flatsync.lock && exit 1
-fi
+cd "$FLATSYNC_GIT"
 
 if [ -d "$FLATSYNC_GIT"/.git ]; then
     ssh-add -q "$FLATSYNC_SSH"/flatsync_key 2>/dev/null
@@ -215,7 +212,11 @@ check-dir_cache
 
 LUD_HOSTNAME=$(head "$FLATSYNC_GIT"/last_updated_device -n 1)
 LUD_FLATSYNC_ID=$(tail "$FLATSYNC_GIT"/last_updated_device -n 1)
-FLATSYNC_ID=$(printf "%s" "$(cat /usr/share/flatsync/flatsync-id)")
+if [ -f /usr/share/flatsync/flatsync-id ]; then
+    FLATSYNC_ID=$(printf "%s" "$(cat /usr/share/flatsync/flatsync-id)")
+else
+    echo -e "This device ID wasn't found at: \n   /usr/share/flatsync/flatsync-id \nPlease create with \`flatsync --id create\` command"
+fi
 set +e +u +o pipefail
 
 if [ -e "$FLATSYNC_GIT"/last_updated_device ] && { [ "$LUD_HOSTNAME" = "$(cat /etc/hostname)" ] && [ "$LUD_FLATSYNC_ID" = "$FLATSYNC_ID" ]; }; then
