@@ -1,13 +1,16 @@
 #!/usr/bin/env bash
 
-exit_flatsync() {
+exit_flatsync_grace() {
     if [ "$NO_TODO" -lt 2 ]; then
         for old_items in "$FLATSYNC_CACHE"/*; do
             shred -u "$old_items"
         done
     fi
     ###
-    cd "$FLATSYNC_GIT" || rm /run/user/$UID/flatsync.lock && exit 1
+    if ! cd "$FLATSYNC_GIT"; then
+        echo "Error! Flatsync git repository not found at: \n$FLATSYNC_GIT\nExiting"
+        rm /run/user/$UID/flatsync.lock && exit 1
+    fi
 
     flatpak list --columns=application --app |
         tee -p remote_flatpaks &>/dev/null

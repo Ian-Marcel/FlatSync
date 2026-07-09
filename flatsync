@@ -67,7 +67,10 @@ source "$FLATSYNC_IMPORTS"/git_config_default_values
 check-dir_git
 check-dir_ssh
 
-cd "$FLATSYNC_GIT" || rm /run/user/$UID/flatsync.lock && exit
+if ! cd "$FLATSYNC_GIT"; then
+    echo "Error! Flatsync git repository not found at: \n$FLATSYNC_GIT\nExiting"
+    rm /run/user/$UID/flatsync.lock && exit 1
+fi
 
 if [ -d "$FLATSYNC_GIT"/.git ]; then
     ssh-add -q "$FLATSYNC_SSH"/flatsync_key 2>/dev/null
@@ -218,7 +221,7 @@ set +e +u +o pipefail
 if [ -e "$FLATSYNC_GIT"/last_updated_device ] && { [ "$LUD_HOSTNAME" = "$(cat /etc/hostname)" ] && [ "$LUD_FLATSYNC_ID" = "$FLATSYNC_ID" ]; }; then
 
     NO_TODO=2
-    exit_flatsync
+    exit_flatsync_grace
 
 else
 
@@ -396,4 +399,4 @@ elif [ -d "$FLATSYNC_GIT"/overrides ] && ! [ -d "$HOME"/.local/share/flatpak/ove
 fi
 ############
 
-exit_flatsync
+exit_flatsync_grace

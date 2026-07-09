@@ -108,7 +108,10 @@ EOF
             ###
             UPDATE_LUD=${UPDATE_LUD:-"true"}
             if [ "$UPDATE_LUD" = true ]; then
-                cd "$FLATSYNC_GIT" || exit
+                if ! cd "$FLATSYNC_GIT"; then
+                    echo "Error! Flatsync git repository not found at: \n$FLATSYNC_GIT\nExiting"
+                    rm /run/user/$UID/flatsync.lock && exit 1
+                fi
                 LUD_FLATSYNC_ID=$(printf "%s" "$(cat /usr/share/flatsync/flatsync-id)")
                 printf "%s\n%s" "$(cat /etc/hostname)" "$LUD_FLATSYNC_ID" 1>last_updated_device
                 git add .
