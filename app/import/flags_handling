@@ -15,8 +15,7 @@ while (($# > 0)); do
         ;;
     -v | --version)
         printf "flatsync: ${FLATSYNC_VERSION}v\n"
-        rm /run/user/$UID/flatsync.lock
-        exit 0
+        exitsh 0
         ;;
     -a | --automatic)
         AUTO_OP_FLATPAKS=true
@@ -27,8 +26,7 @@ while (($# > 0)); do
         systemctl --user disable --now flatsync.timer >/dev/null 2>&1 || true
         rm -f "$SERVICE_DIR"/flatsync.{timer,service}
         systemctl --user daemon-reload
-        rm /run/user/$UID/flatsync.lock
-        exit 0
+        exitsh 0
         ;;
     -S | --systemd)
         shift
@@ -38,8 +36,7 @@ while (($# > 0)); do
             printf "Flag '-S'|'--systemd' doesn't support chars or floats.\n"
 
             printf "SCHEDULE FLAG FAILED DUE TO INVALID VALUE!" &>/dev/null # 1
-            rm /run/user/$UID/flatsync.lock
-            exit 1
+            exitsh 1
         else
             SCHEDULE_DURATION=$int
             mkdir -p "$HOME"/.config/systemd/user
@@ -84,8 +81,7 @@ EOF
             systemctl --user restart flatsync.timer
         fi
         printf "FlatSync will run every %s minutes from now on.\n" "$SCHEDULE_DURATION"
-        rm /run/user/$UID/flatsync.lock
-        exit 0
+        exitsh 0
         ;;
     --id)
         shift
@@ -95,8 +91,7 @@ EOF
             if [ "$(whoami)" != root ]; then
                 if ! sudo -v; then
                     echo -e "${BRED}Failed to elevate privileges! \n${BYELLOW}Exiting...${NC}\n"
-                    rm /run/user/$UID/flatsync.lock
-                    exit 1
+                    exitsh 1
                 fi
             fi
             if [ -s "$FLATSYNC_GIT"/last_updated_device ] && [ -s /usr/share/flatsync/flatsync-id ]; then
@@ -120,13 +115,11 @@ EOF
                 if git commit -q -m "$(date "%H:%M:%S - %d/%m/%Y")" &>/dev/null; then
                     git push -q
                 else
-                    rm /run/user/$UID/flatsync.lock
-                    exit 0
+                    exitsh 0
                 fi
             fi
             ###
-            rm /run/user/$UID/flatsync.lock
-            exit 0
+            exitsh 0
             ;;
         "get")
             if [ -s /usr/share/flatsync/flatsync-id ]; then
@@ -136,21 +129,18 @@ EOF
                 printf "${BRED}No ID found!!! Run ${BCYAN}flatsync --id=make${BRED} to create it ${NC}\n"
             fi
 
-            rm /run/user/$UID/flatsync.lock
-            exit 0
+            exitsh 0
             ;;
         *)
             echo "Error! Flag '--id' requires an option ('create' or 'get')!"
 
-            rm /run/user/$UID/flatsync.lock
-            exit 1
+            exitsh 1
             ;;
         esac
         ;;
     -?* | *)
         printf "Error: Unknown flag '%s'\n" "$1"
-        rm /run/user/$UID/flatsync.lock
-        exit 1
+        exitsh 1
         ;;
     esac
     shift

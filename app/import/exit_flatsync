@@ -25,10 +25,8 @@ exit_flatsync_grace() {
         git push -q
     else
         silencer_check printf "${BGREEN}Nothing to sync. ${NC}\n"
-        rm /run/user/$UID/flatsync.lock
-        exit 0
+        exitsh 0
     fi
     silencer_check printf "${BGREEN}Sync completed! ${NC}\n"
-    rm /run/user/$UID/flatsync.lock
-    exit 0
+    exitsh 0
 }

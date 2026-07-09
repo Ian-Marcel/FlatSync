@@ -22,6 +22,10 @@ if [ -f /run/user/$UID/flatsync.lock ]; then
 else
     touch /run/user/$UID/flatsync.lock
 fi
+exitsh() {
+    rm /run/user/$UID/flatsync.lock
+    exit ${1:-}
+}
 #### Error detector
 set -euo pipefail
 trap 'printf "\n\033[1;33mOps! \033[1;31m\b Something went wrong! \n\033[1;34mExiting...\033[0m\n" && rm -rf $HOME/.cache/flatsync /run/user/$UID/flatsync.lock && exit 1' INT TERM ERR
@@ -47,16 +51,14 @@ case $NET_CHECK_RESULT in
     ;;
 100)
     silencer_check printf "${BRED}Connection failed, aborting! ${NC}\n"
-    rm /run/user/$UID/flatsync.lock
-    exit 1
+    exitsh 1
     ;;
 *)
     if [ $VERBOSE = "true" ]; then
         printf "${BYELLOW}Connection unstable, syncing might be interrupted or take to long! ${NC}\n"
         read -rp $'\033[1;33mPress ENTER to proceed or Ctrl+C to cancel.\033[0m' void
     else
-        rm /run/user/$UID/flatsync.lock
-        exit 1
+        exitsh 1
     fi
     ;;
 esac
@@ -83,8 +85,7 @@ if [ -d "$FLATSYNC_GIT"/.git ]; then
 			\r${BGREEN}$FLATSYNC_GIT ${NC}\n
 			\rThen, re-run '${BCYAN}flatsync${NC}', choose to create a new repository, and follow the instructions.\n
 			\r${BRED}!!!${NC} ERROR ${BRED}!!!${NC} ERROR ${BRED}!!!${NC} ERROR ${BRED}!!!${NC}\n"
-            rm /run/user/$UID/flatsync.lock
-            exit 1
+            exitsh 1
         fi
     else
         silencer_check printf "${BLBLUE}Checking for updates...${NC}\n"
@@ -202,8 +203,7 @@ else
         ;;
     esac
     printf "${BGREEN}Setup complete! ${NC}Now re-run ${BCYAN}flatsync${NC} to start synchronization.\n"
-    rm /run/user/$UID/flatsync.lock
-    exit 0
+    exitsh 0
 fi
 ############
 
@@ -216,8 +216,7 @@ if [ -f /usr/share/flatsync/flatsync-id ]; then
     FLATSYNC_ID=$(printf "%s" "$(cat /usr/share/flatsync/flatsync-id)")
 else
     echo -e "This device ID wasn't found at: \n   /usr/share/flatsync/flatsync-id \nPlease create with \`flatsync --id create\` command"
-    rm /run/user/$UID/flatsync.lock
-    exit 1
+    exitsh 1
 fi
 set +e +u +o pipefail
 
