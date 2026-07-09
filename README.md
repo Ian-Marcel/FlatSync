@@ -34,7 +34,7 @@ The previous command also detects whether `flatsync` is installed and performs a
 ### Uninstall
 Just run the following command and it will remove flatsync objects:
 ```sh
-sudo rm -rf /usr/{local/bin,share}/flatsync
+curl -sSL https://from.ianmarcel.dev/uninstall/flatsync | env sh
 ```
 
 ## Usage
