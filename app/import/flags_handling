@@ -102,7 +102,7 @@ EOF
                 fi
             fi
             ###
-            sudo printf "%s" "$(openssl rand -base64 32)" >/usr/share/flatsync/flatsync-id
+            printf "%s" "$(openssl rand -base64 32)" | sudo tee /usr/share/flatsync/flatsync-id >/dev/null
             sudo chown root:root /usr/share/flatsync/flatsync-id
             sudo chmod 644 /usr/share/flatsync/flatsync-id
             ###
