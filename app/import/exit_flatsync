@@ -7,7 +7,7 @@ exit_flatsync() {
         done
     fi
     ###
-    cd "$FLATSYNC_GIT" || exit 1
+    cd "$FLATSYNC_GIT" || rm /run/user/$UID/flatsync.lock && exit 1
 
     flatpak list --columns=application --app |
         tee -p remote_flatpaks &>/dev/null
@@ -25,8 +25,10 @@ exit_flatsync() {
         git push -q
     else
         silencer_check printf "${BGREEN}Nothing to sync. ${NC}\n"
+        rm /run/user/$UID/flatsync.lock
         exit 0
     fi
     silencer_check printf "${BGREEN}Sync completed! ${NC}\n"
+    rm /run/user/$UID/flatsync.lock
     exit 0
 }

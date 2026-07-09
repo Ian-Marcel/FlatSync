@@ -15,7 +15,13 @@ case "$*" in
     exit 0
     ;;
 esac
-touch /run/user/$UID/flatsync.lock # Lock file that prevents paralleled executions
+# Lock file that prevents paralleled executions
+if [ -f /run/user/$UID/flatsync.lock ]; then
+    echo -e "Hold on! Flatsync is currently syncing.\nLet it finish before running again."
+    exit 0
+else
+    touch /run/user/$UID/flatsync.lock
+fi
 #### Error detector
 set -euo pipefail
 trap 'printf "\n\033[1;33mOps! \033[1;31m\b Something went wrong! \n\033[1;34mExiting...\033[0m\n" && rm -rf $HOME/.cache/flatsync /run/user/$UID/flatsync.lock && exit 1' INT TERM ERR
@@ -41,6 +47,7 @@ case $NET_CHECK_RESULT in
     ;;
 100)
     silencer_check printf "${BRED}Connection failed, aborting! ${NC}\n"
+    rm /run/user/$UID/flatsync.lock
     exit 1
     ;;
 *)
@@ -48,6 +55,7 @@ case $NET_CHECK_RESULT in
         printf "${BYELLOW}Connection unstable, syncing might be interrupted or take to long! ${NC}\n"
         read -rp $'\033[1;33mPress ENTER to proceed or Ctrl+C to cancel.\033[0m' void
     else
+        rm /run/user/$UID/flatsync.lock
         exit 1
     fi
     ;;
@@ -59,7 +67,7 @@ source "$FLATSYNC_IMPORTS"/git_config_default_values
 check-dir_git
 check-dir_ssh
 
-cd "$FLATSYNC_GIT" || exit
+cd "$FLATSYNC_GIT" || rm /run/user/$UID/flatsync.lock && exit
 
 if [ -d "$FLATSYNC_GIT"/.git ]; then
     ssh-add -q "$FLATSYNC_SSH"/flatsync_key 2>/dev/null
@@ -75,6 +83,7 @@ if [ -d "$FLATSYNC_GIT"/.git ]; then
 			\r${BGREEN}$FLATSYNC_GIT ${NC}\n
 			\rThen, re-run '${BCYAN}flatsync${NC}', choose to create a new repository, and follow the instructions.\n
 			\r${BRED}!!!${NC} ERROR ${BRED}!!!${NC} ERROR ${BRED}!!!${NC} ERROR ${BRED}!!!${NC}\n"
+            rm /run/user/$UID/flatsync.lock
             exit 1
         fi
     else
@@ -193,6 +202,7 @@ else
         ;;
     esac
     printf "${BGREEN}Setup complete! ${NC}Now re-run ${BCYAN}flatsync${NC} to start synchronization.\n"
+    rm /run/user/$UID/flatsync.lock
     exit 0
 fi
 ############
