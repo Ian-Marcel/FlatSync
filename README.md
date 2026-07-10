@@ -17,13 +17,13 @@ Synchronize flatpak applications between _Linux_ devices through **Git**.
 Simply copy the following command and paste it in your terminal:
 
 ```sh
-curl -sSL https://from.ianmarcel.dev/install/flatsync | env bash
+curl -fsSL https://from.ianmarcel.dev/install/flatsync | env bash
 ```
 
 To test the experimental version use:
 
 ```sh
-curl -sSL https://from.ianmarcel.dev/install/flatsync | EXPERIMENTAL=true env bash
+curl -fsSL https://from.ianmarcel.dev/install/flatsync | EXPERIMENTAL=true env bash
 ```
 
 ### Updating
@@ -34,7 +34,7 @@ The previous command also detects whether `flatsync` is installed and performs a
 ### Uninstall
 Just run the following command and it will remove flatsync objects:
 ```sh
-curl -sSL https://from.ianmarcel.dev/uninstall/flatsync | env sh
+curl -fsSL https://from.ianmarcel.dev/uninstall/flatsync | env sh
 ```
 
 ## Usage
