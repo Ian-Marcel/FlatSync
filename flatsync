@@ -54,7 +54,7 @@ case $NET_CHECK_RESULT in
     exitsh 1
     ;;
 *)
-    if [ $VERBOSE = "true" ]; then
+    if [ $VERBOSE == "true" ]; then
         printf "${BYELLOW}Connection unstable, syncing might be interrupted or take to long! ${NC}\n"
         read -rp $'\033[1;33mPress ENTER to proceed or Ctrl+C to cancel.\033[0m' void
     else
@@ -220,7 +220,7 @@ else
 fi
 set +e +u +o pipefail
 
-if [ -e "$FLATSYNC_GIT"/last_updated_device ] && { [ "$LUD_HOSTNAME" = "$(cat /etc/hostname)" ] && [ "$LUD_FLATSYNC_ID" = "$FLATSYNC_ID" ]; }; then
+if [ -e "$FLATSYNC_GIT"/last_updated_device ] && { [ "$LUD_HOSTNAME" == "$(cat /etc/hostname)" ] && [ "$LUD_FLATSYNC_ID" == "$FLATSYNC_ID" ]; }; then
 
     NO_TODO=2
     exit_flatsync_grace
@@ -265,7 +265,7 @@ if [ -e "$FLATSYNC_CACHE"/uninstall ]; then
         uninstallid+=("$appid")
     done
 
-    if [ "$AUTO_OP_FLATPAKS" = false ]; then
+    if [ "$AUTO_OP_FLATPAKS" == false ]; then
         if [ "${#uninstallid[@]}" -eq 1 ]; then
             total=${#uninstallid[@]}
         else
@@ -308,7 +308,7 @@ if [ -e "$FLATSYNC_CACHE"/uninstall ]; then
             appid=${uninstallid[$index]}
 
             flatpak uninstall --noninteractive --assumeyes "$appid" &>/dev/null &
-            if [ "$AUTO_OP_FLATPAKS" = false ]; then
+            if [ "$AUTO_OP_FLATPAKS" == false ]; then
                 app_name=${uninstall2[$index]}
                 silencer_check wait_with_spinner_loading "$app_name"
             else
@@ -332,7 +332,7 @@ if [ -e "$FLATSYNC_CACHE"/install ]; then
         installid+=("$appid")
     done
 
-    if [ "$AUTO_OP_FLATPAKS" = false ]; then
+    if [ "$AUTO_OP_FLATPAKS" == false ]; then
         silencer_check printf "Processing installation data...\n"
         if [ "${#installid[@]}" -eq 1 ]; then
             total="${#installid[@]}"
@@ -376,7 +376,7 @@ if [ -e "$FLATSYNC_CACHE"/install ]; then
             appid=${installid[$index]}
 
             flatpak install --noninteractive --assumeyes flathub "$appid" &>/dev/null &
-            if [ "$AUTO_OP_FLATPAKS" = false ]; then
+            if [ "$AUTO_OP_FLATPAKS" == false ]; then
                 app_name=${install2[$index]}
                 silencer_check wait_with_spinner_loading "$app_name"
             else

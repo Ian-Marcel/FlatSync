@@ -73,9 +73,9 @@ Persistent=true
 WantedBy=timers.target
 EOF
         systemctl --user daemon-reload
-        if [ $CH_SCHEDULE = true ]; then
+        if [ $CH_SCHEDULE == true ]; then
             systemctl --user enable --now flatsync.timer
-        elif [ $CH_SCHEDULE = false ]; then
+        elif [ $CH_SCHEDULE == false ]; then
             systemctl --user reset-failed
             systemctl --user enable flatsync.timer
             systemctl --user restart flatsync.timer
@@ -97,7 +97,7 @@ EOF
             if [ -s "$FLATSYNC_GIT"/last_updated_device ] && [ -s /usr/share/flatsync/flatsync-id ]; then
                 OLD_ID_LOCAL=$(printf "%s" "$(cat /usr/share/flatsync/flatsync-id)")
                 LAST_ID=$(tail -n 1 "$FLATSYNC_GIT"/last_updated_device)
-                if [ "$OLD_ID_LOCAL" = "$LAST_ID" ]; then
+                if [ "$OLD_ID_LOCAL" == "$LAST_ID" ]; then
                     UPDATE_LUD=true
                 fi
             fi
@@ -107,7 +107,7 @@ EOF
             sudo chmod 644 /usr/share/flatsync/flatsync-id
             ###
             UPDATE_LUD=${UPDATE_LUD:-"true"}
-            if [ "$UPDATE_LUD" = true ]; then
+            if [ "$UPDATE_LUD" == true ]; then
                 cd "$FLATSYNC_GIT"
                 LUD_FLATSYNC_ID=$(printf "%s" "$(cat /usr/share/flatsync/flatsync-id)")
                 printf "%s\n%s" "$(cat /etc/hostname)" "$LUD_FLATSYNC_ID" 1>last_updated_device
@@ -147,7 +147,7 @@ EOF
 done
 
 silencer_check() {
-    if [ "$VERBOSE" = false ]; then
+    if [ "$VERBOSE" == false ]; then
         "$@" >/dev/null
     else
         "$@"
