@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+
+# EXPLANATION: checks if X is inside of Y, pretty usefull to see if an object is in a list
+# Like the `in` object in python, example:
+# ```py
+# if x in y:
+#   ...
+#```
+# The real use in of this function is for example:
+# ```sh
+# if contains "X" "${Y[@]}"; then
+#   ...
+# fi
+# ```
+
+contains() {
+    local VALUE="$1"
+    shift
+    for COMPARE_VALUE in "$@"; do
+        if [ "$VALUE" == "$COMPARE_VALUE" ]; then
+            return 0
+        fi
+    done
+    return 1
+}

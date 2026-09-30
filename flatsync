@@ -41,6 +41,7 @@ source "$FLATSYNC_IMPORTS"/wait_with_spinner_loading
 source "$FLATSYNC_IMPORTS"/check_directories
 source "$FLATSYNC_IMPORTS"/exit_flatsync
 source "$FLATSYNC_IMPORTS"/flags_handling
+source "$FLATSYNC_IMPORTS"/app/import/contains
 ############
 
 silencer_check printf "${BYELLOW}Checking network connectivity...${NC}\n"
@@ -218,37 +219,29 @@ else
     echo -e "This device ID wasn't found at: \n   /usr/share/flatsync/flatsync-id \nPlease create with \`flatsync --id create\` command"
     exitsh 1
 fi
-set +e +u +o pipefail
+# set +e +u +o pipefail
 
 if [ -e "$FLATSYNC_GIT"/last_updated_device ] && { [ "$LUD_HOSTNAME" == "$(cat /etc/hostname)" ] && [ "$LUD_FLATSYNC_ID" == "$FLATSYNC_ID" ]; }; then
-
     NO_TODO=2
     exit_flatsync_grace
-
 else
-
     silencer_check printf "Different device!\n"
 
-    flatpak list --columns=application --app |
-        tee -p "$FLATSYNC_CACHE"/local_flatpaks &>/dev/null
-    cp "$FLATSYNC_GIT"/remote_flatpaks "$FLATSYNC_CACHE"/
+    mapfile <"$FLATSYNC_GIT"/remote_flatpaks -t REMOTE_FLATPAKS
+    for lapps in $(flatpak list --columns=application --app); do
+        LOCAL_FLATPAKS+=("$lapps")
+    done
 
-    # comment.2
-    if diff "$FLATSYNC_CACHE"/remote_flatpaks "$FLATSYNC_CACHE"/local_flatpaks | grep ">" &>/dev/null; then
-        diff "$FLATSYNC_CACHE"/remote_flatpaks "$FLATSYNC_CACHE"/local_flatpaks |
-            grep ">" |
-            awk -F ">" '{ print $2 }' |
-            tee -p "$FLATSYNC_CACHE"/uninstall &>/dev/null
-    fi
-
-    # comment.1
-    if diff "$FLATSYNC_CACHE"/remote_flatpaks "$FLATSYNC_CACHE"/local_flatpaks | grep "<" &>/dev/null; then
-        diff "$FLATSYNC_CACHE"/remote_flatpaks "$FLATSYNC_CACHE"/local_flatpaks |
-            grep "<" |
-            awk -F "<" '{ print $2 }' |
-            tee -p "$FLATSYNC_CACHE"/install &>/dev/null
-    fi
-
+    for LAPPID in "${LOCAL_FLATPAKS[@]}"; do
+        if ! contains "$LAPPID" "${REMOTE_FLATPAKS[@]}"; then
+            DEL_LIST+=("$LAPPID")
+        fi
+    done
+    for RAPPID in "${REMOTE_FLATPAKS[@]}"; do
+        if ! contains "$RAPPID" "${LOCAL_FLATPAKS[@]}"; then
+            ADD_LIST+=("$RAPPID")
+        fi
+    done
 fi
 
 set -euo pipefail
@@ -257,23 +250,19 @@ set -euo pipefail
 source "$FLATSYNC_IMPORTS"/appid_regex
 
 #### Uninstalling apps
-if [ -e "$FLATSYNC_CACHE"/uninstall ]; then
+if [ "${DEL_LIST:-}" ]; then
     silencer_check printf "${BRED}Removing...${NC}\n"
     silencer_check printf "Processing uninstallation data...\n"
 
-    for appid in $(cat "$FLATSYNC_CACHE"/uninstall); do
-        uninstallid+=("$appid")
-    done
-
     if [ "$AUTO_OP_FLATPAKS" == false ]; then
-        if [ "${#uninstallid[@]}" -eq 1 ]; then
-            total=${#uninstallid[@]}
+        if [ "${#DEL_LIST[@]}" -eq 1 ]; then
+            total=${#DEL_LIST[@]}
         else
-            total=$((${#uninstallid[@]} - 1))
+            total=$((${#DEL_LIST[@]} - 1))
         fi
 
-        for index in "${!uninstallid[@]}"; do
-            appid=${uninstallid[$index]}
+        for index in "${!DEL_LIST[@]}"; do
+            appid=${DEL_LIST[$index]}
 
             progress_bar_by_task_completion "$index" "$total"
 
@@ -303,9 +292,9 @@ if [ -e "$FLATSYNC_CACHE"/uninstall ]; then
 
     case "$ASWR" in
     Y | y)
-        for index in "${!uninstallid[@]}"; do
+        for index in "${!DEL_LIST[@]}"; do
 
-            appid=${uninstallid[$index]}
+            appid=${DEL_LIST[$index]}
 
             flatpak uninstall --noninteractive --assumeyes "$appid" &>/dev/null &
             if [ "$AUTO_OP_FLATPAKS" == false ]; then
@@ -325,23 +314,19 @@ fi
 ############
 
 #### Installing apps
-if [ -e "$FLATSYNC_CACHE"/install ]; then
+if [ "${ADD_LIST:-}" ]; then
     silencer_check printf "${BGREEN}Installing...${NC}\n"
-
-    for appid in $(cat "$FLATSYNC_CACHE"/install); do
-        installid+=("$appid")
-    done
 
     if [ "$AUTO_OP_FLATPAKS" == false ]; then
         silencer_check printf "Processing installation data...\n"
-        if [ "${#installid[@]}" -eq 1 ]; then
-            total="${#installid[@]}"
+        if [ "${#ADD_LIST[@]}" -eq 1 ]; then
+            total="${#ADD_LIST[@]}"
         else
-            total=$((${#installid[@]} - 1))
+            total=$((${#ADD_LIST[@]} - 1))
         fi
 
-        for index in "${!installid[@]}"; do
-            appid=${installid[$index]}
+        for index in "${!ADD_LIST[@]}"; do
+            appid=${ADD_LIST[$index]}
 
             silencer_check progress_bar_by_task_completion "$index" "$total"
             appid_regex
@@ -371,9 +356,9 @@ if [ -e "$FLATSYNC_CACHE"/install ]; then
 
     case "$ASWR" in
     Y | y)
-        for index in "${!installid[@]}"; do
+        for index in "${!ADD_LIST[@]}"; do
 
-            appid=${installid[$index]}
+            appid=${ADD_LIST[$index]}
 
             flatpak install --noninteractive --assumeyes flathub "$appid" &>/dev/null &
             if [ "$AUTO_OP_FLATPAKS" == false ]; then
