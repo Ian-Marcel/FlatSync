@@ -6,8 +6,9 @@ exit_flatsync_grace() {
     #         shred -u "$old_items"
     #     done
     # fi
+    rm -rf "$FLATSYNC_CACHE"
     ###
-    cd "$FLATSYNC_GIT"
+    cd "$FLATSYNC_GIT" || return 2
 
     flatpak list --columns=application --app |
         tee -p remote_flatpaks &>/dev/null
