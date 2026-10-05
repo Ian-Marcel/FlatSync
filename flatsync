@@ -330,7 +330,7 @@ if [ "${ADD_LIST:-}" ]; then
 
             silencer_check progress_bar_by_task_completion "$index" "$total"
             appid_regex
-            QUERY_FLATPAK_NAME=$(flatpak search --columns=name "$appid" | head -n "$i" | tail -n 1)
+            QUERY_FLATPAK_NAME=$(flatpak search --columns=name "$appid" | head -n "$i" | tail -n 1) # $i comes from appid_regex function
             QUERY_FLATPAK_DESCRIPTION=$(flatpak search --columns=description "$appid" | head -n "$i" | tail -n 1)
             printf " ${BGREEN}[+]${NC} %s: %s \n" \
                 "$QUERY_FLATPAK_NAME" \

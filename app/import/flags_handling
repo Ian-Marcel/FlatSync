@@ -14,7 +14,7 @@ while (($# > 0)); do
         continue
         ;;
     -v | --version)
-        printf "flatsync: ${FLATSYNC_VERSION}v\n"
+        printf "flatsync v${FLATSYNC_VERSION}\n"
         exitsh 0
         ;;
     -a | --automatic)
