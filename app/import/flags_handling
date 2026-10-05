@@ -14,7 +14,11 @@ while (($# > 0)); do
         continue
         ;;
     -v | --version)
-        printf "flatsync v${FLATSYNC_VERSION}\n"
+        if [ "${EXPERIMENTAL_REF:-}" ]; then
+            echo "flatsync v${FLATSYNC_VERSION}-${EXPERIMENTAL_REF}"
+        else
+            echo "flatsync v${FLATSYNC_VERSION}"
+        fi
         exitsh 0
         ;;
     -a | --automatic)
