@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 
 exit_flatsync_grace() {
-    if [ "$NO_TODO" -lt 2 ]; then
-        for old_items in "$FLATSYNC_CACHE"/*; do
-            shred -u "$old_items"
-        done
-    fi
+    # if [ "$NO_TODO" -lt 2 ]; then
+    #     for old_items in "$FLATSYNC_CACHE"/*; do
+    #         shred -u "$old_items"
+    #     done
+    # fi
     ###
     cd "$FLATSYNC_GIT"
 
