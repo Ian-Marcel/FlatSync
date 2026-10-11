@@ -21,10 +21,15 @@ while (($# > 0)); do
         fi
         exitsh 0
         ;;
-    -a | --automatic)
+    -y | --assumeyes)
         AUTO_OP_FLATPAKS=true
-        VERBOSE=false
         printf "Last run: \n%s" "$(date "%H:%M:%S - %d/%m/%Y")" >"$FLATSYNC_CACHE/running_automaticaly"
+        ;;
+    -u | --user)
+        APP_LEVEL='--user'
+        ;;
+    -q | --quiet)
+        VERBOSE=false
         ;;
     -R | --remove-systemd)
         systemctl --user disable --now flatsync.timer >/dev/null 2>&1 || true
@@ -58,7 +63,7 @@ Description=Run FlatSync
 
 [Service]
 Type=oneshot
-ExecStart=/usr/local/bin/flatsync --automatic
+ExecStart=/usr/local/bin/flatsync ${APP_LEVEL:-} --assumeyes --quiet
 Nice=10
 IOSchedulingClass=best-effort
 IOSchedulingPriority=7

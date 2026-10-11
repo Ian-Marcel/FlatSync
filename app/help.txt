@@ -4,7 +4,7 @@ Usage:
     flatsync [FLAGS]
 
 Flags:
-    -a, --automatic
+    -y, --assumeyes
         Automatically and silently performs Flatpak
         installations and removals.
 
@@ -35,6 +35,15 @@ Flags:
         Actions:
             create    Generate a new device ID (requires sudo)
             get       Display the current device ID
+
+    -u, --user
+        Installs and remove apps at the user level
+        default is system level, this option is
+        pairable with -S/--systemd option, as long
+        as it's provided before it.
+
+        Example:
+            flatsync -u -S 15
 
     -D, --debug
         Enables verbose debug output.
