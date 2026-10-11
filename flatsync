@@ -296,7 +296,7 @@ if [ "${DEL_LIST:-}" ]; then
 
             appid=${DEL_LIST[$index]}
 
-            flatpak uninstall ${APP_LEVEL:'--system'} --noninteractive --assumeyes "$appid" &>/dev/null &
+            flatpak uninstall ${APP_LEVEL:-'--system'} --noninteractive --assumeyes "$appid" &>/dev/null &
             if [ "$AUTO_OP_FLATPAKS" == false ]; then
                 app_name=${uninstall2[$index]}
                 silencer_check wait_with_spinner_loading "$app_name"
@@ -360,7 +360,7 @@ if [ "${ADD_LIST:-}" ]; then
 
             appid=${ADD_LIST[$index]}
 
-            flatpak install ${APP_LEVEL:'--system'} --noninteractive --assumeyes flathub "$appid" &>/dev/null &
+            flatpak install ${APP_LEVEL:-'--system'} --noninteractive --assumeyes flathub "$appid" &>/dev/null &
             if [ "$AUTO_OP_FLATPAKS" == false ]; then
                 app_name=${install2[$index]}
                 silencer_check wait_with_spinner_loading "$app_name"
