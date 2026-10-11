@@ -90,9 +90,7 @@ flatsync [FLAGS]
   - `create` — Generates a unique identifier for the device (requires `sudo`)
   - `get` — Displays the current device ID
 
-- `--user`, `-u`
-
-  Installs and remove apps at the user level
+- `--user`, `-u` Installs and remove apps at the user level
   default is system level, this option is
   pairable with -S/--systemd option, as long
   as it's provided before it.
