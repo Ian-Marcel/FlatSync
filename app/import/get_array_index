@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+
+# EXPLANATION: Search for a value index in an array and return it if exist.
+# HOW TO USE:
+# ```sh
+#   get_index "value" "${my_array[@]}"
+# ```
+function get_array_index() {
+    local value="$1"
+    shift
+    local array=("$@")
+    for i in "${!array[@]}"; do
+        if [[ "${array[$i]}" = "${value}" ]]; then
+            printf '%i' "$i"
+            break
+        fi
+    done
+}
